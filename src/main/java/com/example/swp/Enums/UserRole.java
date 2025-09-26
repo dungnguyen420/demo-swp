@@ -1,7 +1,7 @@
 package com.example.swp.Enums;
 
 public enum UserRole {
-    USER,
+    MEMBER,
     TRAINER,
     MANAGER,
     INVENTORY,
