@@ -1,12 +1,15 @@
 package com.example.swp.Entity;
 
+import com.example.swp.Enums.UserGender;
+import com.example.swp.Enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.Data;
 
 import java.time.LocalDateTime;
-
-public class UserEntity {
+@Data
+public class UserEntity extends BaseEntity {
     public String userName;
 
     public String phone;
