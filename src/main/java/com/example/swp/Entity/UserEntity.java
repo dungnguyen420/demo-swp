@@ -9,12 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 @Data
-@Entity(name="Users")
+@Entity
+@Table(name="Users")
 public class UserEntity extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String username;
 
     // Quan hệ 1-1 với TrainerProfile

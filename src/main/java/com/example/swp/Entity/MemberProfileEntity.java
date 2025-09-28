@@ -7,10 +7,7 @@ import java.math.BigDecimal;
 @Data
 @Entity
 @Table(name = "member_profiles")
-public class MemberProfileEntity {
-
-    @Id
-    private Long id;
+public class MemberProfileEntity extends BaseEntity {
 
     @OneToOne
     @MapsId
