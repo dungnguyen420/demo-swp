@@ -8,11 +8,12 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
-@Data
+
 @Entity
 @Table(name="Users")
+@Data
 public class UserEntity extends BaseEntity {
-    private String username;
+    private String userName;
 
     // Quan hệ 1-1 với TrainerProfile
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

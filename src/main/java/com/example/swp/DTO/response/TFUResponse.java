@@ -1,4 +1,4 @@
-package com.example.swp.DTO;
+package com.example.swp.DTO.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;

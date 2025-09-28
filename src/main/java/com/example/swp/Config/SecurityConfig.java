@@ -29,8 +29,7 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
 
-    @Autowired
-    private AuthenticationProvider authenticationProvider;
+
     public static final String[] PUBLIC_ENDPOINTS = {
             "/auth/login",
             "/auth/login-v2",
@@ -46,7 +45,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationProvider authenticationProvider) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())

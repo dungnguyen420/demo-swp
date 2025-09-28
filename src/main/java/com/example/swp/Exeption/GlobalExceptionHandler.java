@@ -1,6 +1,6 @@
 package com.example.swp.Exeption;
 
-import com.example.swp.DTO.TFUResponse;
+import com.example.swp.DTO.response.TFUResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
