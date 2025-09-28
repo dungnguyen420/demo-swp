@@ -11,4 +11,5 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long>, JpaSpe
     UserEntity findByUserName(String userName);
     UserEntity findByEmail(String email);
 
+
 }
