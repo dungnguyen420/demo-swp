@@ -29,6 +29,8 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
 
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
     public static final String[] PUBLIC_ENDPOINTS = {
             "/auth/login",
             "/auth/login-v2",
