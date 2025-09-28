@@ -1,16 +1,25 @@
 package com.example.swp.Entity;
 
+import com.example.swp.Enums.Status;
 import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 @Data
+@Entity(name="Users")
 public class UserEntity extends BaseEntity {
-    public String userName;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String username;
+
+    // Quan hệ 1-1 với TrainerProfile
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TrainerProfileEntity trainerProfile;
 
     public String phone;
 
@@ -33,5 +42,8 @@ public class UserEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private UserRole role;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status;
 
 }
