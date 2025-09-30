@@ -6,14 +6,12 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-@Data
+
 @Entity
 @Table(name = "promotions")
-public class PromotionEntity {
+@Data
+public class PromotionEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(length = 50, nullable = false, unique = true)
     private String code;

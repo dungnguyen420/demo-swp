@@ -6,9 +6,11 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface IUserRepository extends JpaRepository<UserEntity, Long>, JpaSpecificationExecutor<UserEntity> {
-    UserEntity findByUserName(String userName);
+    Optional<UserEntity>  findByUserName(String userName);
     UserEntity findByEmail(String email);
 
 

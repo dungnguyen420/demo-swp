@@ -6,7 +6,9 @@ import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserService implements IUserService {
 
     @Autowired
@@ -16,7 +18,7 @@ public class UserService implements IUserService {
     private PasswordEncoder passwordEncoder;
     @Override
     public UserEntity registerUser(RegisterDTO dto) {
-        UserEntity checkUserName = userRepository.findByUserName(dto.getUserName());
+        UserEntity checkUserName = userRepository.findByUserName(dto.getUserName()).orElse(null);
         UserEntity checkEmail = userRepository.findByEmail(dto.getEmail());
         if(checkUserName == null || checkEmail == null){
             UserEntity newUser = new UserEntity();
