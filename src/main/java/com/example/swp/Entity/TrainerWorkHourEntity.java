@@ -13,11 +13,9 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TrainerWorkHourEntity {
+public class TrainerWorkHourEntity extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
 
     @ManyToOne(fetch = FetchType.LAZY)

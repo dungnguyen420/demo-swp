@@ -3,10 +3,8 @@ package com.example.swp.Entity;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
-
-public class TrainerProfileEntity {
-    @Id
-    private Long id;
+@Entity
+public class TrainerProfileEntity extends BaseEntity {
 
     @OneToOne
     @MapsId
