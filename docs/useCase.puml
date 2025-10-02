@@ -29,9 +29,11 @@ actor "Trainer" as trainer
 
 trainer -> (Log in or register)
 trainer --> (View profile)
-        (View profile) <.. (Change profile) : <<extend>>
-        (View profile) <.. (Change password) : <<extend>>
+(View profile) <.. (Change profile) : <<extend>>
+(View profile) <.. (Change password) : <<extend>>
 trainer --> (View work schedule)
+trainer --> (View group class)
+(View group class) <.. (Attendance report): <<extend>>
 (View work schedule) --> (CRUD)
 trainer --> (Report equipment issues)
 
@@ -85,6 +87,10 @@ manager --> (View statistics and reports)
 (View statistics and reports) <.. (Create statistics and report) : <<extend>>
 (View statistics and reports) <.. (View payment history) : <<extend>>
 (View statistics and reports) <.. (Verify and confirm transaction status) : <<extend>>
+
+manager --> (View group class)
+(View group class) <.. (Attendance report): <<extend>>
+(View group class) --> (CRUD)
 
 manager --> (View work schedule)
 (View work schedule) --> (CRUD)
