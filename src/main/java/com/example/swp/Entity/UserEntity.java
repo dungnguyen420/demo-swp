@@ -3,19 +3,24 @@ package com.example.swp.Entity;
 import com.example.swp.Enums.Status;
 import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
+import io.jsonwebtoken.lang.Classes;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
-@Entity
-@Table(name="Users")
 @Data
+@Entity(name="Users")
 public class UserEntity extends BaseEntity {
+
+
     private String userName;
 
-    // Quan hệ 1-1 với TrainerProfile
+
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private TrainerProfileEntity trainerProfile;
 

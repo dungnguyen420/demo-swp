@@ -1,15 +1,10 @@
 package com.example.swp.Entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 
 import java.math.BigDecimal;
-
 @Entity
-@Data
-@Table(name ="Trainer_Profile")
-public class TrainerProfileEntity  extends BaseEntity{
-
+public class TrainerProfileEntity extends BaseEntity {
 
     @OneToOne
     @MapsId

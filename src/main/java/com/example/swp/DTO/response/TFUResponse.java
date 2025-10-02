@@ -23,7 +23,7 @@ public class TFUResponse<T> {
         this.statusCode = statusCode;
         this.errors = errors;
     }
-    // --- getters & setters ---
+
     public Boolean getSuccess() { return success; }
     public void setSuccess(Boolean success) { this.success = success; }
     public T getData() { return data; }
