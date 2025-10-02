@@ -20,7 +20,7 @@ public class UserService implements IUserService {
     public UserEntity registerUser(RegisterDTO dto) {
         UserEntity checkUserName = userRepository.findByUserName(dto.getUserName()).orElse(null);
         UserEntity checkEmail = userRepository.findByEmail(dto.getEmail());
-        if(checkUserName == null || checkEmail == null){
+        if(checkUserName == null && checkEmail == null){
             UserEntity newUser = new UserEntity();
             newUser.setUserName(dto.getUserName());
             newUser.setEmail(dto.getEmail());
