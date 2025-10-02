@@ -110,5 +110,4 @@ manager --> (View promotion and discount)
 
 manager --> (View notification event)
 (View notification event) --> (CRUD)
-
 @enduml
