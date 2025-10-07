@@ -1,4 +1,4 @@
-package com.example.swp.Controller;
+package com.example.swp.base;
 
 import com.example.swp.Config.JwtUtil;
 import com.example.swp.DTO.response.PageResponseDTO;
