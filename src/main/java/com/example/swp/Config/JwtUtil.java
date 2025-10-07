@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 @Component
 public class JwtUtil {
@@ -28,7 +30,7 @@ public class JwtUtil {
                 .claim("role", userEntity.getRole().name())
                 .claim("id", userEntity.getId())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 100))
+                .setExpiration(new Date(Instant.now().plus(30, ChronoUnit.MINUTES).toEpochMilli()))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

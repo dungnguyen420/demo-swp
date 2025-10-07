@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserService implements IUserService {
 
@@ -20,8 +22,8 @@ public class UserService implements IUserService {
     @Override
     public UserEntity registerUser(RegisterDTO dto) {
         UserEntity checkUserName = userRepository.findByUserName(dto.getUserName()).orElse(null);
-        UserEntity checkEmail = userRepository.findByEmail(dto.getEmail());
-        if(checkUserName == null && checkEmail == null){
+        Optional<UserEntity> checkEmail = userRepository.findByEmail(dto.getEmail());
+        if(checkUserName == null && checkEmail.isEmpty()){
             UserEntity newUser = new UserEntity();
             newUser.setUserName(dto.getUserName());
             newUser.setEmail(dto.getEmail());
@@ -44,7 +46,18 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserEntity createUser(UserEntity model) {
+    public UserEntity creatOrUpdateUser(UserEntity model) {
         return userRepository.save(model);
+    }
+
+    @Override
+    public Optional<UserEntity> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    @Override
+    public UserEntity findByUserNameOrEmail(String input) {
+        return userRepository.findByUserName(input)
+                .or(() -> userRepository.findByEmail(input))
+                .orElse(null);
     }
 }

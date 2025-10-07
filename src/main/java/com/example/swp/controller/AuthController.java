@@ -54,12 +54,11 @@ public class AuthController extends BaseAPIController {
     @PostMapping("login")
     public ResponseEntity<TFUResponse<AuthResponse>> login (@RequestBody AuthRequest dto){
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getUserName(),dto.getPassWord()));
+                new UsernamePasswordAuthenticationToken(dto.getEmailOrUserName(),dto.getPassWord()));
 
-        UserEntity user = userService.findByUserName(dto.getUserName());
-
-        if (user == null){
-            return badRequest("User not find");
+        UserEntity user = userService.findByUserNameOrEmail(dto.getEmailOrUserName());
+        if (user == null) {
+            return badRequest("User not found");
         }
         String jwt = jwtUtil.generateToken(user);
         AuthResponse authResponse = new AuthResponse();
