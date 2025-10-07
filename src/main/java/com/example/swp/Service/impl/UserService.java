@@ -38,4 +38,13 @@ public class UserService implements IUserService {
         return userRepository.findByUserName(userName).orElse(null);
     }
 
+    @Override
+    public boolean existedByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public UserEntity createUser(UserEntity model) {
+        return userRepository.save(model);
+    }
 }
