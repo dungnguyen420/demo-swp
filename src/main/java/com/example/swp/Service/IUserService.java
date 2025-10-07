@@ -8,4 +8,6 @@ import org.springframework.stereotype.Service;
 public interface IUserService {
     UserEntity registerUser(RegisterDTO dto);
     UserEntity findByUserName(String userName);
+    boolean existedByEmail(String email);
+    UserEntity createUser(UserEntity model);
 }
