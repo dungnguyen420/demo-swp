@@ -1,22 +1,25 @@
 package com.example.swp.controller;
 
 import com.example.swp.Config.JwtUtil;
+import com.example.swp.DTO.AuthRequest;
+import com.example.swp.DTO.AuthResponse;
 import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.DTO.response.TFUResponse;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Service.IUserService;
+import com.example.swp.base.BaseAPIController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController extends BaseAPIController {
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -28,9 +31,9 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("register")
-    public ResponseEntity<TFUResponse<UserEntity>> register(@RequestBody RegisterDTO dto){
+    public ResponseEntity<TFUResponse<UserEntity>> register(@RequestBody RegisterDTO dto) {
         UserEntity user = userService.registerUser(dto);
-        if(user == null){
+        if (user == null) {
             TFUResponse<UserEntity> response = TFUResponse.<UserEntity>builder()
                     .success(false)
                     .message("Không tạo được user")
@@ -48,4 +51,21 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+    public ResponseEntity<TFUResponse<AuthResponse>> login (@RequestBody AuthRequest dto){
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(dto.getUsername(),dto.getPassword()));
+
+        UserEntity user = userService.findByUserName(dto.getUsername());
+
+        if (user == null){
+            return badRequest("User not find");
+        }
+        String jwt = jwtUtil.generateToken(user);
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setAccessToken(jwt);
+        authResponse.setUserName(user.getUserName());
+        return success(authResponse);
+    }
+    
 }

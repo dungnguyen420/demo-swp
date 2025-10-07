@@ -7,4 +7,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface IUserService {
     UserEntity registerUser(RegisterDTO dto);
+    UserEntity findByUserName(String userName);
 }
