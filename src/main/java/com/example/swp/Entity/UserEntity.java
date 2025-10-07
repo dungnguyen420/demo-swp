@@ -24,23 +24,23 @@ public class UserEntity extends BaseEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private TrainerProfileEntity trainerProfile;
 
-    public String phone;
+    private String phone;
 
-    public String firstName;
+    private String firstName;
 
-    public UserGender gender;
+    private UserGender gender;
 
-    public String lastName;
+    private String lastName;
 
-    public LocalDateTime birthDate;
+    private LocalDateTime birthDate;
 
-    public String avatar;
+    private String avatar;
 
-    public boolean isActive = true;
+    private boolean isActive = true;
 
-    public String email;
+    private String email;
 
-    public String password;
+    private String password;
 
 
     @Enumerated(EnumType.STRING)
