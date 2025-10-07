@@ -2,11 +2,14 @@ package com.example.swp.Service.impl;
 
 import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.Entity.UserEntity;
+import com.example.swp.Enums.UserRole;
 import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class UserService implements IUserService {
@@ -26,6 +29,7 @@ public class UserService implements IUserService {
             newUser.setEmail(dto.getEmail());
             newUser.setFirstName(dto.getFirstName());
             newUser.setLastName(dto.getLastName());
+            newUser.setRole(UserRole.MEMBER);
             newUser.setPassword(passwordEncoder.encode(dto.getPassWord()));
             return userRepository.save(newUser);
         }

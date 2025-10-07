@@ -56,6 +56,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/trainer/**").hasAnyRole("TRAINER", "ADMIN")
+                        .requestMatchers("/api/order/**").hasAnyRole("ORDER", "ADMIN")
+                        .requestMatchers("/api/manager/**").hasAnyRole("MANAGER", "ADMIN")
+
                         .anyRequest().authenticated()
                 )
                     .authenticationProvider(authenticationProvider)
@@ -86,7 +90,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("web-a-thi-moi-dc-call-api"));
+        configuration.setAllowedOrigins(List.of("web-a-thi-moi-dc-call-api?"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
