@@ -51,7 +51,9 @@ public class DataInitializer implements CommandLineRunner {
             userService.creatOrUpdateUser(admin.orElse(null));
             System.out.println("Admin already exists");
         }
+
     }
+
 
 }
 

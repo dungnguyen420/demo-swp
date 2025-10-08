@@ -7,64 +7,78 @@ import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.DTO.response.TFUResponse;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Service.IUserService;
+import com.example.swp.Service.impl.CustomUserDetails;
 import com.example.swp.base.BaseAPIController;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
-@RestController
+@Controller
 @RequestMapping("/auth")
-public class AuthController extends BaseAPIController {
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
+public class AuthController {
 
     @Autowired
     private IUserService userService;
 
-    @Autowired
-    private JwtUtil jwtUtil;
-
-    @PostMapping("register")
-    public ResponseEntity<TFUResponse<UserEntity>> register(@RequestBody RegisterDTO dto) {
-        UserEntity user = userService.registerUser(dto);
-        if (user == null) {
-            TFUResponse<UserEntity> response = TFUResponse.<UserEntity>builder()
-                    .success(false)
-                    .message("Không tạo được user")
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .build();
-
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-        TFUResponse<UserEntity> response = TFUResponse.<UserEntity>builder()
-                .success(true)
-                .message("Tạo user thành công")
-                .statusCode(HttpStatus.OK.value())
-                .data(user)
-                .build();
-
-        return ResponseEntity.ok(response);
+    @GetMapping("/login")
+    public String showLoginForm() {
+        return "auth/login"; // -> templates/login.html
     }
-    @PostMapping("login")
-    public ResponseEntity<TFUResponse<AuthResponse>> login (@RequestBody AuthRequest dto){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.getEmailOrUserName(),dto.getPassWord()));
 
-        UserEntity user = userService.findByUserNameOrEmail(dto.getEmailOrUserName());
+    @PostMapping("/login")
+    public String loginUser (
+            @RequestParam("usernameOrEmail") String usernameOrEmail,
+            @RequestParam("password") String password,
+            HttpSession session,
+            Model model){
+
+        UserEntity user = userService.loginUser(usernameOrEmail, password);
         if (user == null) {
-            return badRequest("User not found");
+            model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng!");
+            return "auth/login";
         }
-        String jwt = jwtUtil.generateToken(user);
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setAccessToken(jwt);
-        authResponse.setUserName(user.getUserName());
-        return success(authResponse);
+        if (!user.isActive()) {
+            model.addAttribute("errorMessage", "Account have been ban");
+            return "auth/login";
+        }
+
+        // ✅ Tạo đối tượng UserDetails
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+
+        // ✅ Tạo token xác thực và gán vào SecurityContext
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+        // ✅ (Tuỳ chọn) lưu vào session để Spring Security ghi nhớ
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+
+
+        if (user.getRole().name().equalsIgnoreCase("ADMIN")) {
+            return "redirect:/home";
+        } else {
+            return "redirect:/home";
+        }
     }
-    
+
+
+
+    //    @PostMapping("register")
+//    public ResponseEntity<TFUResponse<UserEntity>> register(@RequestBody RegisterDTO dto) {
+//        UserEntity user = userService.registerUser(dto);
+//        if (user == null) {
+//
+//            return badRequest("User register fail");
+//        }
+//
+//        return success(user);
+//    }
 }
+    

@@ -13,11 +13,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -35,13 +31,13 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/auth/login")   // dùng login.html của bạn
-                        .loginProcessingUrl("/auth/login")
-                        .defaultSuccessUrl("/home", true)
-                        .failureUrl("/auth/login?error=true")
-                        .permitAll()
-                )
+//                .formLogin(form -> form
+//                        .loginPage("/auth/login")   // dùng login.html của bạn
+//                        .loginProcessingUrl("/auth/login")
+//                        .defaultSuccessUrl("/home", true)
+//                        .failureUrl("/auth/login?error=true")
+//                        .permitAll()
+//                )
                 .logout(logout -> logout
                         .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/auth/login?logout=true")
