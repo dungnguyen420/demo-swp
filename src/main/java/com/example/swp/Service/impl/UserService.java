@@ -6,7 +6,10 @@ import com.example.swp.Enums.Status;
 import com.example.swp.Enums.UserRole;
 import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Service.IUserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,10 +32,10 @@ public class UserService implements IUserService {
             UserEntity newUser = new UserEntity();
             newUser.setUserName(dto.getUserName());
             newUser.setEmail(dto.getEmail());
-            newUser.setStatus(Status.ACTIVE);
-            newUser.setRole(UserRole.MEMBER);
             newUser.setFirstName(dto.getFirstName());
             newUser.setLastName(dto.getLastName());
+            newUser.setStatus(Status.ACTIVE);
+            newUser.setRole(UserRole.MEMBER);
             newUser.setPassword(passwordEncoder.encode(dto.getPassWord()));
             return userRepository.save(newUser);
         }
@@ -63,5 +66,41 @@ public class UserService implements IUserService {
         return userRepository.findByUserName(input)
                 .or(() -> userRepository.findByEmail(input))
                 .orElse(null);
+    }
+
+    @Override
+    public UserEntity loginUser(String usernameOrEmail, String rawPassword){
+        UserEntity user = findByUserNameOrEmail(usernameOrEmail);
+
+        if (user == null) {
+            return null;
+        }
+
+        if (!user.isActive()) {
+            return null;
+        }
+
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            return null;
+        }
+
+        return user;
+    }
+
+    @Override
+    public boolean authenticateUser(String usernameOrEmail, String password, HttpSession session) {
+        UserEntity user = loginUser(usernameOrEmail, password);
+        if (user == null || !user.isActive()) {
+            return false;
+        }
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
+
+        return true;
     }
 }
