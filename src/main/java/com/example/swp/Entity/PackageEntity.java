@@ -26,15 +26,5 @@ public class PackageEntity extends BaseEntity {
     @Column(name = "pt_sessions_count", nullable = false)
     private Integer ptSessionsCount = 0;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
-
 
 }

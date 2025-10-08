@@ -1,4 +1,4 @@
-package com.example.swp.Service.impl;
+package com.example.swp.Service;
 
 import com.example.swp.DTO.TrainerDTO;
 import com.example.swp.Entity.UserEntity;

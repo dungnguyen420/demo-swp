@@ -2,6 +2,8 @@ package com.example.swp.Service.impl;
 
 import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.Entity.UserEntity;
+import com.example.swp.Enums.Status;
+import com.example.swp.Enums.UserRole;
 import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ public class UserService implements IUserService {
             UserEntity newUser = new UserEntity();
             newUser.setUserName(dto.getUserName());
             newUser.setEmail(dto.getEmail());
+            newUser.setStatus(Status.ACTIVE);
+            newUser.setRole(UserRole.MEMBER);
             newUser.setFirstName(dto.getFirstName());
             newUser.setLastName(dto.getLastName());
             newUser.setPassword(passwordEncoder.encode(dto.getPassWord()));
