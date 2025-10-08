@@ -164,8 +164,8 @@
 
         <button type="submit" class="login-button">Đăng nhập</button>
 
-        <div th:if="${param.error}">
-            <p style="color: red;">Tên đăng nhập hoặc mật khẩu không đúng!</p>
+        <div th:if="${errorMessage}" class="error-message" style="color:red; margin-bottom:10px;">
+            <p th:text="${errorMessage}"></p>
         </div>
 
         <div class="form-footer">

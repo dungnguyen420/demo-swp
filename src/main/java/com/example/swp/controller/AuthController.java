@@ -28,38 +28,24 @@ public class AuthController {
 
     @GetMapping("/login")
     public String showLoginForm() {
-        return "auth/login"; // -> templates/login.html
+        return "auth/login";
     }
 
     @PostMapping("/login")
-    public String loginUser (
+    public String loginUser(
             @RequestParam("usernameOrEmail") String usernameOrEmail,
             @RequestParam("password") String password,
             HttpSession session,
-            Model model){
+            Model model) {
 
-        UserEntity user = userService.loginUser(usernameOrEmail, password);
-        if (user == null) {
-            model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không đúng!");
-            return "auth/login";
-        }
-        if (!user.isActive()) {
-            model.addAttribute("errorMessage", "Account have been ban");
+        boolean isAuthenticated = userService.authenticateUser(usernameOrEmail, password, session);
+
+        if (!isAuthenticated) {
+            model.addAttribute("errorMessage", "Tên đăng nhập hoặc mật khẩu không chính xác, hoặc tài khoản bị khóa!");
             return "auth/login";
         }
 
-        // ✅ Tạo đối tượng UserDetails
-        CustomUserDetails userDetails = new CustomUserDetails(user);
-
-        // ✅ Tạo token xác thực và gán vào SecurityContext
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-        // ✅ (Tuỳ chọn) lưu vào session để Spring Security ghi nhớ
-        session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-
+        UserEntity user = userService.findByUserNameOrEmail(usernameOrEmail);
 
         if (user.getRole().name().equalsIgnoreCase("ADMIN")) {
             return "redirect:/home";
@@ -67,6 +53,7 @@ public class AuthController {
             return "redirect:/home";
         }
     }
+
 
 
 
