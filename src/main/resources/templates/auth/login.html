@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - GymCare</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap');
@@ -150,12 +149,12 @@
 <body>
 
 <div class="login-container">
-    <form class="login-form" action="#" method="POST">
+    <form class="login-form" th:action="@{/auth/login}" method="POST">
         <h1>Đăng nhập</h1>
 
         <div class="input-group">
             <i class="fas fa-user"></i>
-            <input type="text" name="username" placeholder="Tên đăng nhập" required>
+            <input type="text" name="usernameOrEmail" placeholder="Tên đăng nhập" required>
         </div>
 
         <div class="input-group">
@@ -165,12 +164,15 @@
 
         <button type="submit" class="login-button">Đăng nhập</button>
 
+        <div th:if="${param.error}">
+            <p style="color: red;">Tên đăng nhập hoặc mật khẩu không đúng!</p>
+        </div>
+
         <div class="form-footer">
             <a href="#">Quên mật khẩu?</a>
-            <a href="#">Tạo tài khoản</a>
+            <p>Chưa có tài khoản <a th:href="@{/auth/register}">Đăng ký</a></p>
         </div>
+
     </form>
 </div>
 
-</body>
-</html>
