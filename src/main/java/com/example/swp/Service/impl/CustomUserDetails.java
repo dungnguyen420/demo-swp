@@ -1,4 +1,4 @@
-package com.example.swp.Service;
+package com.example.swp.Service.impl;
 
 import com.example.swp.Entity.UserEntity;
 import lombok.AllArgsConstructor;
