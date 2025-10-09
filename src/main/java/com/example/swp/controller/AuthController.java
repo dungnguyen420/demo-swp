@@ -28,10 +28,6 @@ public class AuthController {
         return "auth/register";
     }
 
-    @GetMapping("/dashBoard")
-    public String showDashBoard(){
-        return "auth/dashBoard";
-    }
     @PostMapping("/login")
     public String loginUser(
             @RequestParam("usernameOrEmail") String usernameOrEmail,
