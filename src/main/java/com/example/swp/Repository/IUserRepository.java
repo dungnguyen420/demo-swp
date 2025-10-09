@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -14,6 +15,7 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long>, JpaSpe
     Optional<UserEntity>  findByUserName(String userName);
     Optional<UserEntity> findByEmail(String email);
     boolean existsByEmail (String email);
+    List<UserEntity> findByUserNameContainingIgnoreCaseOrEmailContainingIgnoreCase(String username, String email);
 
     
 

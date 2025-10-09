@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @Controller
 @RequestMapping("/auth")
@@ -29,9 +31,10 @@ public class AuthController {
     }
 
     @GetMapping("/dashBoard")
-    public String showDashBoard(){
+    public String showDashBoard(Model model){
         return "auth/dashBoard";
     }
+
     @PostMapping("/login")
     public String loginUser(
             @RequestParam("usernameOrEmail") String usernameOrEmail,
