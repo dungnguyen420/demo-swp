@@ -1,8 +1,8 @@
 package com.example.swp.Entity;
 
 
-
-import com.example.swp.Enums.ScheduleStatus; // mình sẽ tạo enum riêng cho Schedule
+import com.example.swp.Enums.ScheduleStatus;
+import com.example.swp.Enums.Shift;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -35,6 +35,13 @@ public class ScheduleEntity extends BaseEntity {
 
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
+
+    @Column(name = "shift", nullable = false, length = 10)
+    @Enumerated(EnumType.STRING)
+    private Shift shift;
+
+    @ManyToMany(mappedBy = "schedules")
+    private java.util.List<ClassesEntity> classes;
 
 
 }
