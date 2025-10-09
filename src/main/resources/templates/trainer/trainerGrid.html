@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đội ngũ Huấn luyện viên - GymCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap');
+
+        :root {
+            --primary-color: #00f6ff;
+            --card-bg: rgba(26, 26, 58, 0.65);
+            --text-light: #e0e0e0;
+            --text-secondary: #a0a0c0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            color: var(--text-light);
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        /* Navbar (Giữ nguyên từ các trang khác) */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+            background-color: rgba(10, 11, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 246, 255, 0.1);
+        }
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        .navbar nav ul { list-style: none; display: flex; gap: 2rem; }
+        .navbar a { color: var(--text-light); text-decoration: none; font-weight: 700; }
+        .navbar a:hover { color: var(--primary-color); }
+        .cta-button {
+            background: linear-gradient(45deg, #00f6ff, #00aaff);
+            color: #121212;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+        }
+
+        /* Main Content Area */
+        .page-container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 4rem auto;
+            text-align: center;
+        }
+
+        .page-title {
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 900;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px rgba(0, 246, 255, 0.5);
+            margin-bottom: 3rem;
+            animation: fadeInSlideUp 1s ease-out forwards;
+        }
+
+        /* Trainer Grid */
+        .trainer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .trainer-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 1px solid rgba(0, 246, 255, 0.2);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+            /* Animation */
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .trainer-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hiệu ứng trễ cho các card */
+        .trainer-card:nth-child(2) { transition-delay: 0.1s; }
+        .trainer-card:nth-child(3) { transition-delay: 0.2s; }
+        .trainer-card:nth-child(4) { transition-delay: 0.3s; }
+
+
+        .trainer-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 0 40px rgba(0, 246, 255, 0.4);
+        }
+
+        .trainer-image {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .trainer-image img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            object-position: top;
+            transition: transform 0.4s ease;
+        }
+
+        .trainer-card:hover .trainer-image img {
+            transform: scale(1.1);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to top, rgba(10, 11, 30, 0.8) 0%, rgba(0,0,0,0) 60%);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 1; /* Luôn hiển thị tên */
+            transition: opacity 0.4s ease;
+        }
+
+        .trainer-info {
+            padding: 1.5rem;
+        }
+
+        .trainer-info h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-light);
+            margin-bottom: 0.25rem;
+        }
+
+        .trainer-info .specialization {
+            font-size: 1rem;
+            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .trainer-info .bio {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        @keyframes fadeInSlideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+
+</head>
+<body>
+
+<header class="navbar">
+    <a th:href="@{/}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/packages}">Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+
+<main class="page-container">
+    <h1 class="page-title">ĐỘI NGŨ HUẤN LUYỆN VIÊN</h1>
+
+    <div class="trainer-grid">
+        <div class="trainer-card animate-on-scroll" th:each="trainer : ${trainers}">
+            <a th:href="@{/trainers/detail/{id}(id=${trainer.id})}" style="text-decoration: none; color: inherit;">
+                <div class="trainer-image">
+                    <img th:src="${trainer.avatar != null ? trainer.avatar : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop'}"
+                         th:alt="${trainer.firstName}">
+                </div>
+                <div class="trainer-info">
+                    <h3 th:text="${trainer.firstName + ' ' + trainer.lastName}">Tên Trainer</h3>
+                    <p class="specialization" th:text="${trainer.trainerProfile != null ? trainer.trainerProfile.specialization : 'Chưa cập nhật'}">Chuyên môn</p>
+                    <p class="bio" th:text="${trainer.trainerProfile != null ? trainer.trainerProfile.bio : 'Chưa có tiểu sử.'}">Mô tả ngắn.</p>
+                </div>
+            </a>
+        </div>
+
+        <div th:if="${trainers == null or trainers.isEmpty()}">
+            <h3>Hiện tại chưa có huấn luyện viên nào.</h3>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
+        elementsToAnimate.forEach(el => {
+            observer.observe(el);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -11,5 +11,5 @@ public interface ITrainerService {
     UserEntity createTrainer(TrainerDTO dto);
     UserEntity updateTrainer(TrainerDTO dto);
     UserEntity deleteTrainer(Long id);
-
+    TrainerDTO trainerDetail(Long id);
 }
