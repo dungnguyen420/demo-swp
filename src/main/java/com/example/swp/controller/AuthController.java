@@ -1,19 +1,11 @@
 package com.example.swp.controller;
 
-import com.example.swp.Config.JwtUtil;
-import com.example.swp.DTO.AuthRequest;
-import com.example.swp.DTO.AuthResponse;
+
 import com.example.swp.DTO.RegisterDTO;
-import com.example.swp.DTO.response.TFUResponse;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Service.IUserService;
-import com.example.swp.Service.impl.CustomUserDetails;
-import com.example.swp.base.BaseAPIController;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +23,10 @@ public class AuthController {
         return "auth/login";
     }
 
+    @GetMapping("/register")
+    public String showRegisterForm(){
+        return "auth/register";
+    }
     @PostMapping("/login")
     public String loginUser(
             @RequestParam("usernameOrEmail") String usernameOrEmail,
@@ -53,19 +49,19 @@ public class AuthController {
             return "redirect:/home";
         }
     }
+    // 🟨 Xử lý đăng ký
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute RegisterDTO dto, Model model) {
+        UserEntity newUser = userService.registerUser(dto);
 
+        if (newUser == null) {
+            model.addAttribute("errorMessage", "Tên đăng nhập hoặc email đã tồn tại!");
+            return "auth/register";
+        }
 
+        model.addAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
+        return "redirect:/auth/login";
+    }
 
-
-    //    @PostMapping("register")
-//    public ResponseEntity<TFUResponse<UserEntity>> register(@RequestBody RegisterDTO dto) {
-//        UserEntity user = userService.registerUser(dto);
-//        if (user == null) {
-//
-//            return badRequest("User register fail");
-//        }
-//
-//        return success(user);
-//    }
 }
     
