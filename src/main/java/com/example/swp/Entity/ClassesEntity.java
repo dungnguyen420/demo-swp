@@ -25,5 +25,16 @@ public class ClassesEntity extends  BaseEntity {
 
     @Column(nullable = false)
     private Integer capacity;
+
+    @ManyToMany
+    @JoinTable(
+            name = "class_schedule",
+            joinColumns = @JoinColumn(name = "class_id"),
+            inverseJoinColumns = @JoinColumn(name = "schedule_id")
+    )
+    private java.util.List<ScheduleEntity> schedules;
+
+
+
 }
 

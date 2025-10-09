@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách Lớp học - GymCare</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS giữ nguyên */
+        :root { --primary-color: #00f6ff; --card-bg: rgba(26, 26, 58, 0.65); --text-light: #e0e0e0; --text-secondary: #a0a0c0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Be Vietnam Pro', sans-serif; color: var(--text-light); background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop'); background-attachment: fixed; background-position: center; background-size: cover; }
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%; position: sticky; top: 0; z-index: 1000; background-color: rgba(10, 11, 30, 0.7); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 246, 255, 0.1); }
+        .logo { font-weight: 900; font-size: 1.5rem; color: var(--primary-color); text-decoration: none; text-shadow: 0 0 10px var(--primary-color); }
+        .navbar nav ul { list-style: none; display: flex; gap: 2rem; }
+        .navbar nav a { color: var(--text-light); text-decoration: none; font-weight: 700; }
+        .navbar nav a:hover { color: var(--primary-color); }
+        .cta-button { background: linear-gradient(45deg, #00f6ff, #00aaff); color: #121212; padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+        .auth-section { position: relative; }
+        .profile-dropdown { display: flex; align-items: center; cursor: pointer; gap: 10px; padding: 5px 10px; border-radius: 50px; background-color: rgba(255,255,255,0.1); transition: background-color 0.3s ease; }
+        .profile-dropdown:hover { background-color: rgba(255,255,255,0.2); }
+        .profile-dropdown img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
+        .profile-dropdown span { font-weight: 700; color: var(--text-light); }
+        .dropdown-menu { position: absolute; top: 120%; right: 0; background: var(--card-bg); border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(10px); border-radius: 10px; width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); list-style: none; padding: 10px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s; }
+        .profile-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu li a { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--text-secondary); font-weight: normal; text-decoration: none; }
+        .dropdown-menu li a:hover { background-color: rgba(0, 246, 255, 0.1); color: var(--primary-color); }
+        .page-container { width: 90%; max-width: 1200px; margin: 4rem auto; text-align: center; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; }
+        .page-title { margin-bottom: 0; text-align: left; font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 900; color: var(--primary-color); text-shadow: 0 0 15px rgba(0, 246, 255, 0.5); }
+        .class-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .class-card { background: var(--card-bg); border-radius: 15px; border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(10px); padding: 2rem; display: grid; grid-template-columns: 1fr 2fr 1fr; align-items: center; text-align: left; gap: 2rem; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .class-card:hover { transform: translateY(-5px); box-shadow: 0 0 30px rgba(0, 246, 255, 0.3); }
+        .class-time { text-align: center; }
+        .class-time .day { font-size: 1.2rem; color: var(--text-secondary); }
+        .class-time .time { font-size: 2rem; font-weight: 700; color: var(--primary-color); }
+        .class-details h3 { font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .class-details .trainer-info { color: var(--text-secondary); }
+        .class-details .trainer-info i { margin-right: 5px; }
+        .class-action { text-align: right; }
+        .class-action .capacity { margin-bottom: 1rem; }
+        .class-action .capacity i { color: var(--primary-color); }
+        .class-action .cta-button { width: auto; padding: 0.7rem 1.2rem; }
+        @media (max-width: 768px) { .class-card { grid-template-columns: 1fr; text-align: center; } .class-action { text-align: center; } .page-header { flex-direction: column; gap: 1.5rem; } .page-title { text-align: center; } }
+    </style>
+</head>
+<body>
+<header class="navbar">
+    <a href="/" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a href="/">Trang chủ</a></li>
+            <li><a href="/packages">Gói tập</a></li>
+            <li><a href="/trainers">Huấn luyện viên</a></li>
+            <li><a href="/classes">Lớp học</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
+</header> <main class="page-container">
+<main class="page-container">
+
+    <div class="page-header">
+        <h1 class="page-title">LỊCH HỌC TRONG TUẦN</h1>
+        <a sec:authorize="hasAnyAuthority('TRAINER', 'MANAGER')"
+           th:href="@{/classes/create}"
+           class="cta-button">
+            <i class="fas fa-plus"></i>
+            Tạo Lớp học mới
+        </a>
+    </div>
+
+    <div class="class-list">
+        <div class="class-card" th:each="class : ${classes}">
+            <div class="class-time">
+                <div class="day" th:text="${class.scheduleTime != null ? #temporals.dayOfWeekName(class.scheduleTime) : 'N/A'}">Thứ Hai</div>
+                <div class="time" th:text="${class.scheduleTime != null ? #temporals.format(class.scheduleTime, 'HH:mm') : 'N/A'}">18:00</div>
+            </div>
+
+            <div class="class-details">
+                <h3 th:text="${class.name}">Power Yoga</h3>
+                <p class="trainer-info">
+                    <i class="fas fa-user"></i>
+                    <span th:if="${class.trainer != null}" th:text="${class.trainer.firstName + ' ' + class.trainer.lastName}">HLV: Jessica Miles</span>
+                </p>
+            </div>
+
+            <div class="class-action">
+                <p class="capacity">
+                    <i class="fas fa-users"></i>
+                    <span th:text="${class.members != null ? class.members.size() : 0}">15</span> / <span th:text="${class.capacity}">20</span>
+                </p>
+
+                <a sec:authorize="isAuthenticated()" th:href="@{/classes/register/{id}(id=${class.id})}" class="cta-button">Đăng ký</a>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+            </div>
+        </div>
+
+        <div th:if="${classes == null or classes.isEmpty()}">
+            <h3 style="color: var(--text-secondary); margin-top: 3rem;">Hiện tại chưa có lớp học nào được lên lịch.</h3>
+        </div>
+    </div>
+</main>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // === THÊM SCRIPT CHO NÚT ĐĂNG KÝ ĐỂ CÓ THÔNG BÁO ===
+            const registerButtons = document.querySelectorAll('.register-button');
+            registerButtons.forEach(button => {
+                button.addEventListener('click', function(event) {
+                    // Nếu link của nút này trỏ đến trang login (tức là người dùng chưa đăng nhập)
+                    if (this.getAttribute('href').includes('/login')) {
+                        event.preventDefault(); // Ngăn hành động chuyển trang mặc định
+                        alert('Vui lòng đăng nhập để thực hiện đăng ký!');
+                        window.location.href = this.href; // Chuyển hướng sau khi người dùng thấy thông báo
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
