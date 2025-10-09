@@ -27,6 +27,11 @@ public class AuthController {
     public String showRegisterForm(){
         return "auth/register";
     }
+
+    @GetMapping("/dashBoard")
+    public String showDashBoard(){
+        return "auth/dashBoard";
+    }
     @PostMapping("/login")
     public String loginUser(
             @RequestParam("usernameOrEmail") String usernameOrEmail,
@@ -44,7 +49,7 @@ public class AuthController {
         UserEntity user = userService.findByUserNameOrEmail(usernameOrEmail);
 
         if (user.getRole().name().equalsIgnoreCase("ADMIN")) {
-            return "redirect:/home";
+            return "redirect:/auth/dashBoard";
         } else {
             return "redirect:/home";
         }
@@ -62,6 +67,8 @@ public class AuthController {
         model.addAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
         return "redirect:/auth/login";
     }
+
+
 
 }
     
