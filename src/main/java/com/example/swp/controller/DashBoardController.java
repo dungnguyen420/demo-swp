@@ -24,6 +24,4 @@ public class DashBoardController {
         return "auth/dashBoard";
     }
 
-    @GetMapping("/user/{id}")
-    public
 }

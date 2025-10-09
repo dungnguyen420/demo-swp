@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -42,15 +43,6 @@ public class UserService implements IUserService {
         return null;
     }
 
-    @Override
-    public UserEntity findByUserName(String userName) {
-        return userRepository.findByUserName(userName).orElse(null);
-    }
-
-    @Override
-    public boolean existedByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
 
     @Override
     public UserEntity creatOrUpdateUser(UserEntity model) {
@@ -102,5 +94,20 @@ public class UserService implements IUserService {
         session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
 
         return true;
+    }
+
+    @Override
+    public List<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public UserEntity findByIdOrUserName(Long id, String username) {
+        return null;
+    }
+
+    @Override
+    public List<UserEntity> searchUsers(String keyword) {
+        return List.of();
     }
 }
