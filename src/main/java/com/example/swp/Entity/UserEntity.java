@@ -28,6 +28,8 @@ public class UserEntity extends BaseEntity {
 
     private String firstName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50)
     private UserGender gender;
 
     private String lastName;
