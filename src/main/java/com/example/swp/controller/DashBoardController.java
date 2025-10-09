@@ -17,11 +17,11 @@ public class DashBoardController {
     @Autowired
     private IUserService userService;
 
-    @GetMapping("/dashBoard")
-    public String showDashBoard(Model model){
-        List<UserEntity> users = userService.getAllUsers();
-        model.addAllAttributes("users",users);
-        return "auth/dashBoard";
-    }
+//    @GetMapping("/dashBoard")
+//    public String showDashBoard(Model model){
+//        List<UserEntity> users = userService.getAllUsers();
+//        model.addAllAttributes("users",users);
+//        return "auth/dashBoard";
+//    }
 
 }
