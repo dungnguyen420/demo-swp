@@ -126,5 +126,10 @@ public class UserService implements IUserService {
         return userRepository.save(existingUser);
     }
 
+    @Override
+    public UserEntity findById(Long Id) {
+        return userRepository.findById(Id).orElse(null);
+    }
+
 
 }

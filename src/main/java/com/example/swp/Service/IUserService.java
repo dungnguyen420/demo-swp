@@ -21,4 +21,5 @@ public interface IUserService {
     List<UserEntity> findByRole(UserRole member);
     void deleteUser(Long Id);
     UserEntity updateUser(Long id, RegisterDTO dto);
+    UserEntity findById(Long Id);
 }
