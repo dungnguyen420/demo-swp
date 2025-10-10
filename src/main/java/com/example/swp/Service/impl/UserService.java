@@ -43,6 +43,15 @@ public class UserService implements IUserService {
         return null;
     }
 
+    @Override
+    public UserEntity findByUserName(String userName) {
+        return userRepository.findByUserName(userName).orElse(null);
+    }
+
+    @Override
+    public boolean existedByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
     @Override
     public UserEntity creatOrUpdateUser(UserEntity model) {
@@ -97,17 +106,25 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserEntity> findByRole(UserRole member) {
+        List<UserEntity> users = userRepository.findByRole(UserRole.MEMBER);
+        return users;
     }
 
     @Override
-    public UserEntity findByIdOrUserName(Long id, String username) {
-        return null;
+    public void deleteUser(Long Id) {
+        userRepository.deleteById(Id);
     }
 
     @Override
-    public List<UserEntity> searchUsers(String keyword) {
-        return List.of();
+    public UserEntity updateUser(Long id, RegisterDTO dto) {
+        UserEntity existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với id: " + id));
+        existingUser.setFirstName(dto.getFirstName());
+        existingUser.setLastName(dto.getLastName());
+        existingUser.setEmail(dto.getEmail());
+        return userRepository.save(existingUser);
     }
+
+
 }

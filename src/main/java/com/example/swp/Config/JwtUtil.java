@@ -27,7 +27,7 @@ public class JwtUtil {
                 .setSubject(userEntity.getUserName())
                 .claim("email", userEntity.getEmail())
                 .claim("user_name", userEntity.getUserName())
-                .claim("role", userEntity.getRole().name())
+                .claim("role",userEntity.getRole())
                 .claim("id", userEntity.getId())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(Instant.now().plus(30, ChronoUnit.MINUTES).toEpochMilli()))

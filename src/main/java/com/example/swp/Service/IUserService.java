@@ -2,6 +2,7 @@ package com.example.swp.Service;
 
 import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.Entity.UserEntity;
+import com.example.swp.Enums.UserRole;
 import jakarta.servlet.http.HttpSession;
 
 import java.util.List;
@@ -10,12 +11,14 @@ import java.util.Optional;
 
 public interface IUserService {
     UserEntity registerUser(RegisterDTO dto);
+    UserEntity findByUserName(String userName);
+    boolean existedByEmail(String email);
     UserEntity creatOrUpdateUser(UserEntity model);
     Optional<UserEntity> findByEmail(String email);
     UserEntity findByUserNameOrEmail (String input);
     UserEntity loginUser(String usernameOrEmail, String rawPassword);
     boolean authenticateUser(String usernameOrEmail, String password, HttpSession session);
-    List<UserEntity> getAllUsers();
-    UserEntity findByIdOrUserName(Long id, String username);
-    List<UserEntity> searchUsers(String keyword);
+    List<UserEntity> findByRole(UserRole member);
+    void deleteUser(Long Id);
+    UserEntity updateUser(Long id, RegisterDTO dto);
 }
