@@ -1,4 +1,4 @@
-package com.example.swp.Controller;
+package com.example.swp.controller;
 
 
 import com.example.swp.DTO.RegisterDTO;

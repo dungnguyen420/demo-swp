@@ -5,7 +5,9 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 @Entity
+@Table(name = "trainer_profiles")
 @Data
+
 public class TrainerProfileEntity extends BaseEntity {
 
     @OneToOne

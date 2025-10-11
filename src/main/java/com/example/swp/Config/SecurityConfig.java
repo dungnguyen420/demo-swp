@@ -40,7 +40,13 @@ public class SecurityConfig {
                                 "/trainers/detail/**",
                                 "/classes",
                                 "/packages",
-                                "/trainers"
+                                "/trainers",
+                                "/trainers/create",
+                                "/trainers/edit/**",
+                                "/trainers/delete/**",
+                                "/classes/create"
+
+
                         ).permitAll()// cho phép trang login
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
