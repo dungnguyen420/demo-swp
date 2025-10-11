@@ -28,6 +28,7 @@ public class UserEntity extends BaseEntity {
 
     private String firstName;
 
+    @Enumerated(EnumType.STRING)
     private UserGender gender;
 
     private String lastName;
@@ -49,5 +50,6 @@ public class UserEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
+    private String bio;
 
 }

@@ -8,10 +8,12 @@ import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.Shift;
 import com.example.swp.Enums.UserRole;
 import com.example.swp.Repository.ClassesRepository;
+import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Repository.ScheduleRepository;
 import com.example.swp.Repository.TrainerRepository;
 import com.example.swp.Service.IClassesService;
 import com.example.swp.Service.IScheduleService;
+import com.example.swp.Service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -37,10 +39,22 @@ public class ClassesService implements IClassesService {
     @Autowired
     private IScheduleService scheduleService;
 
+    @Autowired
+    private IUserRepository userRepository;
+
 
     @Override
     public ClassesEntity createClasses(ClassesDTO dto) {
-        UserEntity currentUser = (UserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserEntity currentUser;
+        if (principal instanceof CustomUserDetails) {
+            currentUser = ((CustomUserDetails) principal).getUser();
+        } else {
+            // fallback: lấy username rồi query UserEntity từ DB
+            String username = principal.toString();
+            currentUser = userRepository.findByUserName(username)
+                    .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+        }
 
         if (currentUser.getRole() != UserRole.TRAINER && currentUser.getRole() != UserRole.MANAGER) {
             throw new RuntimeException("không có quyền tạo lớp");
