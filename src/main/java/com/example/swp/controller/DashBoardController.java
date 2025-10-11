@@ -1,4 +1,4 @@
-package com.example.swp.controller;
+package com.example.swp.Controller;
 
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Service.IUserService;
