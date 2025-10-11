@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tạo Lớp học mới - GymCare</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        /* === BIẾN MÀU SẮC & STYLE CHUNG === */
+        :root {
+            --primary-color: #00f6ff;
+            --card-bg: rgba(26, 26, 58, 0.65);
+            --text-light: #e0e0e0;
+            --text-secondary: #a0a0c0;
+            --danger-color: #ff5050;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            color: var(--text-light);
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95-b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+        }
+
+        /* === NAVBAR & DROPDOWN === */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(10, 11, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 246, 255, 0.1);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        /* === BỐ CỤC & FORM === */
+        .page-container {
+            width: 90%;
+            max-width: 800px; /* Thu nhỏ lại cho form đẹp hơn */
+            margin: 4rem auto;
+        }
+
+        .page-title {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 900;
+            color: var(--primary-color);
+            text-shadow: 0 0 15px rgba(0, 246, 255, 0.5);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-card {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 246, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-align: left;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            background-color: rgba(10, 11, 30, 0.7);
+            border: 1px solid rgba(0, 246, 255, 0.3);
+            color: var(--text-light);
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(0, 246, 255, 0.5);
+        }
+
+        .form-actions {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #00f6ff, #00aaff);
+            color: #121212;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: none;
+            border: 1px solid var(--text-secondary);
+            color: var(--text-secondary);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border: 1px solid transparent;
+            text-align: left;
+        }
+
+        .alert-danger {
+            color: var(--danger-color);
+            background-color: rgba(255, 80, 80, 0.1);
+            border-color: var(--danger-color);
+        }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<header class="navbar">
+    <a th:href="@{/}" class="logo">GymCare</a>
+</header>
+
+<main class="page-container" style="max-width: 800px;">
+    <h1 class="page-title">Tạo Lớp học mới</h1>
+
+    <div class="form-card">
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <form th:action="@{/classes/create}" th:object="${classesDTO}" method="post">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="name">Tên Lớp học</label>
+                    <input type="text" id="name" th:field="*{name}" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Mô tả</label>
+                    <textarea id="description" th:field="*{description}" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="capacity">Sức chứa (Học viên)</label>
+                    <input type="number" id="capacity" th:field="*{capacity}" required min="1">
+                </div>
+                <div class="form-group">
+                    <label for="durationMinutes">Thời lượng (phút)</label>
+                    <input type="number" id="durationMinutes" th:field="*{durationMinutes}" required min="30">
+                </div>
+                <div class="form-group full-width">
+                    <label>Các Lịch học</label>
+                    <div id="schedule-container">
+                        <div class="schedule-entry">
+                            <input type="datetime-local" name="scheduleTimes" required>
+                        </div>
+                    </div>
+                    <button type="button" id="add-schedule-btn" class="btn-add-schedule">
+                        <i class="fas fa-plus"></i> Thêm lịch khác
+                    </button>
+                </div>
+
+                <div class="form-group full-width" sec:authorize="hasAuthority('MANAGER')">
+                    <label for="trainerId">Chọn Huấn luyện viên</label>
+                    <select id="trainerId" th:field="*{trainerId}">
+                        <option value="">-- Chọn một HLV --</option>
+                        <option th:each="trainer : ${allTrainers}"
+                                th:value="${trainer.id}"
+                                th:text="${trainer.firstName + ' ' + trainer.lastName}"></option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/classes}" class="btn-secondary">
+                        <i class="fas fa-times"></i> Hủy
+                    </a>
+                    <button type="submit" class="cta-button">
+                        <i class="fas fa-plus"></i> Tạo Lớp học
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('schedule-container');
+        const addButton = document.getElementById('add-schedule-btn');
+
+        const createScheduleEntry = () => {
+            const entryDiv = document.createElement('div');
+            entryDiv.className = 'schedule-entry';
+
+            const newInput = document.createElement('input');
+            newInput.type = 'datetime-local';
+            newInput.name = 'scheduleTimes';
+            newInput.required = true;
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn-remove-schedule';
+            removeButton.innerHTML = '&minus;';
+            removeButton.onclick = () => {
+                entryDiv.remove();
+            };
+
+            entryDiv.appendChild(newInput);
+            entryDiv.appendChild(removeButton);
+
+            return entryDiv;
+        };
+
+        addButton.addEventListener('click', () => {
+            container.appendChild(createScheduleEntry());
+        });
+    });
+</script>
+
+</body>
+</html>

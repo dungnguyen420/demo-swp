@@ -5,15 +5,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đội ngũ Huấn luyện viên - GymCare</title>
+    <title>Chỉnh sửa Huấn luyện viên - GymCare</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap');
-
+        :root {
+            --primary-color: #00f6ff;
+            --card-bg: rgba(26, 26, 58, 0.65);
+            --text-light: #e0e0e0;
+            --text-secondary: #a0a0c0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif; color: var(--text-light);
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95-b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            background-attachment: fixed; background-position: center; background-size: cover;
+        }
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem 5%;
+            position: sticky; top: 0; z-index: 1000; background-color: rgba(10, 11, 30, 0.7);
+            backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 246, 255, 0.1);
+        }
+        .logo { font-weight: 900; font-size: 1.5rem; color: var(--primary-color); text-decoration: none; text-shadow: 0 0 10px var(--primary-color); }
+        .cta-button {
+            background: linear-gradient(45deg, #00f6ff, #00aaff); color: #121212;
+            padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700;
+            border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+        }
+        .page-container { width: 90%; max-width: 800px; margin: 4rem auto; }
+        .page-title { font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 900; color: var(--primary-color); text-shadow: 0 0 15px rgba(0, 246, 255, 0.5); margin-bottom: 2rem; text-align: center; }
+        .form-card { background: var(--card-bg); padding: 2.5rem; border-radius: 15px; border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(10px); }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { margin-bottom: 0.5rem; font-weight: 700; color: var(--text-secondary); text-align: left; }
+        .form-group input, .form-group select, .form-group textarea {
+            background-color: rgba(10, 11, 30, 0.7); border: 1px solid rgba(0, 246, 255, 0.3);
+            color: var(--text-light); padding: 0.8rem 1rem; border-radius: 8px; font-size: 1rem;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: var(--primary-color); box-shadow: 0 0 10px rgba(0, 246, 255, 0.5);
+        }
+        .form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
+        .btn-secondary { background: none; border: 1px solid var(--text-secondary); color: var(--text-secondary); padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
         :root {
             --primary-color: #00f6ff;
             --card-bg: rgba(26, 26, 58, 0.65);
@@ -135,98 +173,20 @@
         .trainer-info .bio { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
 
         .card-actions {
-            /* Đẩy sát lên, chỉ còn khoảng cách padding */
-            margin: 0 1.5rem 1.5rem;
-            padding-top: 1rem; /* Giảm khoảng cách từ đường kẻ đến nút */
-            border-top: 1px solid rgba(0, 246, 255, 0.1);
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
+            margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(0, 246, 255, 0.1);
+            display: flex; justify-content: center; gap: 1rem;
         }
         .action-btn { padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 700; transition: background-color 0.3s ease, color 0.3s ease; display: inline-flex; align-items: center; gap: 5px; }
         .action-btn.edit { background-color: rgba(0, 246, 255, 0.2); color: var(--primary-color); }
         .action-btn.edit:hover { background-color: var(--primary-color); color: #121212; }
-        .action-btn.delete-trigger {
-            background-color: rgba(0, 246, 255, 0.2); /* Giống nút Sửa */
-            color: var(--primary-color);           /* Giống nút Sửa */
-        }
-        .action-btn.delete-trigger:hover {
-            background-color: var(--primary-color); /* Hiệu ứng hover giống nút Sửa */
-            color: #121212;                       /* Hiệu ứng hover giống nút Sửa */
-        }
+        .action-btn.delete { background-color: rgba(255, 80, 80, 0.2); color: var(--danger-color); }
+        .action-btn.delete:hover { background-color: var(--danger-color); color: #121212; }
 
-        /* Lớp nền mờ cho popup */
-        .popup-overlay {
-            position: fixed; /* Hiển thị trên cùng của trang */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.6); /* Màu đen mờ */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000; /* Đảm bảo nó nằm trên các phần tử khác */
-        }
-
-        /* Nội dung của popup */
-        .popup-content {
-            background-color: #f1f1f1;
-            padding: 25px 30px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .popup-content p {
-            margin: 0 0 20px;
-            font-size: 1.1em;
-            color: #333;
-        }
-
-        /* Các nút hành động trong popup */
-        .popup-actions {
-            display: flex;
-            justify-content: center;
-            gap: 15px; /* Khoảng cách giữa các nút */
-        }
-
-        /* CSS cho các nút trong popup (bạn có thể dùng lại class .action-btn có sẵn) */
-        .popup-actions .action-btn {
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
-        }
-
-        .popup-actions .action-btn.delete {
-            background-color: #e74c3c; /* Màu đỏ cho nút xóa */
-            color: white;
-        }
-
-        .popup-actions .action-btn.delete:hover {
-            background-color: #c0392b;
-        }
-
-        .popup-actions .action-btn {
-            background-color: #f1f1f1;
-            color: #333;
-            border: 1px solid #ccc;
-        }
-
-        .popup-actions .action-btn:hover {
-            background-color: #e1e1e1;
-        }
     </style>
 </head>
 <body>
-
 <header class="navbar">
-    <a href="#" class="logo">GymCare</a>
+    <a th:href="@{/}" class="logo">GymCare</a>
     <nav>
         <ul>
             <li><a href="#">Trang chủ</a></li>
@@ -249,127 +209,63 @@
 </header>
 
 <main class="page-container">
-    <div class="page-header">
-        <h1 class="page-title">ĐỘI NGŨ HUẤN LUYỆN VIÊN</h1>
-        <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" th:href="@{/trainers/create}" class="cta-button">
-            <i class="fas fa-plus"></i> Tạo mới Trainer
-        </a>
-    </div>
+    <h1 class="page-title">Chỉnh sửa Huấn luyện viên</h1>
 
-    <div class="filter-container">
-        <form th:action="@{/trainers}" method="get" class="filter-form">
-            <input type="text" name="name" placeholder="Tên HLV" th:value="${name}">
-            <select name="gender">
-                <option value="">Tất cả giới tính</option>
-                <option value="MALE" th:selected="${gender == T(com.example.swp.Enums.UserGender).MALE}">Nam</option>
-                <option value="FEMALE" th:selected="${gender == T(com.example.swp.Enums.UserGender).FEMALE}">Nữ</option>
-            </select>
-            <input type="text" name="specialization" placeholder="Chuyên môn" th:value="${specialization}">
-            <button type="submit">Lọc</button>
-            <a th:href="@{/trainers}" class="btn-reset">Xóa lọc</a>
+    <div class="form-card">
+        <form th:action="@{/trainers/edit}" th:object="${trainerDTO}" method="post">
+
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="firstName">Tên</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Họ</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="userName">Tên đăng nhập</label>
+                    <input type="text" id="userName" th:field="*{userName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                </div>
+                <div class="form-group">
+                    <label for="passWord">Mật khẩu mới</label>
+                    <input type="password" id="passWord" th:field="*{passWord}" placeholder="Để trống nếu không đổi">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Giới tính</label>
+                    <select id="gender" th:field="*{gender}">
+                        <option th:value="MALE" th:text="Nam"></option>
+                        <option th:value="FEMALE" th:text="Nữ"></option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="bio">Tiểu sử</label>
+                    <textarea id="bio" th:field="*{bio}" rows="3" maxlength="50"></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="specialization">Chuyên môn</label>
+                    <input type="text" id="specialization" th:field="*{specialization}">
+                </div>
+                <div class="form-group full-width">
+                    <label for="certificationInfo">Thông tin chứng chỉ</label>
+                    <textarea id="certificationInfo" th:field="*{certificationInfo}" rows="3"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/trainers}" class="btn-secondary">Hủy</a>
+                    <button type="submit" class="cta-button">Cập nhật</button>
+                </div>
+            </div>
         </form>
-
-        <div class="quick-filters">
-            <a th:href="@{/trainers(gender='MALE')}" class="btn-chip">Chỉ Nam</a>
-            <a th:href="@{/trainers(gender='FEMALE')}" class="btn-chip">Chỉ Nữ</a>
-            <a th:href="@{/trainers(specialization='Yoga')}" class="btn-chip">Yoga</a>
-            <a th:href="@{/trainers(specialization='Bodybuilding')}" class="btn-chip">Bodybuilding</a>
-        </div>
-    </div>
-
-    <div class="trainer-grid">
-        <div class="trainer-card" th:each="trainer : ${trainers}">
-            <a th:href="@{/trainers/detail/{id}(id=${trainer.id})}" style="text-decoration: none; color: inherit;">
-                <div class="trainer-image">
-                    <img th:src="${trainer.avatar != null ? trainer.avatar : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop'}"
-                         th:alt="${trainer.firstName}">
-                </div>
-                <div class="trainer-info">
-                    <h3 th:text="${trainer.firstName + ' ' + trainer.lastName}"></h3>
-                    <p class="specialization" th:text="${trainer.trainerProfile?.specialization} ?: 'Chưa cập nhật'"></p>
-                    <p class="bio" th:text="${#strings.abbreviate(trainer.bio, 50)} ?: 'Chưa có thông tin giới thiệu.'"></p>
-
-                </div>
-            </a>
-            <div class="card-actions" sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')">
-                <a th:href="@{/trainers/edit/{id}(id=${trainer.id})}" class="action-btn edit">
-                    <i class="fas fa-pencil-alt"></i> Sửa
-                </a>
-                <a th:href="@{/trainers/delete/{id}(id=${trainer.id})}" class="action-btn delete-trigger">
-                    <i class="fas fa-trash-alt"></i> Xóa
-                </a>
-            </div>
-
-        </div>
-
-        <div th:if="${trainers == null or trainers.isEmpty()}">
-            <h3>Hiện tại chưa có huấn luyện viên nào.</h3>
-        </div>
-    </div>
-    <div class="pagination" style="margin-top: 40px; text-align: center;">
-        <a th:if="${currentPage > 0}" th:href="@{/trainers(name=${name}, gender=${gender}, page=${currentPage - 1})}" class="btn-chip">
-            <i class="fas fa-chevron-left"></i> Trước
-        </a>
-        <span>Trang <span th:text="${currentPage + 1}"></span>/<span th:text="${totalPages}"></span></span>
-        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/trainers(name=${name}, gender=${gender}, page=${currentPage + 1})}" class="btn-chip">
-            Sau <i class="fas fa-chevron-right"></i>
-        </a>
-    </div>
-    <div id="custom-popup" class="popup-overlay" style="display: none;">
-        <div class="popup-content">
-            <p>Bạn có chắc chắn muốn xóa trainer này không?</p>
-            <div class="popup-actions">
-                <button id="confirm-delete-btn" class="action-btn delete">Xác nhận</button>
-                <button id="cancel-delete-btn" class="action-btn">Hủy bỏ</button>
-            </div>
-        </div>
     </div>
 </main>
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, {
-            threshold: 0.1
-        });
-        const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
-        elementsToAnimate.forEach(el => {
-            observer.observe(el);
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const popup = document.getElementById('custom-popup');
-        const confirmBtn = document.getElementById('confirm-delete-btn');
-        const cancelBtn = document.getElementById('cancel-delete-btn');
-        const deleteLinks = document.querySelectorAll('.delete-trigger');
-        let deleteUrl = '';
-
-        deleteLinks.forEach(link => {
-            link.addEventListener('click', function (event) {
-                event.preventDefault();
-                deleteUrl = this.href;
-                popup.style.display = 'flex';
-            });
-        });
-        confirmBtn.addEventListener('click', function () {
-            if (deleteUrl) {
-                window.location.href = deleteUrl;
-            }
-        });
-        cancelBtn.addEventListener('click', function () {
-            popup.style.display = 'none';
-        });
-        popup.addEventListener('click', function(event) {
-            if (event.target === popup) {
-                popup.style.display = 'none';
-            }
-        });
-    });
-</script>
 </body>
 </html>
