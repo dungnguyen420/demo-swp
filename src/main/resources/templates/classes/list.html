@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Danh sách lớp (phân trang)</title>
+</head>
+<body>
+<h2>Danh sách lớp</h2>
+
+<form method="get" th:action="@{/classes}">
+    <label>Size:</label>
+    <input type="number" name="size" th:value="${size}" min="1" max="100">
+    <label>Sắp xếp:</label>
+    <select name="sortBy">
+        <option value="createdAt" th:selected="${sortBy=='createdAt'}">Ngày tạo</option>
+        <option value="name" th:selected="${sortBy=='name'}">Tên lớp</option>
+        <option value="capacity" th:selected="${sortBy=='capacity'}">Sức chứa</option>
+    </select>
+    <select name="dir">
+        <option value="desc" th:selected="${dir=='desc'}">Giảm dần</option>
+        <option value="asc" th:selected="${dir=='asc'}">Tăng dần</option>
+    </select>
+    <button type="submit">Áp dụng</button>
+</form>
+
+<table border="1" cellspacing="0" cellpadding="6">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Tên lớp</th>
+        <th>HLV</th>
+        <th>Sức chứa</th>
+        <th>Xem</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="c : ${pageData.content}">
+        <td th:text="${c.id}">1</td>
+        <td th:text="${c.name}">Lớp A</td>
+        <td th:text="${c.trainer != null ? c.trainer.firstName + ' ' + c.trainer.lastName : 'N/A'}">Trainer</td>
+        <td th:text="${c.capacity}">8</td>
+        <td><a th:href="@{|/classes/${c.id}|}">Chi tiết</a></td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(pageData.content)}">
+        <td colspan="5">Chưa có lớp nào</td>
+    </tr>
+    </tbody>
+</table>
+
+<div>
+  <span>Trang
+    <strong th:text="${pageData.number + 1}">1</strong> /
+    <span th:text="${pageData.totalPages}">1</span>,
+    Tổng <span th:text="${pageData.totalElements}">0</span> lớp
+  </span>
+</div>
+
+<div>
+    <a th:if="${!pageData.first}"
+       th:href="@{/classes(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Trang đầu</a>
+
+    <a th:if="${pageData.hasPrevious()}"
+       th:href="@{/classes(page=${pageData.number - 1}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Trước</a>
+
+    <span th:each="i : ${#numbers.sequence(0, pageData.totalPages - 1)}">
+    <a th:if="${i != pageData.number}"
+       th:href="@{/classes(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir})}"
+       th:text="${i + 1}">1</a>
+    <span th:if="${i == pageData.number}" th:text="${i + 1}" style="font-weight:bold">1</span>
+    <span> </span>
+  </span>
+
+    <a th:if="${pageData.hasNext()}"
+       th:href="@{/classes(page=${pageData.number + 1}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Sau</a>
+
+    <a th:if="${!pageData.last}"
+       th:href="@{/classes(page=${pageData.totalPages - 1}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Trang cuối</a>
+</div>
+
+<p><a th:href="@{/classes/create}">+ Tạo lớp mới</a></p>
+</body>
+</html>

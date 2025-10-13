@@ -1,0 +1,75 @@
+/* Google Font Import */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap');
+
+/* === BIẾN MÀU SẮC & STYLE CHUNG === */
+:root {
+    --primary-color: #00f6ff;
+    --card-bg: rgba(26, 26, 58, 0.65);
+    --text-light: #e0e0e0;
+    --text-secondary: #a0a0c0;
+    --danger-color: #ff5050;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    color: var(--text-light);
+    background-image: url('https://images.unsplash.com/photo-1534796636912-3b95-b3ab5986?q=80&w=2071&auto=format&fit=crop');
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+}
+
+/* === NAVBAR === */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    position: sticky; top: 0; z-index: 1000;
+    background-color: rgba(10, 11, 30, 0.7);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 246, 255, 0.1);
+}
+.logo { font-weight: 900; font-size: 1.5rem; color: var(--primary-color); text-decoration: none; text-shadow: 0 0 10px var(--primary-color); }
+
+/* === BỐ CỤC & FORM === */
+.page-container { width: 90%; max-width: 800px; margin: 4rem auto; }
+.page-title { font-size: clamp(2rem, 5vw, 2.5rem); font-weight: 900; color: var(--primary-color); text-shadow: 0 0 15px rgba(0, 246, 255, 0.5); margin-bottom: 2rem; text-align: center; }
+.form-card { background: var(--card-bg); padding: 2.5rem; border-radius: 15px; border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(10px); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.form-group { display: flex; flex-direction: column; }
+.form-group.full-width { grid-column: 1 / -1; }
+.form-group label { margin-bottom: 0.5rem; font-weight: 700; color: var(--text-secondary); text-align: left; }
+.form-group input, .form-group select, .form-group textarea {
+    background-color: rgba(10, 11, 30, 0.7);
+    border: 1px solid rgba(0, 246, 255, 0.3);
+    color: var(--text-light);
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 10px rgba(0, 246, 255, 0.5); }
+.form-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
+
+/* === NÚT BẤM === */
+.cta-button { background: linear-gradient(45deg, #00f6ff, #00aaff); color: #121212; padding: 0.8rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; }
+.btn-secondary { background: none; border: 1px solid var(--text-secondary); color: var(--text-secondary); padding: 0.8rem 2rem; border-radius: 50px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; }
+
+/* === THÔNG BÁO LỖI === */
+.alert { padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem; border: 1px solid transparent; text-align: left; }
+.alert-danger { color: var(--danger-color); background-color: rgba(255, 80, 80, 0.1); border-color: var(--danger-color); }
+
+/* === CSS CHO FORM ĐỘNG (Thêm/Xóa Slot) === */
+.schedule-entry { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+.schedule-entry input { flex-grow: 1; }
+.btn-add-schedule { background: none; border: 1px dashed var(--primary-color); color: var(--primary-color); width: 100%; padding: 0.8rem; border-radius: 8px; cursor: pointer; font-weight: 700; margin-top: 1rem; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-remove-schedule { background-color: rgba(255, 80, 80, 0.2); color: var(--danger-color); border: 1px solid var(--danger-color); border-radius: 50%; width: 35px; height: 35px; cursor: pointer; font-size: 1.2rem; line-height: 35px; text-align: center; flex-shrink: 0; }
+.btn-remove-schedule:hover { background-color: var(--danger-color); color: #121212; }
+
+@media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+}
