@@ -44,7 +44,9 @@ public class SecurityConfig {
                                 "/trainers/create",
                                 "/trainers/edit/**",
                                 "/trainers/delete/**",
-                                "/classes/create"
+                                "/classes/create",
+                                "/classes",
+                                "/classes/**"
 
 
                         ).permitAll()// cho phép trang login

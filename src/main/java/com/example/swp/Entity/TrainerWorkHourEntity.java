@@ -19,7 +19,7 @@ public class TrainerWorkHourEntity extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trainer_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false) // đổi từ trainer_id → user_id
     private UserEntity trainer;
 
 
