@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Data
 @Entity
@@ -11,17 +12,15 @@ import java.time.LocalDateTime;
 public class ClassesEntity extends  BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "trainer_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity trainer;
+
 
     @Column(nullable = false, length = 100)
     private String name;
 
     @Column(columnDefinition = "TEXT")
     private String description;
-
-    @Column(name = "schedule_time", nullable = false)
-    private LocalDateTime scheduleTime;
 
     @Column(nullable = false)
     private Integer capacity;
@@ -32,7 +31,7 @@ public class ClassesEntity extends  BaseEntity {
             joinColumns = @JoinColumn(name = "class_id"),
             inverseJoinColumns = @JoinColumn(name = "schedule_id")
     )
-    private java.util.List<ScheduleEntity> schedules;
+    private java.util.List<ScheduleEntity> schedules = new ArrayList<>();
 
 
 
