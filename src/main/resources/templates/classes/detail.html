@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chi tiết lớp</title>
+</head>
+<body>
+<h2 th:text="${clazz.name}">Tên lớp</h2>
+
+<div>
+    <p><strong>HLV:</strong>
+        <span th:text="${trainer != null ? trainer.firstName + ' ' + trainer.lastName : 'N/A'}">Trainer</span>
+    </p>
+    <p><strong>Sức chứa:</strong> <span th:text="${clazz.capacity}">0</span></p>
+    <p><strong>Mô tả:</strong></p>
+    <p th:text="${clazz.description}">Không có mô tả</p>
+</div>
+
+<h3>Lịch (slot 2 giờ)</h3>
+<table border="1" cellspacing="0" cellpadding="6">
+    <thead>
+    <tr>
+        <th>Ngày</th>
+        <th>Slot</th>
+        <th>Giờ</th>
+        <th>Trạng thái</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="s : ${schedules}">
+        <td th:text="${s.slot.slotDate}">2025-10-14</td>
+        <td th:text="${s.slot.slotNumber}">SLOT_1</td>
+        <td>
+            <span th:text="${s.slot.startTime}">06:00</span>
+            -
+            <span th:text="${s.slot.endTime}">08:00</span>
+        </td>
+        <td th:text="${s.status}">CONFIRMED</td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(schedules)}">
+        <td colspan="4">Chưa có lịch</td>
+    </tr>
+    </tbody>
+</table>
+
+<p><a th:href="@{/classes}">&larr; Quay lại danh sách</a></p>
+</body>
+</html>

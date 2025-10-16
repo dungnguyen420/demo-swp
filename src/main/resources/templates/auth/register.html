@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký - GymCare</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap');
+        :root {
+            --primary-color: #00f6ff;
+            --card-bg: rgba(26, 26, 58, 0.65);
+            --text-light: #e0e0e0;
+            --text-secondary: #a0a0c0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            color: var(--text-light);
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        .auth-container { width: 100%; max-width: 450px; padding: 2rem; }
+        .auth-form {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 246, 255, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+        }
+        .auth-form h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        .input-group { position: relative; margin-bottom: 1.2rem; }
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .auth-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 246, 255, 0.5);
+        }
+        .auth-button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #00f6ff, #00aaff);
+            color: #121212;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            margin-top: 1rem;
+        }
+        .auth-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
+        }
+        .form-footer { margin-top: 2rem; }
+        .form-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+        .form-footer a:hover { color: var(--primary-color); }
+        .name-group { display: flex; gap: 1rem; }
+        .name-group .input-group { flex: 1; }
+        @keyframes fadeInSlideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <form class="auth-form" th:action="@{/auth/register}" method="POST">
+        <h1>Tạo tài khoản</h1>
+
+        <div class="input-group">
+            <i class="fas fa-user-astronaut"></i>
+            <input type="text" name="userName" placeholder="Tên đăng nhập" required>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+
+        <div class="name-group">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" name="firstName" placeholder="Tên" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" name="lastName" placeholder="Họ" required>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="passWord" placeholder="Mật khẩu" required>
+        </div>
+
+        <button type="submit" class="auth-button">Đăng ký</button>
+
+        <div th:if="${errorMessage}" class="error-message" style="color:red; margin-bottom:10px;">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <p th:if="${successMessage}" th:text="${successMessage}"
+           style="color: #00f6ff; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 8px;">
+        </p>
+
+        <div class="form-footer">
+            <a href="/auth/login">Đã có tài khoản? Đăng nhập</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>

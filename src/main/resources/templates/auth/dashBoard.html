@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymCare - Dashboard Quản trị</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap');
+
+        :root {
+            --primary-color: #00f6ff; /* Xanh Cyan Neon */
+            --secondary-color: #ff0077; /* Hồng Neon bổ sung */
+            --card-bg: rgba(26, 26, 58, 0.7); /* Nền thẻ kính mờ */
+            --text-light: #e0e0e0;
+            --text-secondary: #a0a0c0;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            color: var(--text-light);
+            overflow-x: hidden;
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        /* Navbar & Button styles (giữ nguyên để đồng bộ) */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(10, 11, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 246, 255, 0.1);
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .navbar nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+        }
+
+        .navbar a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
+        .navbar a:hover, .navbar .active {
+            color: var(--primary-color);
+            text-shadow: 0 0 5px var(--primary-color);
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #00f6ff, #00aaff);
+            color: #121212;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            white-space: nowrap; /* Giữ nút không bị xuống dòng */
+        }
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
+        }
+
+        /* === STYLE MỚI CHO DASHBOARD ADMIN === */
+
+        .dashboard-container {
+            padding: 2rem 5%;
+            min-height: calc(100vh - 4.5rem);
+            position: relative;
+        }
+
+        .dashboard-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            z-index: 1;
+        }
+
+        .dashboard-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 1rem;
+        }
+
+        .welcome-header h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 900;
+            color: white;
+            text-shadow: 0 0 10px rgba(255, 0, 119, 0.5); /* Dùng màu secondary cho Admin */
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        /* Thẻ cơ sở (Glassmorphism Card) */
+        .glass-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 0, 119, 0.2); /* Viền màu secondary cho Admin */
+            backdrop-filter: blur(8px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 35px rgba(255, 0, 119, 0.3);
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary-color); /* Màu hồng neon */
+            margin-bottom: 1.5rem;
+            border-left: 5px solid var(--secondary-color);
+            padding-left: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title .action-button {
+            font-size: 1rem;
+            background: var(--secondary-color);
+            color: #121212;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .card-title .action-button:hover {
+            opacity: 0.9;
+        }
+
+        /* Grid cho các chức năng */
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        /* Bảng (Table) theo phong cách Neon */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            text-align: left;
+        }
+
+        .data-table th {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding: 1rem 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .data-table td {
+            padding: 1rem 0.75rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            vertical-align: middle;
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(0, 246, 255, 0.05);
+        }
+
+        /* Nút hành động trong bảng */
+        .action-btns button {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: color 0.2s;
+        }
+        .action-btns button:hover {
+            color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+
+        .btn-edit { color: var(--primary-color); }
+        .btn-lock { color: var(--danger-color); }
+        .btn-active { color: var(--success-color); }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .status-active {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+        .status-inactive {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--danger-color);
+            border: 1px solid var(--danger-color);
+        }
+        .status-locked {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+        .alert {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            text-align: center;
+            font-weight: 700;
+        }
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .data-table th, .data-table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.85rem;
+            }
+            .data-table th:nth-child(2), .data-table td:nth-child(2) { /* Ẩn cột mô tả trên mobile */
+                display: none;
+            }
+            .card-title {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .card-title .action-button {
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <a href="#" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a href="/auth/home">Trang chủ</a></li>
+            <li><a href="/auth/dashBoard" class="active">Dashboard Admin</a></li>
+            <li><a href="#">Báo cáo</a></li>
+            <li><a href="#">Cài đặt</a></li>
+        </ul>
+    </nav>
+    <a href="/auth/dashBoard" class="cta-button auth-button" style="background: var(--secondary-color);">
+        <i class="fas fa-user-shield"></i> Admin
+    </a>
+</header>
+
+<main class="dashboard-container">
+    <div class="dashboard-content">
+        <div class="welcome-header">
+            <h1>BẢNG ĐIỀU KHIỂN QUẢN TRỊ</h1>
+            <div th:if="${successMessage}" class="alert alert-success">
+                <p th:text="${successMessage}"></p>
+            </div>
+            <p>Quản lý hệ thống gói tập và người dùng của GymCare.</p>
+        </div>
+
+        <div class="admin-grid">
+
+            <div class="glass-card package-management">
+                <h2 class="card-title">
+                    <i class="fas fa-box-open"></i> Quản lý Gói tập
+                    <button class="action-button" onclick="alert('Mở form Tạo Gói Tập mới')">
+                        <i class="fas fa-plus"></i> Tạo Gói Tập
+                    </button>
+                </h2>
+
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Tên Gói</th>
+                        <th>Mô tả</th>
+                        <th>Giá (VND)</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Basic Fit</td>
+                        <td>Tập luyện tự do không giới hạn.</td>
+                        <td>500.000</td>
+                        <td><span class="status-badge status-active">Đang kích hoạt</span></td>
+                        <td class="action-btns">
+                            <button class="btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn-lock" title="Khóa Gói"><i class="fas fa-lock"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PT 12 Buổi</td>
+                        <td>12 buổi tập 1:1 với HLV chuyên nghiệp.</td>
+                        <td>6.000.000</td>
+                        <td><span class="status-badge status-active">Đang kích hoạt</span></td>
+                        <td class="action-btns">
+                            <button class="btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn-lock" title="Khóa Gói"><i class="fas fa-lock"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Early Bird</td>
+                        <td>Gói khuyến mãi đã dừng.</td>
+                        <td>2.500.000</td>
+                        <td><span class="status-badge status-inactive">Đã khóa</span></td>
+                        <td class="action-btns">
+                            <button class="btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                            <button class="btn-active" title="Mở khóa Gói"><i class="fas fa-lock-open"></i></button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="glass-card user-management">
+                <h2 class="card-title">
+                    <i class="fas fa-users-cog"></i> Quản lý Người dùng
+                    <button class="action-button"
+                            style="background: var(--primary-color); color: #121212;"
+                            onclick="window.location.href='/auth/list'">
+                        <i class="fas fa-search"></i> Xem Danh sách
+                    </button>
+                </h2>
+
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>ID/Email</th>
+                        <th>Họ tên</th>
+                        <th>Hành động</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="u : ${users}">
+                        <td th:text="${u.email}"></td>
+                        <td th:text="${u.firstName + ' ' + u.lastName}"></td>
+                        <td class="action-btns">
+                            <a href="/auth/update" th:onclick="'openEditModal(' + ${u.id} + '); return false;'" class="btn-edit" title="Chỉnh sửa">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            </a>
+
+                            <a th:href="@{'/auth/delete/' + ${u.id}}" class="btn-lock" title="Xóa"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</main>
+<div id="edit-user-modal" class="modal-overlay" style="display: none;">
+    <div class="glass-card modal-content">
+        <h2 class="card-title">
+            <i class="fas fa-user-edit"></i> Chỉnh sửa thông tin
+            <span class="close-modal">&times;</span>
+        </h2>
+
+        <form id="edit-user-form" method="post">
+            <div class="form-group">
+                <label for="edit-firstName">Họ</label>
+                <input type="text" id="edit-firstName" name="firstName" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-lastName">Tên</label>
+                <input type="text" id="edit-lastName" name="lastName" required>
+            </div>
+            <div class="form-group">
+                <label for="edit-email">Email</label>
+                <input type="email" id="edit-email" name="email" required>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="cta-button close-modal" style="background: grey;">Hủy</button>
+                <button type="submit" class="cta-button">Lưu thay đổi</button>
+            </div>
+        </form>
+    </div>
+</div>
+<style>
+    /* CSS cho Modal */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+    }
+    .modal-content {
+        max-width: 600px;
+        width: 90%;
+    }
+    .close-modal {
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+    }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+        display: block; margin-bottom: 0.5rem; font-weight: 700; color: var(--text-secondary);
+    }
+    .form-group input {
+        width: 100%; padding: 0.8rem; border-radius: 5px; border: 1px solid rgba(0, 246, 255, 0.2);
+        background: rgba(0,0,0,0.2); color: var(--text-light); font-size: 1rem;
+    }
+    .form-actions { display: flex; justify-content: space-between; margin-top: 2rem; }
+</style>
+
+<script>
+    const modal = document.getElementById('edit-user-modal');
+    const form = document.getElementById('edit-user-form');
+    const closeButtons = document.querySelectorAll('.close-modal');
+
+    // Hàm mở Modal
+    function openEditModal(userId) {
+        // Gọi API để lấy dữ liệu user
+        fetch(`/auth/api/users/${userId}`)
+            .then(response => response.json())
+            .then(user => {
+                document.getElementById('edit-firstName').value = user.firstName;
+                document.getElementById('edit-lastName').value = user.lastName;
+                document.getElementById('edit-email').value = user.email;
+
+                // Cập nhật action của form để submit đến đúng URL
+                form.action = `/auth/update/${user.id}`;
+
+                // Hiển thị modal
+                modal.style.display = 'flex';
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+
+    function closeModal() {
+        modal.style.display = 'none';
+    }
+
+
+    closeButtons.forEach(button => {
+        button.addEventListener('click', closeModal);
+    });
+
+
+    window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+</script>
+
+</body>
+</html>

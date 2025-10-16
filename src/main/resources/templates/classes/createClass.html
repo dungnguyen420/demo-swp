@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Tạo Lớp học mới</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .slot-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .slot-row .form-group {
+            flex-grow: 1;
+            margin-bottom: 0; /* Bỏ margin-bottom mặc định của form-group */
+        }
+        .slot-row label {
+            display: none; /* Ẩn label trong các dòng slot */
+        }
+    </style>
+</head>
+<body>
+<header class="navbar">
+    <a th:href="@{/}" class="logo">GymCare</a>
+</header>
+
+<main class="page-container" style="max-width: 800px;">
+    <h1 class="page-title">Tạo Lớp học mới</h1>
+    <div class="form-card">
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <form th:action="@{/classes/create}" th:object="${dto}" method="post">
+            <div class="form-group full-width">
+                <label for="name">Tên Lớp học</label>
+                <input type="text" id="name" th:field="*{name}" required>
+            </div>
+            <div class="form-group full-width">
+                <label for="description">Mô tả</label>
+                <textarea id="description" th:field="*{description}" rows="3"></textarea>
+            </div>
+            <div class="form-group full-width">
+                <label for="capacity">Sức chứa (Học viên)</label>
+                <input type="number" id="capacity" th:field="*{capacity}" required min="1">
+            </div>
+            <div class="form-group full-width" sec:authorize="hasAuthority('MANAGER')">
+                <label for="trainerUserId">Chọn Huấn luyện viên</label>
+                <select id="trainerUserId" th:field="*{trainerUserId}">
+                    <option value="">-- Chọn một HLV --</option>
+                    <option th:each="trainer : ${trainers}"
+                            th:value="${trainer.id}"
+                            th:text="${trainer.firstName + ' ' + trainer.lastName}"></option>
+                </select>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Các Slot học</label>
+                <div id="slots-container">
+                </div>
+                <button type="button" id="add-slot-btn" class="btn-add-schedule">
+                    <i class="fas fa-plus"></i> Thêm Slot
+                </button>
+            </div>
+
+            <div class="form-actions">
+                <a th:href="@{/classes}" class="btn-secondary">Hủy</a>
+                <button type="submit" class="cta-button">Tạo Lớp học</button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('slots-container');
+        const addButton = document.getElementById('add-slot-btn');
+        let slotIndex = 0;
+
+        /*<![CDATA[*/
+        const slotNumbers = /*[[${slotNumbers}]]*/ [];
+        /*]]>*/
+
+        const createSlotRow = () => {
+            const row = document.createElement('div');
+            row.className = 'slot-row';
+
+            // Input cho Ngày
+            const dateGroup = document.createElement('div');
+            dateGroup.className = 'form-group';
+            const dateInput = document.createElement('input');
+            dateInput.type = 'date';
+            dateInput.className = 'form-control'; // Áp dụng style chung
+            dateInput.name = `slots[${slotIndex}].date`;
+            dateInput.required = true;
+            dateInput.min = new Date().toISOString().split("T")[0]; // Ngăn chọn ngày quá khứ
+            dateGroup.appendChild(dateInput);
+
+            // Select cho Slot
+            const slotGroup = document.createElement('div');
+            slotGroup.className = 'form-group';
+            const slotSelect = document.createElement('select');
+            slotSelect.className = 'form-control'; // Áp dụng style chung
+            slotSelect.name = `slots[${slotIndex}].slotNumber`;
+            slotSelect.required = true;
+            const placeholder = document.createElement('option');
+            placeholder.value = "";
+            placeholder.textContent = "-- Chọn Slot --";
+            slotSelect.appendChild(placeholder);
+            slotNumbers.forEach(n => {
+                const option = document.createElement('option');
+                option.value = n;
+                option.textContent = 'Slot ' + n;
+                slotSelect.appendChild(option);
+            });
+            slotGroup.appendChild(slotSelect);
+
+            // Nút xóa
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'btn-remove-schedule';
+            removeButton.innerHTML = '&minus;';
+            removeButton.onclick = () => row.remove();
+
+            row.appendChild(dateGroup);
+            row.appendChild(slotGroup);
+            row.appendChild(removeButton);
+
+            container.appendChild(row);
+            slotIndex++;
+        };
+
+        // Thêm một dòng mặc định khi tải trang
+        createSlotRow();
+
+        // Gắn sự kiện cho nút Thêm
+        addButton.addEventListener('click', createSlotRow);
+    });
+</script>
+
+</body>
+</html>

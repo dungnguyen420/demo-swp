@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - GymCare</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #00f6ff; /* Xanh Cyan Neon */
+            --card-bg: rgba(26, 26, 58, 0.65); /* Nền thẻ kính mờ */
+            --text-light: #e0e0e0;
+            --text-secondary: #a0a0c0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            color: var(--text-light);
+
+            /* Nền Galaxy với hiệu ứng Parallax */
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+
+            /* Căn giữa form đăng nhập */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+        }
+
+        .login-form {
+            background: var(--card-bg);
+            padding: 3rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 246, 255, 0.2);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            text-align: center;
+
+            /* Animation */
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+        }
+
+        .login-form h1 {
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem; /* Thêm padding cho icon */
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: var(--text-light);
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(0, 246, 255, 0.5);
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #00f6ff, #00aaff);
+            color: #121212;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .login-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
+        }
+
+        .form-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        .form-footer a:hover {
+            color: var(--primary-color);
+        }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <form class="login-form" th:action="@{/auth/login}" method="POST">
+        <h1>Đăng nhập</h1>
+
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" name="usernameOrEmail" placeholder="Tên đăng nhập" required>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" placeholder="Mật khẩu" required>
+        </div>
+
+        <button type="submit" class="login-button">Đăng nhập</button>
+
+        <div th:if="${errorMessage}" class="error-message" style="color:red; margin-bottom:10px;">
+            <p th:text="${errorMessage}"></p>
+        </div>
+
+        <div class="form-footer">
+            <a href="#">Quên mật khẩu?</a>
+            <p>Chưa có tài khoản <a th:href="@{/auth/register}">Đăng ký</a></p>
+        </div>
+
+    </form>
+</div>
+

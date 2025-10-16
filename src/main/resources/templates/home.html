@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymCare - Định hình Phong cách của bạn</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #00f6ff;
+            --card-bg: rgba(26, 26, 58, 0.65);
+            --text-light: #e0e0e0;
+            --text-secondary: #a0a0c0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            color: var(--text-light);
+            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            background-attachment: fixed;
+            background-position: center;
+            background-size: cover;
+            overflow-x: hidden;
+        }
+        .navbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 5%; position: sticky; top: 0; z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+        .navbar.scrolled {
+            background-color: rgba(10, 11, 30, 0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 246, 255, 0.1);
+        }
+        .logo { font-weight: 900; font-size: 1.5rem; color: var(--primary-color); text-decoration: none; text-shadow: 0 0 10px var(--primary-color); }
+        .navbar nav ul { list-style: none; display: flex; gap: 2rem; }
+        .navbar nav a { color: var(--text-light); text-decoration: none; font-weight: 700; transition: color 0.3s ease; }
+        .navbar nav a:hover { color: var(--primary-color); }
+        .cta-button { background: linear-gradient(45deg, #00f6ff, #00aaff); color: #121212; padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; font-weight: 700; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 0 25px rgba(0, 246, 255, 0.6); }
+        .auth-section { position: relative; }
+        .profile-dropdown { display: flex; align-items: center; cursor: pointer; gap: 10px; padding: 5px 10px; border-radius: 50px; background-color: rgba(255,255,255,0.1); transition: background-color 0.3s ease; }
+        .profile-dropdown:hover { background-color: rgba(255,255,255,0.2); }
+        .profile-dropdown img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
+        .profile-dropdown span { font-weight: 700; color: var(--text-light); }
+        .dropdown-menu { position: absolute; top: 120%; right: 0; background: var(--card-bg); border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(10px); border-radius: 10px; width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); list-style: none; padding: 10px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s; }
+        .profile-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu li a { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--text-secondary); font-weight: normal; text-decoration: none; }
+        .dropdown-menu li a:hover { background-color: rgba(0, 246, 255, 0.1); color: var(--primary-color); }
+
+        /* Hero Section */
+        .hero-section { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 5%; overflow: hidden; }
+
+        /* === SỬA LỖI: THÊM LẠI LỚP PHỦ NỀN === */
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.7) 100%);
+            z-index: -1;
+        }
+
+        .hero-content { position: relative; z-index: 2; animation: fadeInSlideUp 1s ease-out forwards; }
+        .hero-content h1 { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 900; line-height: 1.2; margin-bottom: 1rem; color: white; text-shadow: 0 0 15px rgba(0, 246, 255, 0.5); }
+        .hero-content p { font-size: 1.2rem; max-width: 600px; margin: 0 auto 2rem auto; color: var(--text-secondary); }
+
+        .services-section { padding: 6rem 5%; text-align: center; }
+        .section-title { font-size: 2.5rem; font-weight: 900; margin-bottom: 3rem; color: var(--primary-color); text-shadow: 0 0 10px rgba(0, 246, 255, 0.5); }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+        .service-card { background: var(--card-bg); padding: 2.5rem 2rem; border-radius: 15px; border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(5px); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .service-card:hover { transform: translateY(-10px); box-shadow: 0 0 30px rgba(0, 246, 255, 0.3); }
+        .service-card i { font-size: 3rem; color: var(--primary-color); margin-bottom: 1.5rem; text-shadow: 0 0 15px var(--primary-color); }
+        .service-card h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .service-card p { color: var(--text-secondary); }
+        @keyframes fadeInSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-on-scroll { opacity: 0; transform: translateY(50px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+        .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <a th:href="@{/}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/packages}">Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes/create}">Lớp học</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+
+<main>
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>VƯỢT QUA GIỚI HẠN. <br> ĐỊNH HÌNH PHONG CÁCH.</h1>
+            <p>Nền tảng quản lý và tập luyện hàng đầu, đồng hành cùng bạn trên mọi hành trình.</p>
+            <a th:href="@{/register}" class="cta-button">Trở thành Hội viên</a>
+        </div>
+    </section>
+
+    <section class="services-section">
+        <h2 class="section-title animate-on-scroll">DỊCH VỤ DÀNH CHO BẠN</h2>
+        <div class="services-grid">
+            <a th:href="@{/schedule}" style="text-decoration: none; color: inherit;">
+                <div class="service-card animate-on-scroll">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>Lịch tập 1:1</h3>
+                    <p>Đặt lịch linh hoạt với các huấn luyện viên hàng đầu.</p>
+                </div>
+            </a>
+            <a th:href="@{/classes}" style="text-decoration: none; color: inherit;">
+                <div class="service-card animate-on-scroll">
+                    <i class="fas fa-users"></i>
+                    <h3>Lớp học Nhóm</h3>
+                    <p>Tham gia các lớp Yoga, Zumba, HIIT đầy năng lượng.</p>
+                </div>
+            </a>
+            <a th:href="@{/progress}" style="text-decoration: none; color: inherit;">
+                <div class="service-card animate-on-scroll">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Theo dõi Tiến độ</h3>
+                    <p>Ghi nhận và phân tích kết quả tập luyện của bạn.</p>
+                </div>
+            </a>
+            <a th:href="@{/shop}" style="text-decoration: none; color: inherit;">
+                <div class="service-card animate-on-scroll">
+                    <i class="fas fa-shopping-cart"></i>
+                    <h3>Cửa hàng Tiện lợi</h3>
+                    <p>Mua sắm thực phẩm bổ sung và dụng cụ tập luyện.</p>
+                </div>
+            </a>
+        </div>
+    </section>
+</main>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+
+        const navbar = document.querySelector('.navbar');
+
+        window.addEventListener('scroll', () => {
+
+            if (window.scrollY > 50) {
+
+                navbar.classList.add('scrolled');
+
+            } else {
+
+                navbar.classList.remove('scrolled');
+
+            }
+
+        });
+
+
+
+        const observer = new IntersectionObserver((entries) => {
+
+            entries.forEach(entry => {
+
+                if (entry.isIntersecting) {
+
+                    entry.target.classList.add('visible');
+
+                }
+
+            });
+
+        }, { threshold: 0.1 });
+
+
+
+        const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
+
+        elementsToAnimate.forEach(el => observer.observe(el));
+
+    });
+
+</script>
+</body>
+</html>
