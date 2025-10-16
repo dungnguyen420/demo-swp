@@ -30,7 +30,7 @@ public class UploadController {
             model.addAttribute("message","Upload successful");
             model.addAttribute("imageUrl",imageUrl);
         }catch (Exception e){
-            model.addAttribute("message","Upload fail" + e.getMessage());
+            model.addAttribute("message","Upload fail");
         }
         return "upload_resuld";
     }
