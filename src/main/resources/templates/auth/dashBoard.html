@@ -1,521 +1,351 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GymCare - Dashboard Quản trị</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Trang Quản Trị</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap');
-
-        :root {
-            --primary-color: #00f6ff; /* Xanh Cyan Neon */
-            --secondary-color: #ff0077; /* Hồng Neon bổ sung */
-            --card-bg: rgba(26, 26, 58, 0.7); /* Nền thẻ kính mờ */
-            --text-light: #e0e0e0;
-            --text-secondary: #a0a0c0;
-            --success-color: #28a745;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            color: var(--text-light);
-            overflow-x: hidden;
-            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            min-height: 100vh;
+            background: #f8f9fa;
         }
-
-        /* Navbar & Button styles (giữ nguyên để đồng bộ) */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 5%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: rgba(10, 11, 30, 0.7);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0, 246, 255, 0.1);
+        .nav-tabs .nav-link.active {
+            background-color: #0d6efd;
+            color: white !important;
+            font-weight: 600;
         }
-
-        .logo {
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            text-decoration: none;
-            text-shadow: 0 0 10px var(--primary-color);
+        .table th {
+            background-color: #f1f3f5;
         }
-
-        .navbar nav ul {
-            list-style: none;
-            display: flex;
-            gap: 2rem;
+        .card {
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
         }
-
-        .navbar a {
-            color: var(--text-light);
-            text-decoration: none;
-            font-weight: 700;
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-        .navbar a:hover, .navbar .active {
-            color: var(--primary-color);
-            text-shadow: 0 0 5px var(--primary-color);
-        }
-
-        .cta-button {
-            background: linear-gradient(45deg, #00f6ff, #00aaff);
-            color: #121212;
-            padding: 0.7rem 1.5rem;
-            border: none;
+        .btn-action {
             border-radius: 50px;
-            text-decoration: none;
-            font-weight: 700;
-            transition: transform 0.2s ease, box-shadow 0.3s ease;
-            white-space: nowrap; /* Giữ nút không bị xuống dòng */
-        }
-        .cta-button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
-        }
-
-        /* === STYLE MỚI CHO DASHBOARD ADMIN === */
-
-        .dashboard-container {
-            padding: 2rem 5%;
-            min-height: calc(100vh - 4.5rem);
-            position: relative;
-        }
-
-        .dashboard-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.3);
-            z-index: 1;
-        }
-
-        .dashboard-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .welcome-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-top: 1rem;
-        }
-
-        .welcome-header h1 {
-            font-size: clamp(2rem, 4vw, 3rem);
-            font-weight: 900;
-            color: white;
-            text-shadow: 0 0 10px rgba(255, 0, 119, 0.5); /* Dùng màu secondary cho Admin */
-            margin-bottom: 0.5rem;
-        }
-
-        .welcome-header p {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-        }
-
-        /* Thẻ cơ sở (Glassmorphism Card) */
-        .glass-card {
-            background: var(--card-bg);
-            padding: 2rem;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 0, 119, 0.2); /* Viền màu secondary cho Admin */
-            backdrop-filter: blur(8px);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-            margin-bottom: 2rem;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .glass-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 35px rgba(255, 0, 119, 0.3);
-        }
-
-        .card-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--secondary-color); /* Màu hồng neon */
-            margin-bottom: 1.5rem;
-            border-left: 5px solid var(--secondary-color);
-            padding-left: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title .action-button {
-            font-size: 1rem;
-            background: var(--secondary-color);
-            color: #121212;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: opacity 0.3s;
-        }
-        .card-title .action-button:hover {
-            opacity: 0.9;
-        }
-
-        /* Grid cho các chức năng */
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-
-        /* Bảng (Table) theo phong cách Neon */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95rem;
-            text-align: left;
-        }
-
-        .data-table th {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding: 1rem 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        .data-table td {
-            padding: 1rem 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            vertical-align: middle;
-        }
-
-        .data-table tr:hover {
-            background-color: rgba(0, 246, 255, 0.05);
-        }
-
-        /* Nút hành động trong bảng */
-        .action-btns button {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            margin-right: 0.5rem;
-            cursor: pointer;
-            font-size: 1rem;
-            transition: color 0.2s;
-        }
-        .action-btns button:hover {
-            color: var(--secondary-color);
-            transform: scale(1.1);
-        }
-
-        .btn-edit { color: var(--primary-color); }
-        .btn-lock { color: var(--danger-color); }
-        .btn-active { color: var(--success-color); }
-
-        .status-badge {
-            padding: 0.3rem 0.8rem;
-            border-radius: 50px;
-            font-size: 0.8rem;
-            font-weight: 700;
-        }
-
-        .status-active {
-            background-color: rgba(40, 167, 69, 0.2);
-            color: var(--success-color);
-            border: 1px solid var(--success-color);
-        }
-        .status-inactive {
-            background-color: rgba(220, 53, 69, 0.2);
-            color: var(--danger-color);
-            border: 1px solid var(--danger-color);
-        }
-        .status-locked {
-            background-color: rgba(255, 193, 7, 0.2);
-            color: var(--warning-color);
-            border: 1px solid var(--warning-color);
-        }
-        .alert {
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 8px;
-            border: 1px solid transparent;
-            text-align: center;
-            font-weight: 700;
-        }
-        .alert-success {
-            color: #0f5132;
-            background-color: #d1e7dd;
-            border-color: #badbcc;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .data-table th, .data-table td {
-                padding: 0.75rem 0.5rem;
-                font-size: 0.85rem;
-            }
-            .data-table th:nth-child(2), .data-table td:nth-child(2) { /* Ẩn cột mô tả trên mobile */
-                display: none;
-            }
-            .card-title {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .card-title .action-button {
-                margin-top: 1rem;
-            }
+            padding: 4px 10px;
         }
     </style>
 </head>
 <body>
+<div class="container py-4">
+    <h2 class="mb-4 text-center fw-bold text-primary">Bảng điều khiển Quản trị</h2>
 
-<header class="navbar">
-    <a href="#" class="logo">GymCare</a>
-    <nav>
-        <ul>
-            <li><a href="/auth/home">Trang chủ</a></li>
-            <li><a href="/auth/dashBoard" class="active">Dashboard Admin</a></li>
-            <li><a href="#">Báo cáo</a></li>
-            <li><a href="#">Cài đặt</a></li>
-        </ul>
-    </nav>
-    <a href="/auth/dashBoard" class="cta-button auth-button" style="background: var(--secondary-color);">
-        <i class="fas fa-user-shield"></i> Admin
-    </a>
-</header>
+    <!-- Hiển thị thông báo thành công -->
+    <div th:if="${successMessage}" class="alert alert-success text-center" role="alert"
+         th:text="${successMessage}"></div>
 
-<main class="dashboard-container">
-    <div class="dashboard-content">
-        <div class="welcome-header">
-            <h1>BẢNG ĐIỀU KHIỂN QUẢN TRỊ</h1>
-            <div th:if="${successMessage}" class="alert alert-success">
-                <p th:text="${successMessage}"></p>
-            </div>
-            <p>Quản lý hệ thống gói tập và người dùng của GymCare.</p>
-        </div>
+    <!-- Tabs -->
+    <ul class="nav nav-tabs mb-3" id="myTab">
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${activeTab == 'userPage'} ? 'active'"
+               href="?tab=userPage">Người Dùng</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:classappend="${activeTab == 'packages'} ? 'active'"
+               href="?tab=packages">Gói Tập</a>
+        </li>
+    </ul>
 
-        <div class="admin-grid">
-
-            <div class="glass-card package-management">
-                <h2 class="card-title">
-                    <i class="fas fa-box-open"></i> Quản lý Gói tập
-                    <button class="action-button" onclick="alert('Mở form Tạo Gói Tập mới')">
-                        <i class="fas fa-plus"></i> Tạo Gói Tập
-                    </button>
-                </h2>
-
-                <table class="data-table">
-                    <thead>
-                    <tr>
-                        <th>Tên Gói</th>
-                        <th>Mô tả</th>
-                        <th>Giá (VND)</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>Basic Fit</td>
-                        <td>Tập luyện tự do không giới hạn.</td>
-                        <td>500.000</td>
-                        <td><span class="status-badge status-active">Đang kích hoạt</span></td>
-                        <td class="action-btns">
-                            <button class="btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn-lock" title="Khóa Gói"><i class="fas fa-lock"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>PT 12 Buổi</td>
-                        <td>12 buổi tập 1:1 với HLV chuyên nghiệp.</td>
-                        <td>6.000.000</td>
-                        <td><span class="status-badge status-active">Đang kích hoạt</span></td>
-                        <td class="action-btns">
-                            <button class="btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn-lock" title="Khóa Gói"><i class="fas fa-lock"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Early Bird</td>
-                        <td>Gói khuyến mãi đã dừng.</td>
-                        <td>2.500.000</td>
-                        <td><span class="status-badge status-inactive">Đã khóa</span></td>
-                        <td class="action-btns">
-                            <button class="btn-edit" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                            <button class="btn-active" title="Mở khóa Gói"><i class="fas fa-lock-open"></i></button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+    <!-- Tab: USERS -->
+    <div th:if="${activeTab == 'userPage'}">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Danh sách Người Dùng</h5>
             </div>
 
-            <div class="glass-card user-management">
-                <h2 class="card-title">
-                    <i class="fas fa-users-cog"></i> Quản lý Người dùng
-                    <button class="action-button"
-                            style="background: var(--primary-color); color: #121212;"
-                            onclick="window.location.href='/auth/list'">
-                        <i class="fas fa-search"></i> Xem Danh sách
-                    </button>
-                </h2>
+            <table class="table table-bordered align-middle text-center">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Họ</th>
+                    <th>Tên</th>
+                    <th>Email</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="user : ${usersPage.content}">
+                    <td th:text="${user.id}"></td>
+                    <td th:text="${user.userName}"></td>
+                    <td th:text="${user.firstName}"></td>
+                    <td th:text="${user.lastName}"></td>
+                    <td th:text="${user.email}"></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btn-action"
+                                th:attr="data-id=${user.id}" onclick="editUser(this)">Sửa</button>
+                        <form th:action="@{/auth/delete}" method="post" class="d-inline"
+                              onsubmit="return confirm('Bạn có chắc muốn xóa người dùng này không?')">
+                            <input type="hidden" name="id" th:value="${user.id}">
+                            <button type="submit" class="btn btn-danger btn-sm btn-action">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-                <table class="data-table">
-                    <thead>
-                    <tr>
-                        <th>ID/Email</th>
-                        <th>Họ tên</th>
-                        <th>Hành động</th>
-                    </tr>
-                    </thead>
-
-                    <tbody>
-                    <tr th:each="u : ${users}">
-                        <td th:text="${u.email}"></td>
-                        <td th:text="${u.firstName + ' ' + u.lastName}"></td>
-                        <td class="action-btns">
-                            <a href="/auth/update" th:onclick="'openEditModal(' + ${u.id} + '); return false;'" class="btn-edit" title="Chỉnh sửa">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            </a>
-
-                            <a th:href="@{'/auth/delete/' + ${u.id}}" class="btn-lock" title="Xóa"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <!-- Phân trang -->
+            <div class="d-flex justify-content-center mt-3">
+                <a th:if="${usersPage.hasPrevious()}"
+                   th:href="@{/auth/dashBoard(userPage=${usersPage.number - 1}, tab='userPage')}"
+                   class="btn btn-outline-primary btn-sm me-2">Trước</a>
+                <a th:if="${usersPage.hasNext()}"
+                   th:href="@{/auth/dashBoard(userPage=${usersPage.number + 1}, tab='userPage')}"
+                   class="btn btn-outline-primary btn-sm">Sau</a>
             </div>
-
         </div>
     </div>
-</main>
-<div id="edit-user-modal" class="modal-overlay" style="display: none;">
-    <div class="glass-card modal-content">
-        <h2 class="card-title">
-            <i class="fas fa-user-edit"></i> Chỉnh sửa thông tin
-            <span class="close-modal">&times;</span>
-        </h2>
 
-        <form id="edit-user-form" method="post">
-            <div class="form-group">
-                <label for="edit-firstName">Họ</label>
-                <input type="text" id="edit-firstName" name="firstName" required>
+    <!-- Tab: PACKAGES -->
+    <div th:if="${activeTab == 'packages'}">
+        <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5>Danh sách Gói Tập</h5>
+                <button class="btn btn-primary btn-sm" onclick="openCreatePackage()">+ Tạo Gói Tập</button>
             </div>
-            <div class="form-group">
-                <label for="edit-lastName">Tên</label>
-                <input type="text" id="edit-lastName" name="lastName" required>
+
+            <table class="table table-bordered align-middle text-center">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên</th>
+                    <th>Mô tả</th>
+                    <th>Giá</th>
+                    <th>Thời hạn (tháng)</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pkg : ${packagesPage.content}">
+                    <td th:text="${pkg.id}"></td>
+                    <td th:text="${pkg.name}"></td>
+                    <td th:text="${pkg.description}"></td>
+                    <td th:text="${pkg.price}"></td>
+                    <td th:text="${pkg.durationMonth}"></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm btn-action"
+                                th:attr="data-id=${pkg.id}" onclick="editPackage(this)">Sửa</button>
+                        <form th:action="@{/auth/delete-package}" method="post" class="d-inline"
+                              onsubmit="return confirm('Bạn có chắc muốn xóa gói tập này không?')">
+                            <input type="hidden" name="id" th:value="${pkg.id}">
+                            <button type="submit" class="btn btn-danger btn-sm btn-action">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- Phân trang -->
+            <div class="d-flex justify-content-center mt-3">
+                <a th:if="${packagesPage.hasPrevious()}"
+                   th:href="@{/auth/dashBoard(packagePage=${packagesPage.number - 1}, tab='packages')}"
+                   class="btn btn-outline-primary btn-sm me-2">Trước</a>
+                <a th:if="${packagesPage.hasNext()}"
+                   th:href="@{/auth/dashBoard(packagePage=${packagesPage.number + 1}, tab='packages')}"
+                   class="btn btn-outline-primary btn-sm">Sau</a>
             </div>
-            <div class="form-group">
-                <label for="edit-email">Email</label>
-                <input type="email" id="edit-email" name="email" required>
-            </div>
-            <div class="form-actions">
-                <button type="button" class="cta-button close-modal" style="background: grey;">Hủy</button>
-                <button type="submit" class="cta-button">Lưu thay đổi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal sửa Gói Tập -->
+<div class="modal fade" id="editPackageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" id="updatePackageForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật gói tập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Tên gói:</label>
+                    <input type="text" class="form-control mb-2" name="name" id="pkgName">
+                    <label>Mô tả:</label>
+                    <input type="text" class="form-control mb-2" name="description" id="pkgDesc">
+                    <label>Giá:</label>
+                    <input type="number" class="form-control mb-2" name="price" id="pkgPrice">
+                    <label>Thời hạn (tháng):</label>
+                    <input type="number" class="form-control" name="durationMonth" id="pkgDuration">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                </div>
             </div>
         </form>
     </div>
 </div>
-<style>
-    /* CSS cho Modal */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-        backdrop-filter: blur(5px);
-    }
-    .modal-content {
-        max-width: 600px;
-        width: 90%;
-    }
-    .close-modal {
-        cursor: pointer;
-        font-size: 1.5rem;
-        color: var(--text-secondary);
-    }
-    .form-group { margin-bottom: 1.5rem; }
-    .form-group label {
-        display: block; margin-bottom: 0.5rem; font-weight: 700; color: var(--text-secondary);
-    }
-    .form-group input {
-        width: 100%; padding: 0.8rem; border-radius: 5px; border: 1px solid rgba(0, 246, 255, 0.2);
-        background: rgba(0,0,0,0.2); color: var(--text-light); font-size: 1rem;
-    }
-    .form-actions { display: flex; justify-content: space-between; margin-top: 2rem; }
-</style>
+<!-- Modal Sửa Người Dùng -->
+<div class="modal fade" id="editUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="post" id="updateUserForm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cập nhật người dùng</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label>Họ:</label>
+                    <input type="text" class="form-control mb-2" name="firstName" id="userFirstName">
+                    <label>Tên:</label>
+                    <input type="text" class="form-control mb-2" name="lastName" id="userLastName">
+                    <label>Email:</label>
+                    <input type="email" class="form-control" name="email" id="userEmail">
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Lưu</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
 
 <script>
-    const modal = document.getElementById('edit-user-modal');
-    const form = document.getElementById('edit-user-form');
-    const closeButtons = document.querySelectorAll('.close-modal');
-
-    // Hàm mở Modal
-    function openEditModal(userId) {
-        // Gọi API để lấy dữ liệu user
-        fetch(`/auth/api/users/${userId}`)
-            .then(response => response.json())
+    function editUser(btn) {
+        const id = btn.getAttribute("data-id");
+        fetch(`/auth/api/users/${id}`)
+            .then(res => res.json())
             .then(user => {
-                document.getElementById('edit-firstName').value = user.firstName;
-                document.getElementById('edit-lastName').value = user.lastName;
-                document.getElementById('edit-email').value = user.email;
+                document.getElementById("userFirstName").value = user.firstName;
+                document.getElementById("userLastName").value = user.lastName;
+                document.getElementById("userEmail").value = user.email;
 
-                // Cập nhật action của form để submit đến đúng URL
-                form.action = `/auth/update/${user.id}`;
-
-                // Hiển thị modal
-                modal.style.display = 'flex';
-            })
-            .catch(error => console.error('Error:', error));
+                document.getElementById("updateUserForm").action = `/auth/update/${id}`;
+                new bootstrap.Modal(document.getElementById("editUserModal")).show();
+            });
     }
-
-
-    function closeModal() {
-        modal.style.display = 'none';
-    }
-
-
-    closeButtons.forEach(button => {
-        button.addEventListener('click', closeModal);
-    });
-
-
-    window.addEventListener('click', function(event) {
-        if (event.target === modal) {
-            closeModal();
-        }
-    });
 </script>
 
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function openCreatePackage() {
+        Swal.fire({
+            title: 'Tạo gói tập mới',
+            html: `
+            <input id="name" class="swal2-input" placeholder="Tên gói">
+            <input id="description" class="swal2-input" placeholder="Mô tả">
+            <input id="price" type="number" class="swal2-input" placeholder="Giá">
+            <input id="durationMonth" type="number" class="swal2-input" placeholder="Thời hạn (tháng)">
+        `,11````````````````````````
+            showCancelButton: true,
+            confirmButtonText: 'Tạo',
+            preConfirm: () => {
+                // Lấy giá trị người dùng nhập
+                const name = document.getElementById('name').value.trim();
+                const description = document.getElementById('description').value.trim();
+                const price = parseFloat(document.getElementById('price').value);
+                const duration = parseInt(document.getElementById('durationMonth').value);
+
+                // ✅ Validate dữ liệu
+                if (!name) {
+                    Swal.showValidationMessage('⚠️ Vui lòng nhập tên gói');
+                    return false;
+                }
+                if (!description) {
+                    Swal.showValidationMessage('⚠️ Vui lòng nhập mô tả');
+                    return false;
+                }
+                if (isNaN(price) || price <= 0) {
+                    Swal.showValidationMessage('⚠️ Giá phải là số dương lớn hơn 0');
+                    return false;
+                }
+                if (isNaN(duration) || duration <= 0) {
+                    Swal.showValidationMessage('⚠️ Thời hạn phải là số dương');
+                    return false;
+                }
+
+                // Nếu hợp lệ -> trả object (Swal sẽ resolve nó)
+                return { name, description, price, durationMonth: duration };
+            }
+        }).then(result => {
+            if (result.isConfirmed) {
+                const { name, description, price, durationMonth } = result.value;
+
+                // Gửi dữ liệu bằng AJAX (fetch)
+                fetch('/auth/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, description, price, durationMonth })
+                })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error("Lỗi khi tạo gói tập");
+                        }
+                        return res.text();
+                    })
+                    .then(() => {
+                        Swal.fire('Thành công 🎉', 'Tạo gói tập mới thành công!', 'success')
+                            .then(() => location.reload());
+                    })
+                    .catch(err => {
+                        Swal.fire('Lỗi', err.message, 'error');
+                    });
+            }
+        });
+    }
+
+
+    function editPackage(btn) {
+        const id = btn.getAttribute("data-id");
+
+        fetch(`/auth/api/package/${id}`)
+            .then(res => res.json())
+            .then(pkg => {
+                document.getElementById("pkgName").value = pkg.name;
+                document.getElementById("pkgDesc").value = pkg.description;
+                document.getElementById("pkgPrice").value = pkg.price;
+                document.getElementById("pkgDuration").value = pkg.durationMonth;
+                document.getElementById("updatePackageForm").action = `/auth/update-package/${id}`;
+
+                // Hiển thị modal
+                const modal = new bootstrap.Modal(document.getElementById("editPackageModal"));
+                modal.show();
+
+                // Gắn sự kiện submit (validation)
+                const form = document.getElementById("updatePackageForm");
+                form.onsubmit = function (e) {
+                    e.preventDefault(); // chặn submit mặc định
+
+                    // Lấy dữ liệu
+                    const name = document.getElementById("pkgName").value.trim();
+                    const desc = document.getElementById("pkgDesc").value.trim();
+                    const price = parseFloat(document.getElementById("pkgPrice").value);
+                    const duration = parseInt(document.getElementById("pkgDuration").value);
+
+                    // Validation cơ bản
+                    if (!name) {
+                        Swal.fire("Lỗi", "⚠️ Tên gói không được để trống", "error");
+                        return;
+                    }
+                    if (!desc) {
+                        Swal.fire("Lỗi", "⚠️ Mô tả không được để trống", "error");
+                        return;
+                    }
+                    if (isNaN(price) || price <= 0) {
+                        Swal.fire("Lỗi", "⚠️ Giá phải là số dương lớn hơn 0", "error");
+                        return;
+                    }
+                    if (isNaN(duration) || duration <= 0) {
+                        Swal.fire("Lỗi", "⚠️ Thời hạn phải là số dương", "error");
+                        return;
+                    }
+
+                    // Nếu hợp lệ thì gửi form
+                    form.submit();
+                };
+            });
+    }
+
+</script>
 </body>
 </html>

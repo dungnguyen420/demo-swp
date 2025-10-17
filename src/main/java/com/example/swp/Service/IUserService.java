@@ -4,6 +4,8 @@ import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserRole;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +24,5 @@ public interface IUserService {
     void deleteUser(Long Id);
     UserEntity updateUser(Long id, RegisterDTO dto);
     UserEntity findById(Long Id);
+    Page<UserEntity> findByRole(UserRole role, Pageable pageable);
 }

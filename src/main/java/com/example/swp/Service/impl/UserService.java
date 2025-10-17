@@ -8,6 +8,8 @@ import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Service.IUserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -129,6 +131,11 @@ public class UserService implements IUserService {
     @Override
     public UserEntity findById(Long Id) {
         return userRepository.findById(Id).orElse(null);
+    }
+
+    @Override
+    public Page<UserEntity> findByRole(UserRole role, Pageable pageable) {
+        return userRepository.findByRole(role, pageable);
     }
 
 

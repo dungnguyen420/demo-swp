@@ -2,6 +2,8 @@ package com.example.swp.Repository;
 
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserRole;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +19,5 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long>, JpaSpe
     Optional<UserEntity> findByEmail(String email);
     boolean existsByEmail (String email);
     List<UserEntity> findByRole(UserRole role);
+    Page<UserEntity> findByRole(UserRole role, Pageable pageable);
 }
