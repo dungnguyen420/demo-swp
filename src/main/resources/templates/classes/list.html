@@ -1,7 +1,24 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
 <head>
     <title>Danh sách lớp (phân trang)</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .modal-backdrop {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .modal-box {
+            background: #fff; border-radius: 8px; max-width: 420px; width: 92%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); padding: 16px 18px 14px;
+        }
+        .modal-head { font-size: 18px; margin-bottom: 8px; }
+        .modal-actions { text-align: right; margin-top: 14px; }
+        .btn { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; }
+        .btn-cancel { background: #e9ecef; color: #333; margin-right: 8px; }
+        .btn-danger { background: #dc3545; color: #fff; }
+    </style>
 </head>
 <body>
 <h2>Danh sách lớp</h2>
@@ -19,8 +36,20 @@
         <option value="desc" th:selected="${dir=='desc'}">Giảm dần</option>
         <option value="asc" th:selected="${dir=='asc'}">Tăng dần</option>
     </select>
+
+    <!-- Toggle chỉ lớp còn lịch -->
+    <label style="margin-left:12px">
+        <input type="checkbox" name="onlyUpcoming" value="true" th:checked="${onlyUpcoming}">
+        Chỉ hiển thị lớp còn lịch
+    </label>
+
     <button type="submit">Áp dụng</button>
 </form>
+
+<!-- Nút tạo (chỉ MANAGER) -->
+<div style="margin:10px 0" sec:authorize="hasRole('MANAGER')">
+    <a th:href="@{/classes/create}">+ Tạo lớp mới</a>
+</div>
 
 <table border="1" cellspacing="0" cellpadding="6">
     <thead>
@@ -29,7 +58,7 @@
         <th>Tên lớp</th>
         <th>HLV</th>
         <th>Sức chứa</th>
-        <th>Xem</th>
+        <th>Hành động</th>
     </tr>
     </thead>
     <tbody>
@@ -38,7 +67,18 @@
         <td th:text="${c.name}">Lớp A</td>
         <td th:text="${c.trainer != null ? c.trainer.firstName + ' ' + c.trainer.lastName : 'N/A'}">Trainer</td>
         <td th:text="${c.capacity}">8</td>
-        <td><a th:href="@{|/classes/${c.id}|}">Chi tiết</a></td>
+        <td>
+            <a th:href="@{|/classes/${c.id}|}">Chi tiết</a>
+
+            <span sec:authorize="hasRole('MANAGER')">
+              | <a th:href="@{|/classes/${c.id}/edit|}">Sửa</a>
+              | <button type="button"
+                        class="openDeleteModalBtn"
+                        th:attr="data-id=${c.id}, data-name=${c.name}">
+                    Xóa
+                </button>
+            </span>
+        </td>
     </tr>
     <tr th:if="${#lists.isEmpty(pageData.content)}">
         <td colspan="5">Chưa có lớp nào</td>
@@ -56,26 +96,79 @@
 
 <div>
     <a th:if="${!pageData.first}"
-       th:href="@{/classes(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Trang đầu</a>
+       th:href="@{/classes(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, onlyUpcoming=${onlyUpcoming})}">Trang đầu</a>
 
     <a th:if="${pageData.hasPrevious()}"
-       th:href="@{/classes(page=${pageData.number - 1}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Trước</a>
+       th:href="@{/classes(page=${pageData.number - 1}, size=${size}, sortBy=${sortBy}, dir=${dir}, onlyUpcoming=${onlyUpcoming})}">Trước</a>
 
     <span th:each="i : ${#numbers.sequence(0, pageData.totalPages - 1)}">
-    <a th:if="${i != pageData.number}"
-       th:href="@{/classes(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir})}"
-       th:text="${i + 1}">1</a>
-    <span th:if="${i == pageData.number}" th:text="${i + 1}" style="font-weight:bold">1</span>
-    <span> </span>
-  </span>
+      <a th:if="${i != pageData.number}"
+         th:href="@{/classes(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir}, onlyUpcoming=${onlyUpcoming})}"
+         th:text="${i + 1}">1</a>
+      <span th:if="${i == pageData.number}" th:text="${i + 1}" style="font-weight:bold">1</span>
+      <span> </span>
+    </span>
 
     <a th:if="${pageData.hasNext()}"
-       th:href="@{/classes(page=${pageData.number + 1}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Sau</a>
+       th:href="@{/classes(page=${pageData.number + 1}, size=${size}, sortBy=${sortBy}, dir=${dir}, onlyUpcoming=${onlyUpcoming})}">Sau</a>
 
     <a th:if="${!pageData.last}"
-       th:href="@{/classes(page=${pageData.totalPages - 1}, size=${size}, sortBy=${sortBy}, dir=${dir})}">Trang cuối</a>
+       th:href="@{/classes(page=${pageData.totalPages - 1}, size=${size}, sortBy=${sortBy}, dir=${dir}, onlyUpcoming=${onlyUpcoming})}">Trang cuối</a>
 </div>
 
-<p><a th:href="@{/classes/create}">+ Tạo lớp mới</a></p>
+<!-- Form xóa ẩn, được cập nhật action động khi xác nhận -->
+<form id="deleteForm" method="post" style="display:none"></form>
+
+<!-- Modal xác nhận xóa -->
+<div id="deleteModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="deleteTitle">
+        <div class="modal-head" id="deleteTitle">Xác nhận xóa</div>
+        <div class="modal-body">
+            Bạn có chắc muốn xóa lớp: <strong id="deleteName">—</strong>? Hành động không thể hoàn tác.
+        </div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-cancel" id="cancelDeleteBtn">Hủy</button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Xóa</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const backdrop   = document.getElementById('deleteModal');
+    const deleteForm = document.getElementById('deleteForm');
+    const cancelBtn  = document.getElementById('cancelDeleteBtn');
+    const confirmBtn = document.getElementById('confirmDeleteBtn');
+    const nameEl     = document.getElementById('deleteName');
+
+    let targetId = null;
+
+    function openModal(id, name) {
+        targetId = id;
+        nameEl.textContent = name || ('#' + id);
+        deleteForm.setAttribute('action', `/classes/${id}/delete`);
+        backdrop.style.display = 'flex';
+    }
+
+    function closeModal() {
+        backdrop.style.display = 'none';
+        targetId = null;
+    }
+
+    document.querySelectorAll('.openDeleteModalBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            openModal(btn.getAttribute('data-id'), btn.getAttribute('data-name'));
+        });
+    });
+
+    cancelBtn.addEventListener('click', closeModal);
+    confirmBtn.addEventListener('click', () => {
+        confirmBtn.disabled = true;
+        deleteForm.submit();
+    });
+
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+</script>
+
 </body>
 </html>

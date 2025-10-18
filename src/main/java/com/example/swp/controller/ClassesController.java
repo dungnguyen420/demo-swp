@@ -1,40 +1,49 @@
 package com.example.swp.controller;
 
-import com.example.swp.DTO.ClassesDTO;
 import com.example.swp.DTO.CreateClassBySlotDTO;
-import com.example.swp.DTO.CreateClassDTO;
+import com.example.swp.DTO.EditClassDTO;
 import com.example.swp.DTO.SlotRequest;
 import com.example.swp.Entity.ClassesEntity;
+import com.example.swp.Entity.ScheduleEntity;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserRole;
+import com.example.swp.Repository.ClassMemberRepository;
 import com.example.swp.Repository.ClassesRepository;
 import com.example.swp.Repository.IUserRepository;
-import com.example.swp.Repository.TrainerRepository;
 import com.example.swp.Service.IClassesService;
+import com.example.swp.Service.IScheduleService;
+import com.example.swp.Service.impl.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/classes")
 @RequiredArgsConstructor
 public class ClassesController {
-    private final ClassesRepository repo;
 
+    private final ClassesRepository classesRepo;
     private final IClassesService classesService;
     private final IUserRepository userRepository;
+    private final ClassMemberRepository classMemberRepository;
+    private final IScheduleService scheduleService;
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         CreateClassBySlotDTO dto = new CreateClassBySlotDTO();
-        dto.setSlots(new ArrayList<>(List.of(new SlotRequest()))); // 1 hàng mặc định
+        dto.setSlots(new ArrayList<>(List.of(new SlotRequest())));
         model.addAttribute("dto", dto);
         model.addAttribute("trainers", userRepository.findAllByRole(UserRole.TRAINER));
         model.addAttribute("slotNumbers", List.of(1,2,3,4,5,6));
@@ -60,29 +69,138 @@ public class ClassesController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String dir,
+            @RequestParam(defaultValue = "true") boolean onlyUpcoming,
             Model model) {
 
-        Page<ClassesEntity> pageData = classesService.listPaged(page, size, sortBy, dir);
+        Page<ClassesEntity> pageData = onlyUpcoming
+                ? classesService.listUpcoming(page, size, sortBy, dir)
+                : classesService.listPaged(page, size, sortBy, dir);
 
         model.addAttribute("pageData", pageData);
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("dir", dir);
-        return "classes/list";
+        model.addAttribute("onlyUpcoming", onlyUpcoming);
+        return "classes/list"; // hoặc list_paged
     }
 
-    @GetMapping("/{id}")
-    public String detail(@PathVariable Long id, Model model) {
-        ClassesEntity clazz = repo.findWithAllById(id)
+    @GetMapping("/{id}/edit")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String editForm(@PathVariable Long id, Model model) {
+        ClassesEntity clazz = classesRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
 
+        EditClassDTO dto = new EditClassDTO();
+        dto.setName(clazz.getName());
+        dto.setDescription(clazz.getDescription());
+        dto.setCapacity(clazz.getCapacity());
+        dto.getNewSlots().add(new SlotRequest());
+        if (dto.getNewSlots() == null || dto.getNewSlots().isEmpty()) {
+            dto.setNewSlots(new ArrayList<>());
+            dto.getNewSlots().add(new SlotRequest());
+        }
+// một dòng trống ban đầu
+
         model.addAttribute("clazz", clazz);
-        model.addAttribute("trainer", clazz.getTrainer());
-        model.addAttribute("schedules", clazz.getSchedules());
-        return "classes/detail"; // templates/classes/detail.html
+        model.addAttribute("dto", dto);
+        model.addAttribute("slotNumbers", List.of(1,2,3,4,5,6));
+        return "classes/edit";
     }
 
+    @PostMapping("/{id}/edit")
+    @PreAuthorize("hasRole('MANAGER')")
+    public String editSubmit(@PathVariable Long id,
+                             @ModelAttribute("dto") EditClassDTO dto,
+                             RedirectAttributes ra) {
+        try {
+            // 1) Cập nhật thông tin lớp
+            ClassesEntity updated = classesService.updateBasicInfo(id, dto.getName(), dto.getDescription(), dto.getCapacity());
+
+            // 2) Thêm các slot mới
+            if (dto.getNewSlots() != null && !dto.getNewSlots().isEmpty()) {
+                ClassesEntity clazz = classesRepo.findById(id)
+                        .orElseThrow(() -> new RuntimeException("Class not found"));
+                UserEntity trainer = clazz.getTrainer();
+
+                // Lấy các slot hiện có trong lớp (để chặn trùng ngay trong lớp)
+                Set<String> existingPairs = clazz.getSchedules().stream()
+                        .map(s -> s.getSlot().getSlotDate() + "#" + s.getSlot().getSlotNumber().name())
+                        .collect(Collectors.toSet());
+
+                for (SlotRequest r : dto.getNewSlots()) {
+                    if (r.getDate() == null || r.getSlotNumber() == null) continue;
+
+                    // Chặn trùng slot ngay trong lớp
+                    String pair = r.getDate() + "#SLOT_" + r.getSlotNumber();
+                    if (existingPairs.contains(pair)) {
+                        continue; // đã có trong lớp, bỏ qua
+                    }
+
+                    // Tạo schedule: service này chặn trùng slot của trainer
+                    ScheduleEntity s = scheduleService.createSchedule(trainer, r.getDate(), r.getSlotNumber());
+                    clazz.getSchedules().add(s);
+                    existingPairs.add(pair);
+                }
+                classesRepo.save(clazz);
+            }
+
+            ra.addFlashAttribute("message", "Cập nhật thành công");
+            return "redirect:/classes/" + id;
+        } catch (RuntimeException ex) {
+            ra.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/classes/" + id + "/edit";
+        }
     }
 
+        // Delete (Manager)
+        @PostMapping("/{id}/delete")
+        public String delete (@PathVariable Long id, RedirectAttributes ra){
+            classesService.deleteById(id);
+            ra.addFlashAttribute("message", "Đã xóa lớp");
+            return "redirect:/classes";
+        }
 
+        @GetMapping("/{id}")
+        public String detail (@PathVariable Long id,
+                @AuthenticationPrincipal CustomUserDetails principal,
+                Model model){
+
+            ClassesEntity clazz = classesRepo.findWithAllById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
+
+            Long currentUserId = principal != null ? principal.getUser().getId() : null;
+            boolean isJoined = false;
+            long currentMembers = classMemberRepository.countByClassEntity_Id(id);
+            boolean isFull = clazz.getCapacity() != null && currentMembers >= clazz.getCapacity();
+
+            if (currentUserId != null) {
+                isJoined = classMemberRepository.existsById_ClassIdAndId_UserId(id, currentUserId);
+            }
+
+            model.addAttribute("isJoined", isJoined);
+            model.addAttribute("isFull", isFull);
+            model.addAttribute("currentMembers", currentMembers);
+
+            model.addAttribute("clazz", clazz);
+            model.addAttribute("trainer", clazz.getTrainer());
+            model.addAttribute("schedules", clazz.getSchedules());
+            return "classes/detail";
+        }
+
+        @PostMapping("/{id}/register")
+        public String register (@PathVariable Long id,
+                @AuthenticationPrincipal CustomUserDetails principal){
+            Long userId = principal.getUser().getId();
+            classesService.register(id, userId);
+            return "redirect:/classes/" + id + "?joined";
+        }
+
+        @PostMapping("/{id}/unregister")
+        public String unregister (@PathVariable Long id,
+                @AuthenticationPrincipal CustomUserDetails principal){
+            Long userId = principal.getUser().getId();
+            classesService.unregister(id, userId);
+            return "redirect:/classes/" + id + "?left";
+        }
+    }

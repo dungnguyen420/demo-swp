@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,4 +19,8 @@ public interface ClassesRepository extends JpaRepository<ClassesEntity, Long> {
 
     @EntityGraph(attributePaths = {"trainer", "schedules", "schedules.slot"})
     Optional<ClassesEntity> findWithAllById(Long id);
+
+    @EntityGraph(attributePaths = {"trainer"}) // list chỉ cần trainer, tránh N+1
+    Page<ClassesEntity> findDistinctBySchedules_Slot_SlotDateGreaterThanEqual(
+            LocalDate date, Pageable pageable);
 }

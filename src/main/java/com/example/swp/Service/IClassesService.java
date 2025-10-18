@@ -12,4 +12,14 @@ public interface IClassesService {
     ClassesEntity createClassBySlots(CreateClassBySlotDTO dto);
     Page<ClassesEntity> listPaged(int page, int size, String sortBy, String dir);
     ClassesEntity getDetail(Long id);
+
+    void register(Long classId, Long userId);
+    void unregister(Long classId, Long userId);
+    Page<ClassesEntity> listUpcoming(int page, int size, String sortBy, String dir);
+    ClassesEntity updateBasicInfo(Long classId, String name, String description, Integer capacity);
+    void deleteById(Long classId);
+
+
+
+
 }

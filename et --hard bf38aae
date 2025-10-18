@@ -1,0 +1,12 @@
+[33mf533562[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{0}: rebase (finish): returning to refs/heads/master
+[33mf533562[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{1}: rebase (start): checkout f533562d4b635e49decd89a3127273976be30bc9
+[33mbf38aae[m HEAD@{2}: rebase (finish): returning to refs/heads/master
+[33mbf38aae[m HEAD@{3}: rebase (pick): CRUD Trainer
+[33mf533562[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{4}: rebase (start): checkout f533562d4b635e49decd89a3127273976be30bc9
+[33m2656571[m HEAD@{5}: commit: CRUD Trainer
+[33m156dfc6[m HEAD@{6}: commit: CRUD Trainer
+[33mf533562[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m HEAD@{7}: merge origin/master: Merge made by the 'ort' strategy.
+[33me3282fd[m HEAD@{8}: merge origin/master: Merge made by the 'ort' strategy.
+[33m59e64a1[m HEAD@{9}: commit: them phan quyen
+[33m636c296[m HEAD@{10}: merge origin/master: Fast-forward
+[33mc7c1ffd[m HEAD@{11}: clone: from https://github.com/dungnguyen420/demo-swp.git

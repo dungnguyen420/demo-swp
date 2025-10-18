@@ -6,13 +6,37 @@
 <body>
 <h2 th:text="${clazz.name}">Tên lớp</h2>
 
+<!-- Thông báo (flash hoặc query params) -->
+<div th:if="${message}" style="color:green" th:text="${message}"></div>
+<div th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></div>
+
 <div>
     <p><strong>HLV:</strong>
         <span th:text="${trainer != null ? trainer.firstName + ' ' + trainer.lastName : 'N/A'}">Trainer</span>
     </p>
-    <p><strong>Sức chứa:</strong> <span th:text="${clazz.capacity}">0</span></p>
+    <p>
+        <strong>Sức chứa:</strong>
+        <span th:text="${clazz.capacity}">0</span>
+        (<span th:text="${currentMembers}">0</span> đã đăng ký)
+        <span th:if="${isFull}" style="color:red"> - Đã đủ chỗ</span>
+    </p>
     <p><strong>Mô tả:</strong></p>
     <p th:text="${clazz.description}">Không có mô tả</p>
+</div>
+
+<!-- Nút đăng ký / hủy đăng ký (frontend control) -->
+<div style="margin:12px 0">
+    <!-- Đăng ký: chỉ hiện khi chưa tham gia -->
+    <form th:if="${!isJoined}" th:action="@{|/classes/${clazz.id}/register|}" method="post" style="display:inline">
+        <button type="submit" th:disabled="${isFull}">Đăng ký lớp</button>
+        <span th:if="${isFull}" style="color:red; margin-left:8px">Lớp đã đủ chỗ</span>
+    </form>
+
+    <!-- Hủy đăng ký: chỉ hiện khi đã tham gia -->
+    <form th:if="${isJoined}" th:action="@{|/classes/${clazz.id}/unregister|}" method="post" style="display:inline; margin-left:8px">
+        <button type="submit">Hủy đăng ký</button>
+        <span style="color:green; margin-left:8px">Bạn đã tham gia lớp</span>
+    </form>
 </div>
 
 <h3>Lịch (slot 2 giờ)</h3>
@@ -43,5 +67,27 @@
 </table>
 
 <p><a th:href="@{/classes}">&larr; Quay lại danh sách</a></p>
+
+<!-- Chặn click từ frontend (phòng user sửa DOM) -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const isFull = /*[[${isFull}]]*/ false;
+    const isJoined = /*[[${isJoined}]]*/ false;
+
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+
+        if (btn.type === 'submit' && btn.textContent.includes('Đăng ký') && isFull) {
+            e.preventDefault();
+            alert('Lớp đã đủ chỗ');
+        }
+        if (btn.type === 'submit' && btn.textContent.includes('Hủy đăng ký') && !isJoined) {
+            e.preventDefault();
+            alert('Bạn chưa tham gia lớp này');
+        }
+    });
+    /*]]>*/
+</script>
 </body>
 </html>
