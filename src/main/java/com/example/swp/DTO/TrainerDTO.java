@@ -17,5 +17,4 @@ public class TrainerDTO {
     private String avatar;
     private String bio;
 
-
 }

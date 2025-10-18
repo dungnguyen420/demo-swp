@@ -1,59 +1,53 @@
 package com.example.swp.Service.impl;
 
 import com.example.swp.Entity.ScheduleEntity;
+import com.example.swp.Entity.TimeSlotEntity;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.ScheduleStatus;
 import com.example.swp.Enums.Shift;
+import com.example.swp.Enums.SlotNumber;
 import com.example.swp.Repository.ScheduleRepository;
+import com.example.swp.Repository.TimeSlotRepository;
 import com.example.swp.Service.IScheduleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Service
+@RequiredArgsConstructor
 public class ScheduleService implements IScheduleService {
 
+    private final TimeSlotRepository slotRepo;
+    private final ScheduleRepository scheduleRepo;
 
-    private final ScheduleRepository scheduleRepository;
+    // Một trainer chỉ 1 schedule trong cùng (date, slotNumber)
+    public ScheduleEntity createSchedule(UserEntity trainer, LocalDate date, int slotNum) {
 
-    public ScheduleService(ScheduleRepository scheduleRepository) {
-        this.scheduleRepository = scheduleRepository;
-    }
+        SlotNumber slotNumber = SlotNumber.fromNumber(slotNum);
+        Shift shift = slotNumber.number <= 3 ? Shift.MORNING : Shift.AFTERNOON;
 
-    public ScheduleEntity createSchedule(UserEntity trainer, UserEntity member, java.time.LocalDateTime scheduleTime, Integer durationMinutes) {
+        TimeSlotEntity slot = slotRepo.findBySlotDateAndSlotNumber(date, slotNumber)
+                .orElseGet(() -> {
+                    TimeSlotEntity s = new TimeSlotEntity();
+                    s.setSlotDate(date);
+                    s.setSlotNumber(slotNumber);
+                    s.setStartTime(slotNumber.start);
+                    s.setEndTime(slotNumber.end);
+                    s.setShift(shift);
+                    return slotRepo.save(s);
+                });
 
-        if (durationMinutes == null) durationMinutes = 60;
+        boolean busy = scheduleRepo.existsByTrainer_IdAndSlot_Id(trainer.getId(), slot.getId());
+        if (busy) throw new IllegalStateException("Trainer đã có lịch ở slot " + slotNumber.number + " ngày " + date);
 
-        // Xác định ca sáng / chiều
-        Shift shift;
-        int hour = scheduleTime.getHour();
-        if (hour >= 6 && hour < 12) {
-            shift = Shift.MORNING;
-        } else if (hour >= 12 && hour < 18) {
-            shift = Shift.AFTERNOON;
-        } else {
-            throw new IllegalArgumentException("Chỉ lập lịch ca sáng hoặc chiều");
-        }
-
-        // Lấy ngày của schedule
-        java.time.LocalDate date = scheduleTime.toLocalDate();
-        java.time.LocalDateTime startOfShift = date.atTime(shift == Shift.MORNING ? 6 : 12, 0);
-        java.time.LocalDateTime endOfShift = date.atTime(shift == Shift.MORNING ? 12 : 18, 0);
-
-        // Kiểm tra trùng ca
-        if (scheduleRepository.existsByTrainerIdAndShiftAndScheduleTimeBetween(trainer.getId(), shift, startOfShift, endOfShift)) {
-            throw new IllegalStateException("Trainer đã có lớp trong ca này");
-        }
-
-        // Tạo schedule mới
-        ScheduleEntity schedule = new ScheduleEntity();
-        schedule.setTrainer(trainer);
-        schedule.setMember(member);
-        schedule.setScheduleTime(scheduleTime);
-        schedule.setDurationMinutes(durationMinutes);
-        schedule.setShift(shift);
-        schedule.setStatus(ScheduleStatus.PENDING);
-
-        return scheduleRepository.save(schedule);
+        ScheduleEntity sch = new ScheduleEntity();
+        sch.setTrainer(trainer);
+        sch.setSlot(slot);
+        sch.setStatus(ScheduleStatus.CONFIRMED);
+        return scheduleRepo.save(sch);
     }
 }
+

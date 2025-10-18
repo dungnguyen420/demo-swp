@@ -4,10 +4,15 @@ import com.example.swp.DTO.TrainerDTO;
 import com.example.swp.Entity.TrainerProfileEntity;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.Status;
+import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
 import com.example.swp.Repository.TrainerRepository;
 import com.example.swp.Service.ITrainerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +26,14 @@ public class TrainerService implements ITrainerService {
     @Autowired
     private TrainerRepository trainerRepository;
 
-    @Override
-    public List<UserEntity> getAllTrainer(UserRole trainer) {
-        return trainerRepository.findByRole(UserRole.TRAINER);
+    public List<UserEntity> getAllTrainer(UserRole role) {
+        return trainerRepository.findAllTrainerWithProfile(role);
     }
+
+
+public Page<UserEntity> search(String name, UserGender gender, String specialization, Pageable pageable) {
+    return trainerRepository.searchTrainer(name, gender, specialization, pageable);
+}
 
 
     public UserEntity createTrainer(TrainerDTO dto) {
@@ -67,6 +76,7 @@ public class TrainerService implements ITrainerService {
             }
             existingTrainer.setRole(UserRole.TRAINER);
             existingTrainer.setUserName(dto.getUserName());
+            existingTrainer.setBio(dto.getBio());
 
         TrainerProfileEntity profile = existingTrainer.getTrainerProfile();
         if (profile == null) {
@@ -106,6 +116,7 @@ public class TrainerService implements ITrainerService {
         dtoTrainer.setEmail(trainer.getEmail());
         dtoTrainer.setUserName(trainer.getUserName());
         dtoTrainer.setAvatar(trainer.getAvatar());
+        dtoTrainer.setBio(trainer.getBio());
 
         dtoTrainer.setGender(trainer.getGender());
 

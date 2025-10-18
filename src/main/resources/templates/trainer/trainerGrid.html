@@ -21,15 +21,8 @@
             --text-secondary: #a0a0c0;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Be Vietnam Pro', sans-serif;
@@ -41,164 +34,205 @@
             background-size: cover;
         }
 
-        /* Navbar (Giữ nguyên từ các trang khác) */
+        /* Navbar */
         .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 5%;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            transition: background-color 0.3s ease;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 5%; position: sticky; top: 0; z-index: 1000;
             background-color: rgba(10, 11, 30, 0.7);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(0, 246, 255, 0.1);
         }
-        .logo {
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-            text-decoration: none;
-            text-shadow: 0 0 10px var(--primary-color);
-        }
+        .logo { font-weight: 900; font-size: 1.5rem; color: var(--primary-color); text-decoration: none; text-shadow: 0 0 10px var(--primary-color); }
         .navbar nav ul { list-style: none; display: flex; gap: 2rem; }
-        .navbar a { color: var(--text-light); text-decoration: none; font-weight: 700; }
-        .navbar a:hover { color: var(--primary-color); }
-        .cta-button {
-            background: linear-gradient(45deg, #00f6ff, #00aaff);
-            color: #121212;
-            padding: 0.7rem 1.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-        }
+        .navbar nav a { color: var(--text-light); text-decoration: none; font-weight: 700; }
+        .navbar nav a:hover { color: var(--primary-color); }
 
-        /* Main Content Area */
-        .page-container {
-            width: 90%;
-            max-width: 1200px;
-            margin: 4rem auto;
-            text-align: center;
-        }
+        /* CSS CHO PROFILE DROPDOWN */
+        .auth-section { position: relative; }
+        .profile-dropdown { display: flex; align-items: center; cursor: pointer; gap: 10px; padding: 5px 10px; border-radius: 50px; background-color: rgba(255,255,255,0.1); transition: background-color 0.3s ease; }
+        .profile-dropdown:hover { background-color: rgba(255,255,255,0.2); }
+        .profile-dropdown img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
+        .profile-dropdown span { font-weight: 700; color: var(--text-light); }
+        .profile-dropdown i { color: var(--text-secondary); }
+        .dropdown-menu { position: absolute; top: 120%; right: 0; background: var(--card-bg); border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(10px); border-radius: 10px; width: 200px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); list-style: none; padding: 10px 0; opacity: 0; visibility: hidden; transform: translateY(10px); transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s; }
+        .profile-dropdown:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+        .dropdown-menu li a { display: flex; align-items: center; gap: 10px; padding: 10px 20px; color: var(--text-secondary); font-weight: normal; text-decoration: none; }
+        .dropdown-menu li a:hover { background-color: rgba(0, 246, 255, 0.1); color: var(--primary-color); }
+        .dropdown-menu .divider { height: 1px; background-color: rgba(255,255,255,0.1); margin: 5px 0; }
+        .dropdown-menu .logout a { color: #ff5050; }
+        .dropdown-menu .logout a:hover { background-color: rgba(255, 80, 80, 0.1); }
 
-        .page-title {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 900;
-            color: var(--primary-color);
-            text-shadow: 0 0 15px rgba(0, 246, 255, 0.5);
-            margin-bottom: 3rem;
-            animation: fadeInSlideUp 1s ease-out forwards;
-        }
+        .cta-button { background: linear-gradient(45deg, #00f6ff, #00aaff); color: #121212; padding: 0.7rem 1.5rem; border-radius: 50px; text-decoration: none; display: inline-block; text-align: center; }
 
-        /* Trainer Grid */
-        .trainer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
+        /* Layout chính */
+        .page-container { width: 90%; max-width: 1200px; margin: 4rem auto; }
+        .profile-layout { display: grid; grid-template-columns: 1fr 2.5fr; gap: 3rem; }
+        .profile-sidebar { text-align: center; }
+        .profile-image { width: 250px; height: 250px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary-color); box-shadow: 0 0 25px rgba(0, 246, 255, 0.5); margin-bottom: 1.5rem; }
+        .profile-sidebar h1 { font-size: 2.5rem; font-weight: 900; color: var(--text-light); }
+        .profile-sidebar .specialization { font-size: 1.2rem; color: var(--primary-color); font-weight: 700; margin-bottom: 2rem; }
+        .profile-sidebar .cta-button { width: 100%; font-size: 1.1rem; transition: transform 0.2s ease, box-shadow 0.3s ease; }
+        .profile-sidebar .cta-button:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 0 25px rgba(0, 246, 255, 0.6); }
 
+        /* Content (Cột Phải) */
+        .profile-content { display: flex; flex-direction: column; gap: 2.5rem; }
+        .content-card { background: var(--card-bg); padding: 2rem; border-radius: 15px; border: 1px solid rgba(0, 246, 255, 0.2); backdrop-filter: blur(10px); }
+        .content-card h2 { font-size: 1.8rem; color: var(--primary-color); margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(0, 246, 255, 0.2); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
+        .stat-item { text-align: center; }
+        .stat-item i { font-size: 2rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .stat-item .stat-value { font-size: 1.2rem; font-weight: 700; word-wrap: break-word; }
+        .stat-item .stat-label { font-size: 0.9rem; color: var(--text-secondary); }
+        .stat-item a { color: var(--text-light); text-decoration: none; transition: color 0.3s ease; }
+        .stat-item a:hover { color: var(--primary-color); }
+        .bio-section p { line-height: 1.8; color: var(--text-secondary); }
+        .schedule-table { width: 100%; border-collapse: collapse; text-align: center; }
+        .schedule-table th, .schedule-table td { padding: 1rem; border: 1px solid rgba(0, 246, 255, 0.1); }
+        .schedule-table thead { background-color: rgba(0, 246, 255, 0.1); }
+        .schedule-table th { color: var(--primary-color); font-weight: 700; }
+        .schedule-table .available { color: #50ff50; font-weight: bold; }
+
+        @media (max-width: 900px) { .profile-layout { grid-template-columns: 1fr; } }
+
+        /* === CSS CHO BỘ LỌC === */
+        .filter-container { width: 100%; }
+        .filter-form {
+            display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; background: var(--card-bg);
+            padding: 1.5rem; border-radius: 10px; border: 1px solid rgba(0, 246, 255, 0.2);
+        }
+        .filter-form input, .filter-form select, .filter-form button {
+            background-color: rgba(10, 11, 30, 0.7); border: 1px solid rgba(0, 246, 255, 0.3);
+            color: var(--text-light); padding: 0.7rem 1rem; border-radius: 8px;
+            font-family: 'Be Vietnam Pro', sans-serif; font-size: 1rem;
+        }
+        .filter-form input::placeholder { color: var(--text-secondary); }
+        .filter-form input:focus, .filter-form select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 10px rgba(0, 246, 255, 0.5); }
+        .filter-form button { background-color: var(--primary-color); color: #121212; font-weight: 700; cursor: pointer; }
+        .btn-reset {
+            background: none; border: 1px solid var(--text-secondary); color: var(--text-secondary); text-decoration: none;
+            display: inline-flex; align-items: center; padding: 0.7rem 1rem; border-radius: 8px;
+        }
+        .quick-filters { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2.5rem; justify-content: center; }
+        .btn-chip {
+            background: rgba(0, 246, 255, 0.1); border: 1px solid rgba(0, 246, 255, 0.3);
+            color: var(--primary-color); padding: 0.4rem 1rem; border-radius: 50px; text-decoration: none;
+            font-size: 0.9rem; transition: background-color 0.3s;
+        }
+        .btn-chip:hover { background: rgba(0, 246, 255, 0.2); }
+
+        .trainer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
         .trainer-card {
-            background: var(--card-bg);
-            border-radius: 15px;
-            border: 1px solid rgba(0, 246, 255, 0.2);
-            backdrop-filter: blur(10px);
-            overflow: hidden;
-            text-align: center;
+            background: var(--card-bg); border-radius: 15px; border: 1px solid rgba(0, 246, 255, 0.2);
+            backdrop-filter: blur(10px); overflow: hidden; text-align: center;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .trainer-card:hover { transform: translateY(-10px); box-shadow: 0 0 40px rgba(0, 246, 255, 0.4); }
+        .trainer-image img { width: 100%; height: 300px; object-fit: cover; object-position: top; transition: transform 0.4s ease; }
+        .trainer-card:hover .trainer-image img { transform: scale(1.1); }
+        .trainer-info { padding: 1.5rem; }
+        .trainer-info h3 { font-size: 1.5rem; font-weight: 700; color: var(--text-light); margin-bottom: 0.25rem; }
+        .trainer-info .specialization { font-size: 1rem; color: var(--primary-color); font-weight: 700; margin-bottom: 1rem; }
+        .trainer-info .bio { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; }
 
-            /* Animation */
-            opacity: 0;
-            transform: translateY(50px);
+        .card-actions {
+            /* Đẩy sát lên, chỉ còn khoảng cách padding */
+            margin: 0 1.5rem 1.5rem;
+            padding-top: 1rem; /* Giảm khoảng cách từ đường kẻ đến nút */
+            border-top: 1px solid rgba(0, 246, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .action-btn { padding: 0.5rem 1rem; border-radius: 8px; text-decoration: none; font-weight: 700; transition: background-color 0.3s ease, color 0.3s ease; display: inline-flex; align-items: center; gap: 5px; }
+        .action-btn.edit { background-color: rgba(0, 246, 255, 0.2); color: var(--primary-color); }
+        .action-btn.edit:hover { background-color: var(--primary-color); color: #121212; }
+        .action-btn.delete-trigger {
+            background-color: rgba(0, 246, 255, 0.2); /* Giống nút Sửa */
+            color: var(--primary-color);           /* Giống nút Sửa */
+        }
+        .action-btn.delete-trigger:hover {
+            background-color: var(--primary-color); /* Hiệu ứng hover giống nút Sửa */
+            color: #121212;                       /* Hiệu ứng hover giống nút Sửa */
         }
 
-        .trainer-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Hiệu ứng trễ cho các card */
-        .trainer-card:nth-child(2) { transition-delay: 0.1s; }
-        .trainer-card:nth-child(3) { transition-delay: 0.2s; }
-        .trainer-card:nth-child(4) { transition-delay: 0.3s; }
-
-
-        .trainer-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 0 40px rgba(0, 246, 255, 0.4);
-        }
-
-        .trainer-image {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .trainer-image img {
-            width: 100%;
-            height: 300px;
-            object-fit: cover;
-            object-position: top;
-            transition: transform 0.4s ease;
-        }
-
-        .trainer-card:hover .trainer-image img {
-            transform: scale(1.1);
-        }
-
-        .image-overlay {
-            position: absolute;
+        /* Lớp nền mờ cho popup */
+        .popup-overlay {
+            position: fixed; /* Hiển thị trên cùng của trang */
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to top, rgba(10, 11, 30, 0.8) 0%, rgba(0,0,0,0) 60%);
+            background-color: rgba(0, 0, 0, 0.6); /* Màu đen mờ */
             display: flex;
-            align-items: flex-end;
             justify-content: center;
-            opacity: 1; /* Luôn hiển thị tên */
-            transition: opacity 0.4s ease;
+            align-items: center;
+            z-index: 1000; /* Đảm bảo nó nằm trên các phần tử khác */
         }
 
-        .trainer-info {
-            padding: 1.5rem;
+        /* Nội dung của popup */
+        .popup-content {
+            background-color: #f1f1f1;
+            padding: 25px 30px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
         }
 
-        .trainer-info h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-light);
-            margin-bottom: 0.25rem;
+        .popup-content p {
+            margin: 0 0 20px;
+            font-size: 1.1em;
+            color: #333;
         }
 
-        .trainer-info .specialization {
-            font-size: 1rem;
-            color: var(--primary-color);
-            font-weight: 700;
-            margin-bottom: 1rem;
+        /* Các nút hành động trong popup */
+        .popup-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px; /* Khoảng cách giữa các nút */
         }
 
-        .trainer-info .bio {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.6;
+        /* CSS cho các nút trong popup (bạn có thể dùng lại class .action-btn có sẵn) */
+        .popup-actions .action-btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
         }
 
-        @keyframes fadeInSlideUp {
-            to { opacity: 1; transform: translateY(0); }
+        .popup-actions .action-btn.delete {
+            background-color: #e74c3c; /* Màu đỏ cho nút xóa */
+            color: white;
         }
 
+        .popup-actions .action-btn.delete:hover {
+            background-color: #c0392b;
+        }
+
+        .popup-actions .action-btn {
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .popup-actions .action-btn:hover {
+            background-color: #e1e1e1;
+        }
     </style>
-
 </head>
 <body>
 
 <header class="navbar">
-    <a th:href="@{/}" class="logo">GymCare</a>
+    <a href="#" class="logo">GymCare</a>
     <nav>
         <ul>
-            <li><a th:href="@{/}">Trang chủ</a></li>
-            <li><a th:href="@{/packages}">Gói tập</a></li>
-            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
-            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a href="#">Trang chủ</a></li>
+            <li><a href="#">Gói tập</a></li>
+            <li><a href="#">Huấn luyện viên</a></li>
+            <li><a href="#">Lớp học</a></li>
         </ul>
     </nav>
     <div class="auth-section">
@@ -215,29 +249,82 @@
 </header>
 
 <main class="page-container">
-    <h1 class="page-title">ĐỘI NGŨ HUẤN LUYỆN VIÊN</h1>
+    <div class="page-header">
+        <h1 class="page-title">ĐỘI NGŨ HUẤN LUYỆN VIÊN</h1>
+        <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" th:href="@{/trainers/create}" class="cta-button">
+            <i class="fas fa-plus"></i> Tạo mới Trainer
+        </a>
+    </div>
+
+    <div class="filter-container">
+        <form th:action="@{/trainers}" method="get" class="filter-form">
+            <input type="text" name="name" placeholder="Tên HLV" th:value="${name}">
+            <select name="gender">
+                <option value="">Tất cả giới tính</option>
+                <option value="MALE" th:selected="${gender == T(com.example.swp.Enums.UserGender).MALE}">Nam</option>
+                <option value="FEMALE" th:selected="${gender == T(com.example.swp.Enums.UserGender).FEMALE}">Nữ</option>
+            </select>
+            <input type="text" name="specialization" placeholder="Chuyên môn" th:value="${specialization}">
+            <button type="submit">Lọc</button>
+            <a th:href="@{/trainers}" class="btn-reset">Xóa lọc</a>
+        </form>
+
+        <div class="quick-filters">
+            <a th:href="@{/trainers(gender='MALE')}" class="btn-chip">Chỉ Nam</a>
+            <a th:href="@{/trainers(gender='FEMALE')}" class="btn-chip">Chỉ Nữ</a>
+            <a th:href="@{/trainers(specialization='Yoga')}" class="btn-chip">Yoga</a>
+            <a th:href="@{/trainers(specialization='Bodybuilding')}" class="btn-chip">Bodybuilding</a>
+        </div>
+    </div>
 
     <div class="trainer-grid">
-        <div class="trainer-card animate-on-scroll" th:each="trainer : ${trainers}">
+        <div class="trainer-card" th:each="trainer : ${trainers}">
             <a th:href="@{/trainers/detail/{id}(id=${trainer.id})}" style="text-decoration: none; color: inherit;">
                 <div class="trainer-image">
                     <img th:src="${trainer.avatar != null ? trainer.avatar : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop'}"
                          th:alt="${trainer.firstName}">
                 </div>
                 <div class="trainer-info">
-                    <h3 th:text="${trainer.firstName + ' ' + trainer.lastName}">Tên Trainer</h3>
-                    <p class="specialization" th:text="${trainer.trainerProfile != null ? trainer.trainerProfile.specialization : 'Chưa cập nhật'}">Chuyên môn</p>
-                    <p class="bio" th:text="${trainer.trainerProfile != null ? trainer.trainerProfile.bio : 'Chưa có tiểu sử.'}">Mô tả ngắn.</p>
+                    <h3 th:text="${trainer.firstName + ' ' + trainer.lastName}"></h3>
+                    <p class="specialization" th:text="${trainer.trainerProfile?.specialization} ?: 'Chưa cập nhật'"></p>
+                    <p class="bio" th:text="${#strings.abbreviate(trainer.bio, 50)} ?: 'Chưa có thông tin giới thiệu.'"></p>
+
                 </div>
             </a>
+            <div class="card-actions" sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')">
+                <a th:href="@{/trainers/edit/{id}(id=${trainer.id})}" class="action-btn edit">
+                    <i class="fas fa-pencil-alt"></i> Sửa
+                </a>
+                <a th:href="@{/trainers/delete/{id}(id=${trainer.id})}" class="action-btn delete-trigger">
+                    <i class="fas fa-trash-alt"></i> Xóa
+                </a>
+            </div>
+
         </div>
 
         <div th:if="${trainers == null or trainers.isEmpty()}">
             <h3>Hiện tại chưa có huấn luyện viên nào.</h3>
         </div>
     </div>
+    <div class="pagination" style="margin-top: 40px; text-align: center;">
+        <a th:if="${currentPage > 0}" th:href="@{/trainers(name=${name}, gender=${gender}, page=${currentPage - 1})}" class="btn-chip">
+            <i class="fas fa-chevron-left"></i> Trước
+        </a>
+        <span>Trang <span th:text="${currentPage + 1}"></span>/<span th:text="${totalPages}"></span></span>
+        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/trainers(name=${name}, gender=${gender}, page=${currentPage + 1})}" class="btn-chip">
+            Sau <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+    <div id="custom-popup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <p>Bạn có chắc chắn muốn xóa trainer này không?</p>
+            <div class="popup-actions">
+                <button id="confirm-delete-btn" class="action-btn delete">Xác nhận</button>
+                <button id="cancel-delete-btn" class="action-btn">Hủy bỏ</button>
+            </div>
+        </div>
+    </div>
 </main>
-
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const observer = new IntersectionObserver((entries) => {
@@ -249,13 +336,40 @@
         }, {
             threshold: 0.1
         });
-
         const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
         elementsToAnimate.forEach(el => {
             observer.observe(el);
         });
     });
-</script>
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const popup = document.getElementById('custom-popup');
+        const confirmBtn = document.getElementById('confirm-delete-btn');
+        const cancelBtn = document.getElementById('cancel-delete-btn');
+        const deleteLinks = document.querySelectorAll('.delete-trigger');
+        let deleteUrl = '';
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                deleteUrl = this.href;
+                popup.style.display = 'flex';
+            });
+        });
+        confirmBtn.addEventListener('click', function () {
+            if (deleteUrl) {
+                window.location.href = deleteUrl;
+            }
+        });
+        cancelBtn.addEventListener('click', function () {
+            popup.style.display = 'none';
+        });
+        popup.addEventListener('click', function(event) {
+            if (event.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+    });
+</script>
 </body>
 </html>

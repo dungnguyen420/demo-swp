@@ -18,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+
 public class SecurityConfig {
 
     @Autowired
@@ -34,10 +35,34 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/auth/list", "/css/**", "/js/**", "/images/**").permitAll() // cho phép trang login
+                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers(
+                                "/trainers/detail/**",
+                                "/classes",
+                                "/packages",
+                                "/trainers",
+                                "/trainers/create",
+                                "/trainers/edit/**",
+                                "/trainers/delete/**",
+                                "/classes/create",
+                                "/classes",
+                                "/classes/**"
+//                                        // Manager-only cho thao tác lớp
+//                                        .requestMatchers(HttpMethod.GET, "/classes/create", "/classes/*/edit").hasRole("MANAGER")
+//                                        .requestMatchers(HttpMethod.POST, "/classes/create", "/classes/*/edit").hasRole("MANAGER")
+//                                        .requestMatchers(HttpMethod.POST, "/classes/*/delete").hasRole("MANAGER")
+//                                        // Đăng ký/hủy: cần đăng nhập
+//                                        .requestMatchers(HttpMethod.POST, "/classes/*/register", "/classes/*/unregister").authenticated()
+//                                        // Public xem list, detail
+//                                        .requestMatchers(HttpMethod.GET, "/classes/**").permitAll()
+
+
+                        ).permitAll()// cho phép trang login
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/products/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form.disable())
 
                 .logout(logout -> logout

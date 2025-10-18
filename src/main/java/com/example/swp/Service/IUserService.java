@@ -2,6 +2,7 @@ package com.example.swp.Service;
 
 import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.Entity.UserEntity;
+import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,5 @@ public interface IUserService {
     void deleteUser(Long Id);
     UserEntity updateUser(Long id, RegisterDTO dto);
     UserEntity findById(Long Id);
-    Page<UserEntity> findByRole(UserRole role, Pageable pageable);
-    Page<UserEntity> searchUsers(String keyword, Pageable pageable);
+
 }

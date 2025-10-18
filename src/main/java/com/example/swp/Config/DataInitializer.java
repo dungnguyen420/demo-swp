@@ -26,6 +26,7 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         createDefaultAdmin();
+        createDefaultManager();
     }
 
     private void createDefaultAdmin() {
@@ -50,6 +51,27 @@ public class DataInitializer implements CommandLineRunner {
             admin.get().setPhone("0981272666");
             userService.creatOrUpdateUser(admin.orElse(null));
             System.out.println("Admin already exists");
+        }
+
+    }
+
+    private void createDefaultManager(){
+        String managerEmail = "manager@gmail.com";
+        Optional<UserEntity> manager = userService.findByEmail(managerEmail);
+        if (manager.isEmpty()){
+            manager = Optional.of(new UserEntity());
+            manager.get().setUserName("manager");
+            manager.get().setFirstName("Manager");
+            manager.get().setLastName("Manager");
+            manager.get().setPassword(passwordEncoder.encode("manager"));
+            manager.get().setEmail(managerEmail);
+            manager.get().setRole(UserRole.MANAGER);
+            manager.get().setActive(true);
+            manager.get().setStatus(Status.ACTIVE);
+            userService.creatOrUpdateUser(manager.orElse(null));
+            System.out.println("Manager create successfully");
+        }else {
+            System.out.println("Manager already exists");
         }
 
     }
