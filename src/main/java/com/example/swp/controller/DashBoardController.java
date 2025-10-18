@@ -36,13 +36,13 @@ public class DashBoardController {
                                 // Thêm tham số keyword, required=false để không bắt buộc
                                 @RequestParam(name = "keyword", required = false) String keyword) {
 
-        int userSize = 10; // Hoặc số lượng bạn muốn
+        int userSize = 10;
         Page<UserEntity> usersPage;
 
-        // Nếu có từ khóa, gọi hàm tìm kiếm trong service
+
         if (keyword != null && !keyword.isEmpty()) {
             usersPage = userService.searchUsers(keyword, PageRequest.of(userPage, userSize));
-            model.addAttribute("keyword", keyword); // Gửi keyword ra lại view để hiển thị
+            model.addAttribute("keyword", keyword);
         } else {
 
             usersPage = userService.findByRole(UserRole.MEMBER, PageRequest.of(userPage, userSize));
@@ -56,7 +56,7 @@ public class DashBoardController {
 
         model.addAttribute("activeTab", activeTab);
 
-        return "auth/dashBoard"; // Hoặc "user-management" nếu bạn dùng file riêng
+        return "auth/dashBoard";
     }
 
     @PostMapping("/delete")
