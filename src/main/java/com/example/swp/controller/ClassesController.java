@@ -15,6 +15,9 @@ import com.example.swp.Service.IScheduleService;
 import com.example.swp.Service.impl.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -64,26 +68,30 @@ public class ClassesController {
     }
 
     @GetMapping
-    public String listClasses(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String dir,
-            @RequestParam(defaultValue = "true") boolean onlyUpcoming,
-            Model model) {
-
-        Page<ClassesEntity> pageData = onlyUpcoming
-                ? classesService.listUpcoming(page, size, sortBy, dir)
-                : classesService.listPaged(page, size, sortBy, dir);
-
+    public String list(@RequestParam(required=false) String className,
+                       @RequestParam(required=false) String trainerLast,
+                       @RequestParam(required=false) String gender,
+                       @RequestParam(required=false, defaultValue="all") String mode, // all/upcoming/finished
+                       @RequestParam(defaultValue="createdAt") String sortBy,
+                       @RequestParam(defaultValue="desc") String dir,
+                       @RequestParam(defaultValue="0") int page,
+                       @RequestParam(defaultValue="10") int size,
+                       Model model) {
+        Pageable p = PageRequest.of(page, size,
+                "asc".equalsIgnoreCase(dir)? Sort.by(sortBy).ascending(): Sort.by(sortBy).descending());
+        Page<ClassesEntity> pageData = classesService.search(className, trainerLast, gender, mode, p);
         model.addAttribute("pageData", pageData);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("size", size);
+        model.addAttribute("className", className);
+        model.addAttribute("trainerLast", trainerLast);
+        model.addAttribute("gender", gender);
+        model.addAttribute("mode", mode);
         model.addAttribute("sortBy", sortBy);
         model.addAttribute("dir", dir);
-        model.addAttribute("onlyUpcoming", onlyUpcoming);
-        return "classes/list"; // hoặc list_paged
+        model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
+        return "classes/list";
     }
+
 
     @GetMapping("/{id}/edit")
     @PreAuthorize("hasRole('MANAGER')")
@@ -161,36 +169,45 @@ public class ClassesController {
             return "redirect:/classes";
         }
 
-        @GetMapping("/{id}")
-        public String detail (@PathVariable Long id,
-                @AuthenticationPrincipal CustomUserDetails principal,
-                Model model){
+    @GetMapping("/{id}")
+    public String detail(@PathVariable Long id,
+                         @AuthenticationPrincipal CustomUserDetails principal,
+                         Model model) {
+        ClassesEntity clazz = classesRepo.findWithAllById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
 
-            ClassesEntity clazz = classesRepo.findWithAllById(id)
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
+        boolean noFutureSchedules = clazz.getSchedules() == null
+                || clazz.getSchedules().stream()
+                .noneMatch(s -> s.getSlot() != null && s.getSlot().getSlotDate() != null
+                        && !s.getSlot().getSlotDate().isBefore(LocalDate.now()));
 
-            Long currentUserId = principal != null ? principal.getUser().getId() : null;
-            boolean isJoined = false;
-            long currentMembers = classMemberRepository.countByClassEntity_Id(id);
-            boolean isFull = clazz.getCapacity() != null && currentMembers >= clazz.getCapacity();
+        long currentMembers = classMemberRepository.countByClassEntity_Id(id);
+        boolean isFull = clazz.getCapacity() != null && currentMembers >= clazz.getCapacity();
 
-            if (currentUserId != null) {
-                isJoined = classMemberRepository.existsById_ClassIdAndId_UserId(id, currentUserId);
-            }
+        Long currentUserId = principal != null ? principal.getUser().getId() : null;
+        boolean isJoined = currentUserId != null && classMemberRepository.existsById_ClassIdAndId_UserId(id, currentUserId);
 
-            model.addAttribute("isJoined", isJoined);
-            model.addAttribute("isFull", isFull);
-            model.addAttribute("currentMembers", currentMembers);
+        model.addAttribute("clazz", clazz);
+        model.addAttribute("schedules", clazz.getSchedules());
+        model.addAttribute("trainer", clazz.getTrainer());
+        model.addAttribute("isJoined", isJoined);
+        model.addAttribute("isFull", isFull);
+        model.addAttribute("currentMembers", currentMembers);
+        model.addAttribute("noFutureSchedules", noFutureSchedules);
+        return "classes/detail";
+    }
 
-            model.addAttribute("clazz", clazz);
-            model.addAttribute("trainer", clazz.getTrainer());
-            model.addAttribute("schedules", clazz.getSchedules());
-            return "classes/detail";
+
+    @PostMapping("/{id}/register")
+        public String register (@PathVariable Long id,
+                                @AuthenticationPrincipal CustomUserDetails principal,
+                                RedirectAttributes ra){
+
+        if (principal == null) {
+            ra.addFlashAttribute("errorMessage", "Vui lòng đăng nhập để đăng ký lớp");
+            return "redirect:/auth/login";
         }
 
-        @PostMapping("/{id}/register")
-        public String register (@PathVariable Long id,
-                @AuthenticationPrincipal CustomUserDetails principal){
             Long userId = principal.getUser().getId();
             classesService.register(id, userId);
             return "redirect:/classes/" + id + "?joined";
@@ -198,7 +215,14 @@ public class ClassesController {
 
         @PostMapping("/{id}/unregister")
         public String unregister (@PathVariable Long id,
-                @AuthenticationPrincipal CustomUserDetails principal){
+                                  @AuthenticationPrincipal CustomUserDetails principal,
+                                  RedirectAttributes ra){
+
+            if (principal == null) {
+                ra.addFlashAttribute("errorMessage", "Vui lòng đăng nhập");
+                return "redirect:/auth/login";
+            }
+
             Long userId = principal.getUser().getId();
             classesService.unregister(id, userId);
             return "redirect:/classes/" + id + "?left";

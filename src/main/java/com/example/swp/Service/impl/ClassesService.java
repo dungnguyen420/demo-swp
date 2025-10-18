@@ -7,6 +7,7 @@ import com.example.swp.DTO.CreateClassDTO;
 import com.example.swp.DTO.SlotRequest;
 import com.example.swp.Entity.*;
 import com.example.swp.Enums.Shift;
+import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
 import com.example.swp.Repository.*;
 import com.example.swp.Service.IClassesService;
@@ -139,6 +140,14 @@ public class ClassesService implements IClassesService {
             throw new RuntimeException("Bạn đã đăng ký lớp này");
         }
 
+        boolean noFutureSchedules = clazz.getSchedules() == null
+                || clazz.getSchedules().stream()
+                .noneMatch(s -> s.getSlot() != null && s.getSlot().getSlotDate() != null
+                        && !s.getSlot().getSlotDate().isBefore(LocalDate.now()));
+        if (noFutureSchedules) {
+            throw new RuntimeException("Lớp không còn lịch học trong tương lai, không thể đăng ký");
+        }
+
         // Kiểm tra sức chứa
         int capacity = clazz.getCapacity() != null ? clazz.getCapacity() : MAX_CAPACITY_DEFAULT;
         long current = memberRepo.countByClassEntity_Id(classId);
@@ -173,7 +182,20 @@ public class ClassesService implements IClassesService {
         memberRepo.deleteById(id);
     }
 
+    public Page<ClassesEntity> search(String className, String trainerLast, String genderStr,
+                                      String mode, Pageable pageable) {
+        UserGender gender = null;
+        if (genderStr != null && !genderStr.isBlank()) {
+            try { gender = UserGender.valueOf(genderStr); } catch (Exception ignored) {}
+        }
+        className   = (className == null || className.isBlank()) ? null : className;
+        trainerLast = (trainerLast == null || trainerLast.isBlank()) ? null : trainerLast;
+        mode = (mode == null || mode.isBlank()) ? "all" : mode; // all | upcoming | finished
+        return classesRepo.search(className, trainerLast, gender, mode, pageable);
+    }
+    }
 
-}
+
+
 
 
