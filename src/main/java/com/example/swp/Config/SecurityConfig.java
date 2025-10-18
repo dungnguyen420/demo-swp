@@ -59,8 +59,10 @@ public class SecurityConfig {
 
                         ).permitAll()// cho phép trang login
                         .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/products/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
                 )
+
                 .formLogin(form -> form.disable())
 
                 .logout(logout -> logout

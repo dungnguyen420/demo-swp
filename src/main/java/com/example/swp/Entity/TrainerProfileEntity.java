@@ -23,4 +23,6 @@ public class TrainerProfileEntity extends BaseEntity {
     @Column(precision = 10, scale = 2)
     private BigDecimal hourlyRate = BigDecimal.ZERO;
 
+
+
 }
