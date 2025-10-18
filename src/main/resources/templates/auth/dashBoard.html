@@ -35,19 +35,17 @@
 <div class="container py-4">
     <h2 class="mb-4 text-center fw-bold text-primary">Bảng điều khiển Quản trị</h2>
 
-    <!-- Hiển thị thông báo thành công -->
+    <!-- Hiển thị thông báo -->
     <div th:if="${successMessage}" class="alert alert-success text-center" role="alert"
          th:text="${successMessage}"></div>
 
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-3" id="myTab">
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${activeTab == 'userPage'} ? 'active'"
-               href="?tab=userPage">Người Dùng</a>
+            <a class="nav-link" th:classappend="${activeTab == 'userPage'} ? 'active'" href="?tab=userPage">Người Dùng</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" th:classappend="${activeTab == 'packages'} ? 'active'"
-               href="?tab=packages">Gói Tập</a>
+            <a class="nav-link" th:classappend="${activeTab == 'packages'} ? 'active'" href="?tab=packages">Gói Tập</a>
         </li>
     </ul>
 
@@ -57,19 +55,15 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>Danh sách Người Dùng</h5>
             </div>
-            <form th:action="@{/auth/dashBoard}" method="get" style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem;">
-                <input type="hidden" name="tab" value="users">
-                <input type="hidden" name="packagePage" th:value="${packagesPage.number}">
-
-                <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm kiếm theo email, tên..."
-                       style="flex-grow: 1; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px;">
-                <button type="submit" class="cta-button btn-primary" style="padding: 0.7rem 1.5rem;">
-                    <i class="fas fa-search"></i> Tìm
-                </button>
-                <a th:href="@{/auth/dashBoard(tab='users', packagePage=${packagesPage.number})}" class="cta-button btn-secondary" style="padding: 0.7rem 1.5rem;">
-                    Xóa Lọc
-                </a>
+            <form th:action="@{/auth/dashBoard}" method="get" class="d-flex gap-2 mb-3">
+                <input type="hidden" name="tab" value="userPage">
+                <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Tìm kiếm theo email, tên...">
+                <button type="submit" class="btn btn-primary">Tìm</button>
+                <a th:href="@{/auth/dashBoard(tab='userPage')}" class="btn btn-secondary">Xóa Lọc</a>
             </form>
+
+
+
             <table class="table table-bordered align-middle text-center">
                 <thead>
                 <tr>
@@ -101,14 +95,9 @@
                 </tbody>
             </table>
 
-            <!-- Phân trang -->
             <div class="d-flex justify-content-center mt-3">
-                <a th:if="${usersPage.hasPrevious()}"
-                   th:href="@{/auth/dashBoard(userPage=${usersPage.number - 1}, tab='userPage')}"
-                   class="btn btn-outline-primary btn-sm me-2">Trước</a>
-                <a th:if="${usersPage.hasNext()}"
-                   th:href="@{/auth/dashBoard(userPage=${usersPage.number + 1}, tab='userPage')}"
-                   class="btn btn-outline-primary btn-sm">Sau</a>
+                <a th:if="${usersPage.hasPrevious()}" th:href="@{/auth/dashBoard(userPage=${usersPage.number - 1}, tab='userPage')}" class="btn btn-outline-primary btn-sm me-2">Trước</a>
+                <a th:if="${usersPage.hasNext()}" th:href="@{/auth/dashBoard(userPage=${usersPage.number + 1}, tab='userPage')}" class="btn btn-outline-primary btn-sm">Sau</a>
             </div>
         </div>
     </div>
@@ -152,14 +141,9 @@
                 </tbody>
             </table>
 
-            <!-- Phân trang -->
             <div class="d-flex justify-content-center mt-3">
-                <a th:if="${packagesPage.hasPrevious()}"
-                   th:href="@{/auth/dashBoard(packagePage=${packagesPage.number - 1}, tab='packages')}"
-                   class="btn btn-outline-primary btn-sm me-2">Trước</a>
-                <a th:if="${packagesPage.hasNext()}"
-                   th:href="@{/auth/dashBoard(packagePage=${packagesPage.number + 1}, tab='packages')}"
-                   class="btn btn-outline-primary btn-sm">Sau</a>
+                <a th:if="${packagesPage.hasPrevious()}" th:href="@{/auth/dashBoard(packagePage=${packagesPage.number - 1}, tab='packages')}" class="btn btn-outline-primary btn-sm me-2">Trước</a>
+                <a th:if="${packagesPage.hasNext()}" th:href="@{/auth/dashBoard(packagePage=${packagesPage.number + 1}, tab='packages')}" class="btn btn-outline-primary btn-sm">Sau</a>
             </div>
         </div>
     </div>
@@ -191,6 +175,7 @@
         </form>
     </div>
 </div>
+
 <!-- Modal Sửa Người Dùng -->
 <div class="modal fade" id="editUserModal" tabindex="-1">
     <div class="modal-dialog">
@@ -214,8 +199,10 @@
             </div>
         </form>
     </div>
-
 </div>
+
+<!-- JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     function editUser(btn) {
@@ -231,85 +218,59 @@
                 new bootstrap.Modal(document.getElementById("editUserModal")).show();
             });
     }
-</script>
 
-
-<!-- Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
     function openCreatePackage() {
         Swal.fire({
             title: 'Tạo gói tập mới',
             html: `
-            <input id="name" class="swal2-input" placeholder="Tên gói">
-            <input id="description" class="swal2-input" placeholder="Mô tả">
-            <input id="price" type="number" class="swal2-input" placeholder="Giá">
-            <input id="durationMonth" type="number" class="swal2-input" placeholder="Thời hạn (tháng)">
-        `,11````````````````````````
+                <input id="name" class="swal2-input" placeholder="Tên gói">
+                <input id="description" class="swal2-input" placeholder="Mô tả">
+                <input id="price" type="number" class="swal2-input" placeholder="Giá">
+                <input id="durationMonth" type="number" class="swal2-input" placeholder="Thời hạn (tháng)">
+            `,
             showCancelButton: true,
             confirmButtonText: 'Tạo',
             preConfirm: () => {
-                // Lấy giá trị người dùng nhập
                 const name = document.getElementById('name').value.trim();
                 const description = document.getElementById('description').value.trim();
-                const price = parseFloat(document.getElementById('price').value);
-                const duration = parseInt(document.getElementById('durationMonth').value);
+                const price = document.getElementById('price').value.trim();
+                const duration = document.getElementById('durationMonth').value.trim();
 
-                // ✅ Validate dữ liệu
-                if (!name) {
-                    Swal.showValidationMessage('⚠️ Vui lòng nhập tên gói');
+                if (!name || !description || !price || !duration) {
+                    Swal.showValidationMessage('⚠️ Vui lòng nhập đầy đủ thông tin');
                     return false;
                 }
-                if (!description) {
-                    Swal.showValidationMessage('⚠️ Vui lòng nhập mô tả');
-                    return false;
-                }
-                if (isNaN(price) || price <= 0) {
-                    Swal.showValidationMessage('⚠️ Giá phải là số dương lớn hơn 0');
-                    return false;
-                }
-                if (isNaN(duration) || duration <= 0) {
-                    Swal.showValidationMessage('⚠️ Thời hạn phải là số dương');
-                    return false;
-                }
-
-                // Nếu hợp lệ -> trả object (Swal sẽ resolve nó)
                 return { name, description, price, durationMonth: duration };
             }
         }).then(result => {
             if (result.isConfirmed) {
-                const { name, description, price, durationMonth } = result.value;
+                const formData = new FormData();
+                formData.append("name", result.value.name);
+                formData.append("description", result.value.description);
+                formData.append("price", result.value.price);
+                formData.append("durationMonth", result.value.durationMonth);
 
-                // Gửi dữ liệu bằng AJAX (fetch)
                 fetch('/auth/create', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name, description, price, durationMonth })
+                    body: formData
                 })
                     .then(res => {
-                        if (!res.ok) {
-                            throw new Error("Lỗi khi tạo gói tập");
+                        if (res.redirected) {
+                            window.location.href = res.url;
+                        } else if (res.ok) {
+                            Swal.fire('🎉 Thành công!', 'Tạo gói tập mới thành công', 'success')
+                                .then(() => location.reload());
+                        } else {
+                            Swal.fire('Lỗi', 'Không thể tạo gói tập', 'error');
                         }
-                        return res.text();
                     })
-                    .then(() => {
-                        Swal.fire('Thành công 🎉', 'Tạo gói tập mới thành công!', 'success')
-                            .then(() => location.reload());
-                    })
-                    .catch(err => {
-                        Swal.fire('Lỗi', err.message, 'error');
-                    });
+                    .catch(() => Swal.fire('Lỗi', 'Không thể kết nối máy chủ', 'error'));
             }
         });
     }
 
-
     function editPackage(btn) {
         const id = btn.getAttribute("data-id");
-
         fetch(`/auth/api/package/${id}`)
             .then(res => res.json())
             .then(pkg => {
@@ -318,46 +279,9 @@
                 document.getElementById("pkgPrice").value = pkg.price;
                 document.getElementById("pkgDuration").value = pkg.durationMonth;
                 document.getElementById("updatePackageForm").action = `/auth/update-package/${id}`;
-
-                // Hiển thị modal
-                const modal = new bootstrap.Modal(document.getElementById("editPackageModal"));
-                modal.show();
-
-                // Gắn sự kiện submit (validation)
-                const form = document.getElementById("updatePackageForm");
-                form.onsubmit = function (e) {
-                    e.preventDefault(); // chặn submit mặc định
-
-                    // Lấy dữ liệu
-                    const name = document.getElementById("pkgName").value.trim();
-                    const desc = document.getElementById("pkgDesc").value.trim();
-                    const price = parseFloat(document.getElementById("pkgPrice").value);
-                    const duration = parseInt(document.getElementById("pkgDuration").value);
-
-                    // Validation cơ bản
-                    if (!name) {
-                        Swal.fire("Lỗi", "⚠️ Tên gói không được để trống", "error");
-                        return;
-                    }
-                    if (!desc) {
-                        Swal.fire("Lỗi", "⚠️ Mô tả không được để trống", "error");
-                        return;
-                    }
-                    if (isNaN(price) || price <= 0) {
-                        Swal.fire("Lỗi", "⚠️ Giá phải là số dương lớn hơn 0", "error");
-                        return;
-                    }
-                    if (isNaN(duration) || duration <= 0) {
-                        Swal.fire("Lỗi", "⚠️ Thời hạn phải là số dương", "error");
-                        return;
-                    }
-
-                    // Nếu hợp lệ thì gửi form
-                    form.submit();
-                };
+                new bootstrap.Modal(document.getElementById("editPackageModal")).show();
             });
     }
-
 </script>
 </body>
 </html>
