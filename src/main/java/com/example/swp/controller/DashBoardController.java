@@ -32,20 +32,31 @@ public class DashBoardController {
     public String showDashBoard(Model model,
                                 @RequestParam(name = "userPage", defaultValue = "0") int userPage,
                                 @RequestParam(name = "packagePage", defaultValue = "0") int packagePage,
-                                @RequestParam(name = "tab", defaultValue = "userPage") String activeTab) {
-        int userSize = 2;
-        Page<UserEntity> usersPage = userService.findByRole(UserRole.MEMBER, PageRequest.of(userPage, userSize));
+                                @RequestParam(name = "tab", defaultValue = "packages") String activeTab,
+                                // Thêm tham số keyword, required=false để không bắt buộc
+                                @RequestParam(name = "keyword", required = false) String keyword) {
+
+        int userSize = 10; // Hoặc số lượng bạn muốn
+        Page<UserEntity> usersPage;
+
+        // Nếu có từ khóa, gọi hàm tìm kiếm trong service
+        if (keyword != null && !keyword.isEmpty()) {
+            usersPage = userService.searchUsers(keyword, PageRequest.of(userPage, userSize));
+            model.addAttribute("keyword", keyword); // Gửi keyword ra lại view để hiển thị
+        } else {
+
+            usersPage = userService.findByRole(UserRole.MEMBER, PageRequest.of(userPage, userSize));
+        }
         model.addAttribute("usersPage", usersPage);
 
 
-        int packageSize = 2;
+        int packageSize = 5;
         Page<PackageEntity> packagesPage = packageService.findAll(PageRequest.of(packagePage, packageSize));
         model.addAttribute("packagesPage", packagesPage);
 
-
         model.addAttribute("activeTab", activeTab);
 
-        return "auth/dashBoard";
+        return "auth/dashBoard"; // Hoặc "user-management" nếu bạn dùng file riêng
     }
 
     @PostMapping("/delete")

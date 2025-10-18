@@ -57,7 +57,19 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <h5>Danh sách Người Dùng</h5>
             </div>
+            <form th:action="@{/auth/dashBoard}" method="get" style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem;">
+                <input type="hidden" name="tab" value="users">
+                <input type="hidden" name="packagePage" th:value="${packagesPage.number}">
 
+                <input type="text" name="keyword" th:value="${keyword}" placeholder="Tìm kiếm theo email, tên..."
+                       style="flex-grow: 1; padding: 0.7rem; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" class="cta-button btn-primary" style="padding: 0.7rem 1.5rem;">
+                    <i class="fas fa-search"></i> Tìm
+                </button>
+                <a th:href="@{/auth/dashBoard(tab='users', packagePage=${packagesPage.number})}" class="cta-button btn-secondary" style="padding: 0.7rem 1.5rem;">
+                    Xóa Lọc
+                </a>
+            </form>
             <table class="table table-bordered align-middle text-center">
                 <thead>
                 <tr>

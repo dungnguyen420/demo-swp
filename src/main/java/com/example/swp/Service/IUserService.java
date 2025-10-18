@@ -25,4 +25,5 @@ public interface IUserService {
     UserEntity updateUser(Long id, RegisterDTO dto);
     UserEntity findById(Long Id);
     Page<UserEntity> findByRole(UserRole role, Pageable pageable);
+    Page<UserEntity> searchUsers(String keyword, Pageable pageable);
 }

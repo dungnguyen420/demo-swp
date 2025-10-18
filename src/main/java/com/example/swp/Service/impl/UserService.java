@@ -137,6 +137,10 @@ public class UserService implements IUserService {
     public Page<UserEntity> findByRole(UserRole role, Pageable pageable) {
         return userRepository.findByRole(role, pageable);
     }
+    @Override
+    public Page<UserEntity> searchUsers(String keyword, Pageable pageable) {
+        return userRepository.searchByKeyword(keyword, pageable);
+    }
 
 
 }
