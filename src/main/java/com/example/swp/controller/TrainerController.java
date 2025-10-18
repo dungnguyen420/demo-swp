@@ -1,66 +1,59 @@
 package com.example.swp.controller;
 
 import com.example.swp.DTO.TrainerDTO;
+import com.example.swp.DTO.response.TFUResponse;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserRole;
-import com.example.swp.Service.ITrainerService;
+import com.example.swp.Repository.TrainerRepository;
+import com.example.swp.Service.IUserService;
+
+import com.example.swp.Service.impl.TrainerService;
+import com.example.swp.base.BaseAPIController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
-@RequestMapping("/trainers")
-public class TrainerController {
+@RestController
+@RequestMapping("/trainer")
+public class TrainerController extends BaseAPIController {
 
     @Autowired
-    private ITrainerService trainerService;
+    private TrainerService trainerService;
 
-    @GetMapping
-    public String listTrainers(Model model) {
-        List<UserEntity> trainers = trainerService.getAllTrainer(UserRole.TRAINER);
-        model.addAttribute("trainers", trainers);
-        return "trainer/trainerGrid";
+    @Autowired
+    private TrainerRepository trainerRepository;
+
+    @GetMapping("get-list-trainer")
+    public ResponseEntity<TFUResponse<List<UserEntity>>> getAllTrainer(){
+        List<UserEntity> getTrainer = trainerService.getAllTrainer(UserRole.TRAINER);
+        return success(getTrainer);
     }
 
-    @GetMapping("/create")
-    public String showCreateForm(Model model) {
-        model.addAttribute("trainerDTO", new TrainerDTO());
-        return "trainer/create";
+    @PostMapping("create-trainer")
+    public ResponseEntity<TFUResponse<UserEntity>> createTrainer(@RequestBody TrainerDTO dto){
+        UserEntity createTrainer = trainerService.createTrainer(dto);
+        if(createTrainer == null){
+            return  badRequest("không tạo được trainer");
+        }
+        return success(createTrainer);
     }
 
-    @PostMapping("/create")
-    public String createTrainer(@ModelAttribute TrainerDTO trainerDTO) {
-        trainerService.createTrainer(trainerDTO);
-        return "redirect:/trainers";
+    @PutMapping("update-trainer")
+    public ResponseEntity<TFUResponse<UserEntity>> updateTrainer(@RequestBody TrainerDTO dto){
+        UserEntity updateTrainer = trainerService.updateTrainer(dto);
+        if (updateTrainer == null){
+            return badRequest("không tìm thấy trainer");
+        }
+        return success(updateTrainer);
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        TrainerDTO dto = trainerService.trainerDetail(id);
-        model.addAttribute("trainerDTO", dto);
-        return "trainer/edit";
+    @DeleteMapping("delete-trainer")
+    public ResponseEntity<TFUResponse<UserEntity>> deleteTrainer(@RequestBody Long id){
+    UserEntity deleteTrainer = trainerService.deleteTrainer(id);
+    return  success(deleteTrainer);
     }
 
-    @PostMapping("/edit")
-    public String updateTrainer(@ModelAttribute TrainerDTO trainerDTO) {
-        trainerService.updateTrainer(trainerDTO);
-        return "redirect:/trainers";
-    }
 
-    @GetMapping("/delete/{id}")
-    public String deleteTrainer(@PathVariable Long id) {
-        trainerService.deleteTrainer(id);
-        return "redirect:/trainers";
-    }
-
-    @GetMapping("/detail/{id}")
-    public String trainerDetail(@PathVariable Long id, Model model) {
-        TrainerDTO dto = trainerService.trainerDetail(id);
-        model.addAttribute("trainer", dto);
-        return "trainer/trainerDetail";
-    }
 }
-

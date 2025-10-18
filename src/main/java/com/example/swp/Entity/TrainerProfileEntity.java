@@ -5,9 +5,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 @Entity
-@Table(name = "trainer_profiles")
 @Data
-
 public class TrainerProfileEntity extends BaseEntity {
 
     @OneToOne
@@ -22,7 +20,5 @@ public class TrainerProfileEntity extends BaseEntity {
 
     @Column(precision = 10, scale = 2)
     private BigDecimal hourlyRate = BigDecimal.ZERO;
-
-
 
 }

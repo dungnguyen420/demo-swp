@@ -17,8 +17,8 @@ public class ClassMember {
         private ClassesEntity classEntity;
 
         @ManyToOne(fetch = FetchType.LAZY)
-        @MapsId("userId")
-        @JoinColumn(name = "user_id")
+        @MapsId("memberId")
+        @JoinColumn(name = "member_id")
         private UserEntity member;
 
 }

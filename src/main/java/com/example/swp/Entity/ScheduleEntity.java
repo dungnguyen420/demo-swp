@@ -7,23 +7,27 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
 @Table(name = "schedules")
 public class ScheduleEntity extends BaseEntity {
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "member_id", nullable = false)
+    private UserEntity member;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "trainer_id", nullable = false)
     private UserEntity trainer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "slot_id", nullable = false)
-    private TimeSlotEntity slot;
+    @Column(name = "schedule_time", nullable = false)
+    private LocalDateTime scheduleTime;
 
-
+    @Column(name = "duration_minutes")
+    private Integer durationMinutes = 60;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -32,13 +36,12 @@ public class ScheduleEntity extends BaseEntity {
     @Column(name = "rejection_reason", columnDefinition = "TEXT")
     private String rejectionReason;
 
-    @Column(name = "shift", length = 10)
+    @Column(name = "shift", nullable = false, length = 10)
     @Enumerated(EnumType.STRING)
     private Shift shift;
 
     @ManyToMany(mappedBy = "schedules")
-    private java.util.List<ClassesEntity> classes = new ArrayList<>();;
-
+    private java.util.List<ClassesEntity> classes;
 
 
 }

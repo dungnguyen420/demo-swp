@@ -22,12 +22,7 @@ public class ProductEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column
-    private double price;
-
-    @Column(nullable = false)
-    private  int quantity;
-
-    private String image;
+    @Column(nullable = false, precision = 12, scale = 2)
+    private BigDecimal price;
 }
 

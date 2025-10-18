@@ -17,7 +17,7 @@ import java.util.Objects;
 public class ClassMemberId implements Serializable {
 
     private Long classId;
-    private Long userId;
+    private Long memberId;
 
     @Override
     public boolean equals(Object o) {
@@ -25,12 +25,12 @@ public class ClassMemberId implements Serializable {
         if (!(o instanceof ClassMemberId)) return false;
         ClassMemberId that = (ClassMemberId) o;
         return Objects.equals(classId, that.classId) &&
-                Objects.equals(userId, that.userId);
+                Objects.equals(memberId, that.memberId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(classId, userId);
+        return Objects.hash(classId, memberId);
     }
 }
 
