@@ -75,31 +75,6 @@ public class AuthController extends BaseAPIController {
         return "redirect:/auth/login";
     }
 
-    @GetMapping("/dashBoard")
-    public String getAllUser(Model model) {
-        List<UserEntity> users = userService.findByRole(UserRole.MEMBER);
-        model.addAttribute("users", users);
-        return "/auth/dashBoard";
-    }
-    @GetMapping("/delete/{id}")
-    public String deleteUser(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
-        userService.deleteUser(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Đã xóa người dùng thành công!");
-        return "redirect:/auth/dashBoard";
-    }
-    @PostMapping("/update/{id}")
-    public String updateUser(
-            @PathVariable("id") Long id,
-            @ModelAttribute RegisterDTO dto,
-            RedirectAttributes redirectAttributes) {
-        userService.updateUser(id, dto);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin người dùng thành công!");
-        return "redirect:/auth/dashBoard";
-    }
-    @GetMapping("/api/users/{id}")
-    @ResponseBody
-    public UserEntity getUserById(@PathVariable Long id) {
-        return userService.findById(id);
-    }
+
 }
     

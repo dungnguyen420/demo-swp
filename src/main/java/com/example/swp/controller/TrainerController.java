@@ -28,7 +28,7 @@ public class TrainerController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("trainerDTO", new TrainerDTO());
-        return "trainer/create";
+        return "trainer/createTrainer";
     }
 
     @PostMapping("/create")
@@ -41,7 +41,7 @@ public class TrainerController {
     public String showEditForm(@PathVariable Long id, Model model) {
         TrainerDTO dto = trainerService.trainerDetail(id);
         model.addAttribute("trainerDTO", dto);
-        return "trainer/edit";
+        return "trainer/editTrainer";
     }
 
     @PostMapping("/edit")
