@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Giỏ hàng</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background: #f6f6f6; }
+        img { max-height: 56px; border-radius: 4px; }
+        .right { text-align: right; }
+        .actions { white-space: nowrap; }
+        .msg { margin: 8px 0; padding: 8px; border-radius: 6px; background: #f1f3f5; }
+    </style>
+</head>
+<body>
+
+<h2>Giỏ hàng</h2>
+
+<div th:if="${msg}" class="msg" th:text="${msg}">OK</div>
+<div th:if="${error}" class="msg" style="background:#ffe3e3" th:text="${error}">Lỗi</div>
+
+<div th:if="${#lists.isEmpty(cart.items)}">
+    Giỏ hàng trống. <a th:href="@{/products}">Tiếp tục mua sắm</a>
+</div>
+
+<div th:if="${!#lists.isEmpty(cart.items)}">
+    <table>
+        <thead>
+        <tr>
+            <th>Ảnh</th>
+            <th>Sản phẩm</th>
+            <th class="right">Giá</th>
+            <th class="right">SL</th>
+            <th class="right">Tạm tính</th>
+            <th class="actions">Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="it : ${cart.items}">
+            <td>
+                <img th:if="${it.image != null}" th:src="${it.image}" alt="img">
+            </td>
+            <td th:text="${it.productName}">Tên SP</td>
+            <td class="right" th:text="${it.unitPrice}">0</td>
+            <td class="right">
+                <form th:action="@{/cart/update}" method="post" style="display:inline-flex; gap:6px; align-items:center">
+                    <input type="hidden" name="productId" th:value="${it.productId}">
+                    <input type="number" name="quantity" th:value="${it.quantity}" min="0" style="width:72px; text-align:right">
+                    <button type="submit">Cập nhật</button>
+                </form>
+            </td>
+            <td class="right" th:text="${it.lineTotal}">0</td>
+            <td class="actions">
+                <form th:action="@{/cart/remove}" method="post" style="display:inline">
+                    <input type="hidden" name="productId" th:value="${it.productId}">
+                    <button type="submit">Xóa</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr>
+            <th colspan="3" class="right">Tổng</th>
+            <th class="right" th:text="${cart.totalItems}">0</th>
+            <th class="right" th:text="${cart.totalAmount}">0</th>
+            <th></th>
+        </tr>
+        </tfoot>
+    </table>
+
+    <div style="margin-top:12px; display:flex; gap:10px">
+        <a th:href="@{/products}">Tiếp tục mua sắm</a>
+        <form th:action="@{/cart/clear}" method="post" style="display:inline">
+            <button type="submit" onclick="return confirm('Xóa toàn bộ giỏ?')">Xóa toàn bộ giỏ</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

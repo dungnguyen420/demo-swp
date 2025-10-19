@@ -5,18 +5,15 @@ import com.example.swp.DTO.ClassesDTO;
 import com.example.swp.DTO.CreateClassBySlotDTO;
 import com.example.swp.DTO.CreateClassDTO;
 import com.example.swp.DTO.SlotRequest;
-import com.example.swp.Entity.ClassesEntity;
-import com.example.swp.Entity.ScheduleEntity;
-import com.example.swp.Entity.UserEntity;
+import com.example.swp.Entity.*;
 import com.example.swp.Enums.Shift;
+import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
-import com.example.swp.Repository.ClassesRepository;
-import com.example.swp.Repository.IUserRepository;
-import com.example.swp.Repository.ScheduleRepository;
-import com.example.swp.Repository.TrainerRepository;
+import com.example.swp.Repository.*;
 import com.example.swp.Service.IClassesService;
 import com.example.swp.Service.IScheduleService;
 import com.example.swp.Service.IUserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,6 +37,12 @@ public class ClassesService implements IClassesService {
     private final ClassesRepository classesRepo;
     private final IUserRepository userRepo;
     private final IScheduleService scheduleService;
+    private final ClassMemberRepository memberRepo;
+    private final ScheduleRepository scheduleRepo;
+
+
+    private static final int MAX_CAPACITY_DEFAULT = 8;
+
 
     @Override
     public ClassesEntity createClassBySlots(CreateClassBySlotDTO dto) {
@@ -81,6 +84,18 @@ public class ClassesService implements IClassesService {
     }
 
     @Override
+    public Page<ClassesEntity> listUpcoming(int page, int size, String sortBy, String dir) {
+        if (page < 0) page = 0;
+        if (size <= 0 || size > 100) size = 10;
+        if (sortBy == null || sortBy.isBlank()) sortBy = "createdAt";
+        Sort sort = "asc".equalsIgnoreCase(dir) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        LocalDate today = LocalDate.now();
+        return classesRepo.findDistinctBySchedules_Slot_SlotDateGreaterThanEqual(today, pageable);
+    }
+
+    @Override
     public Page<ClassesEntity> listPaged(int page, int size, String sortBy, String dir) {
         if (page < 0) page = 0;
         if (size <= 0 || size > 100) size = 10;
@@ -95,6 +110,92 @@ public class ClassesService implements IClassesService {
         return classesRepo.findWithAllById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
     }
-}
+
+    @Override
+    public ClassesEntity updateBasicInfo(Long classId, String name, String description, Integer capacity) {
+        ClassesEntity c = classesRepo.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lớp"));
+        if (name != null && !name.isBlank()) c.setName(name.trim());
+        c.setDescription(description);
+        if (capacity != null && capacity > 0) c.setCapacity(capacity);
+        return classesRepo.save(c);
+    }
+
+    @Override
+    public void deleteById(Long classId) {
+        if (!classesRepo.existsById(classId)) return;
+        classesRepo.deleteById(classId);
+    }
+
+    @Transactional
+    @Override
+    public void register(Long classId, Long userId) {
+        ClassesEntity clazz = classesRepo.findById(classId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy lớp"));
+        UserEntity user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+
+        // Đã đăng ký?
+        if (memberRepo.existsById_ClassIdAndId_UserId(classId, userId)) {
+            throw new RuntimeException("Bạn đã đăng ký lớp này");
+        }
+
+        boolean noFutureSchedules = clazz.getSchedules() == null
+                || clazz.getSchedules().stream()
+                .noneMatch(s -> s.getSlot() != null && s.getSlot().getSlotDate() != null
+                        && !s.getSlot().getSlotDate().isBefore(LocalDate.now()));
+        if (noFutureSchedules) {
+            throw new RuntimeException("Lớp không còn lịch học trong tương lai, không thể đăng ký");
+        }
+
+        // Kiểm tra sức chứa
+        int capacity = clazz.getCapacity() != null ? clazz.getCapacity() : MAX_CAPACITY_DEFAULT;
+        long current = memberRepo.countByClassEntity_Id(classId);
+        if (current >= capacity) {
+            throw new RuntimeException("Lớp đã đủ chỗ (" + capacity + ")");
+        }
+
+        // Kiểm tra trùng slot với các lớp khác của user
+        List<Long> slotIds = clazz.getSchedules()
+                .stream().map(s -> s.getSlot().getId()).distinct().toList();
+
+        if (!slotIds.isEmpty()) {
+            boolean busy = memberRepo.existsById_UserIdAndClassEntity_Schedules_Slot_IdIn(userId, slotIds);
+            if (busy) throw new RuntimeException("Bạn đã có lịch trong các slot này");
+        }
+
+
+        // Lưu tham gia
+        ClassMemberId id = new ClassMemberId(classId, userId);
+        ClassMember cm = new ClassMember();
+        cm.setId(id);
+        cm.setClassEntity(clazz);
+        cm.setMember(user);
+        memberRepo.save(cm);
+    }
+
+    @Transactional
+    @Override
+    public void unregister(Long classId, Long userId) {
+        ClassMemberId id = new ClassMemberId(classId, userId);
+        if (!memberRepo.existsById(id)) return;
+        memberRepo.deleteById(id);
+    }
+
+    public Page<ClassesEntity> search(String className, String trainerLast, String genderStr,
+                                      String mode, Pageable pageable) {
+        UserGender gender = null;
+        if (genderStr != null && !genderStr.isBlank()) {
+            try { gender = UserGender.valueOf(genderStr); } catch (Exception ignored) {}
+        }
+        className   = (className == null || className.isBlank()) ? null : className;
+        trainerLast = (trainerLast == null || trainerLast.isBlank()) ? null : trainerLast;
+        mode = (mode == null || mode.isBlank()) ? "all" : mode; // all | upcoming | finished
+        return classesRepo.search(className, trainerLast, gender, mode, pageable);
+    }
+    }
+
+
+
 
 
