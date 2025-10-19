@@ -5,6 +5,8 @@ import com.example.swp.Entity.ProductEntity;
 import com.example.swp.Repository.IProductRepository;
 import com.example.swp.Service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -72,7 +74,7 @@ public class ProductService implements IProductService {
 
     @Override
     public Optional<ProductEntity> findByName(String name) {
-        return Optional.empty();
+        return productRepository.findByName(name);
     }
 
     @Override
@@ -82,4 +84,12 @@ public class ProductService implements IProductService {
         }
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
+
+
+    @Override
+    public Page<ProductEntity> findAllPaged(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isBlank()) return productRepository.findAll(pageable);
+        return productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+    }
+
 }
