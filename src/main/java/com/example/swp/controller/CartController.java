@@ -17,26 +17,28 @@ public class CartController {
 
     private final ICartService cartService;
 
-    @GetMapping("/view")
-    public String view(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
-        if (principal == null) return "redirect:/login";
-        var summary = cartService.getCart(principal.getUser().getId());
-        model.addAttribute("cart", summary);
-        return "cart/view";
-    }
-
     @PostMapping("/add")
     public String add(@ModelAttribute CartRequestDTO req,
+                      @RequestParam(required=false) String keyword,
+                      @RequestParam(defaultValue="0") int page,
+                      @RequestParam(defaultValue="12") int size,
+                      @RequestParam(defaultValue="name") String sortBy,
+                      @RequestParam(defaultValue="asc") String dir,
                       @AuthenticationPrincipal CustomUserDetails principal,
                       RedirectAttributes ra) {
-        if (principal == null) return "redirect:/login";
+        if (principal == null) return "redirect:/auth/login";
         try {
             cartService.addItem(principal.getUser().getId(), req);
             ra.addFlashAttribute("msg", "Đã thêm vào giỏ");
         } catch (RuntimeException e) {
             ra.addFlashAttribute("error", e.getMessage());
         }
-        return "redirect:/products"; // về danh sách sản phẩm
+        ra.addAttribute("keyword", keyword);
+        ra.addAttribute("page", page);
+        ra.addAttribute("size", size);
+        ra.addAttribute("sortBy", sortBy);
+        ra.addAttribute("dir", dir);
+        return "redirect:/shop";
     }
 
     @PostMapping("/update")
@@ -70,5 +72,13 @@ public class CartController {
         cartService.clear(principal.getUser().getId());
         ra.addFlashAttribute("msg", "Đã xóa toàn bộ giỏ");
         return "redirect:/cart/view";
+    }
+
+    @GetMapping("/view")
+    public String view(@AuthenticationPrincipal CustomUserDetails principal, Model model) {
+        if (principal == null) return "redirect:/login";
+        var summary = cartService.getCart(principal.getUser().getId());
+        model.addAttribute("cart", summary);
+        return "cart/view";
     }
 }

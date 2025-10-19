@@ -25,6 +25,9 @@ public class CartEntity {
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
 
+    @Version
+    @Column(name = "version")
+    private Integer version;
 
     public CartEntity() {}
 

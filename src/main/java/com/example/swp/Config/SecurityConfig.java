@@ -48,7 +48,11 @@ public class SecurityConfig {
                                 "/classes",
                                 "/classes/**",
                                 "/cart/view",
-                                "/shop/list"
+                                "/shop",
+                                "/shop/add",
+                                "/cart/add",
+                                "/cart/update",
+                                "/cart/clear"
 
 //                                        // Manager-only cho thao tác lớp
 //                                        .requestMatchers(HttpMethod.GET, "/classes/create", "/classes/*/edit").hasRole("MANAGER")
@@ -61,6 +65,7 @@ public class SecurityConfig {
 
 
                         ).permitAll()// cho phép trang login
+                        .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/products/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
