@@ -46,7 +46,10 @@ public class SecurityConfig {
                                 "/trainers/delete/**",
                                 "/classes/create",
                                 "/classes",
-                                "/classes/**"
+                                "/classes/**",
+                                "/cart/view",
+                                "/shop/list"
+
 //                                        // Manager-only cho thao tác lớp
 //                                        .requestMatchers(HttpMethod.GET, "/classes/create", "/classes/*/edit").hasRole("MANAGER")
 //                                        .requestMatchers(HttpMethod.POST, "/classes/create", "/classes/*/edit").hasRole("MANAGER")

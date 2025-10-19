@@ -16,7 +16,6 @@ public class ProductService implements IProductService {
     @Autowired
     private IProductRepository productRepository;
 
-
     @Override
     public ProductEntity createProduct(ProductDTO dto) {
         Optional<ProductEntity> existingProduct = productRepository.findByName(dto.getName());
@@ -92,6 +91,10 @@ public class ProductService implements IProductService {
         return productRepository.findById(id).orElse(null);
     }
 
+    @Override
+    public Optional<ProductEntity> findByName(String name) {
+        return productRepository.findByName(name);
+    }
 
     @Override
     public List<ProductEntity> searchProduct(String keyword) {
@@ -100,4 +103,12 @@ public class ProductService implements IProductService {
         }
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
+
+
+    @Override
+    public Page<ProductEntity> findAllPaged(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.isBlank()) return productRepository.findAll(pageable);
+        return productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+    }
+
 }
