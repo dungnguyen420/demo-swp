@@ -16,11 +16,20 @@ public class ProductService implements IProductService {
     @Autowired
     private IProductRepository productRepository;
 
+
     @Override
     public ProductEntity createProduct(ProductDTO dto) {
         Optional<ProductEntity> existingProduct = productRepository.findByName(dto.getName());
         if (existingProduct.isPresent()) {
-            throw new RuntimeException("Tên sản phẩm '" + dto.getName() + "' đã tồn tại!");
+            throw new IllegalArgumentException("Tên sản phẩm '" + dto.getName() + "' đã tồn tại!");
+        }
+
+        if (dto.getPrice() < 0){
+            throw new IllegalArgumentException("Giá phải lớn hơn 0");
+        }
+
+        if(dto.getQuantity() < 0){
+            throw new RuntimeException("Quantity not negative");
         }
 
         ProductEntity newProduct = new ProductEntity();
@@ -38,6 +47,19 @@ public class ProductService implements IProductService {
     public ProductEntity updateProduct(ProductDTO dto) {
         ProductEntity existingProduct = productRepository.findById(dto.getId()).get();
         if(existingProduct != null){
+            if(dto.getPrice() < 0){
+                throw new RuntimeException("Price not negative and not empty");
+            }
+
+            if(dto.getQuantity() < 0){
+                throw new RuntimeException("Quantity not negative");
+            }
+
+            Optional<ProductEntity> duplicate = productRepository.findByName(dto.getName());
+            if (duplicate.isPresent() && !duplicate.get().getId().equals(dto.getId())) {
+                throw new RuntimeException("Tên sản phẩm '" + dto.getName() + "' đã tồn tại!");
+            }
+
             existingProduct.setName(dto.getName());
             existingProduct.setDescription(dto.getDescription());
             existingProduct.setPrice(dto.getPrice());
@@ -70,10 +92,6 @@ public class ProductService implements IProductService {
         return productRepository.findById(id).orElse(null);
     }
 
-    @Override
-    public Optional<ProductEntity> findByName(String name) {
-        return Optional.empty();
-    }
 
     @Override
     public List<ProductEntity> searchProduct(String keyword) {

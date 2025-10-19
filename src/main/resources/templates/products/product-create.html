@@ -9,6 +9,11 @@
 
 <h2>Thêm sản phẩm mới</h2>
 
+<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+
 <form th:action="@{/products/create}" th:object="${product}" method="post">
     <div class="mb-3">
         <label class="form-label">Tên sản phẩm</label>

@@ -9,6 +9,12 @@
 
 <h2>Chỉnh sửa sản phẩm</h2>
 
+<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+
+
 <form th:action="@{/products/update}" th:object="${product}" method="post">
     <input type="hidden" th:field="*{id}">
 

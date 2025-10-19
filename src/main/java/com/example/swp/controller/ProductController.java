@@ -43,11 +43,10 @@ public class ProductController {
             ProductEntity product = productService.createProduct(dto);
             model.addAttribute("success", "Tạo sản phẩm thành công!");
             return "redirect:/products/list";
-        } catch (RuntimeException e) {
-            // Nếu service ném ra lỗi trùng tên hoặc lỗi khác
+        } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
-            model.addAttribute("product", dto); // Giữ lại dữ liệu người dùng nhập
-            return "products/product-create"; // Quay lại form tạo
+            model.addAttribute("product", dto);
+            return "products/product-create";
         }
     }
 
@@ -74,12 +73,15 @@ public class ProductController {
 
     @PostMapping("/update")
     public String updateProduct(@ModelAttribute("product") ProductDTO dto, Model model){
-        ProductEntity updated = productService.updateProduct(dto);
-        if (updated == null){
-            model.addAttribute("error", "Update product fail");
+        try {
+            ProductEntity updated = productService.updateProduct(dto);
+            model.addAttribute("success", "Cập nhật sản phẩm thành công!");
+            return "redirect:/products/list";
+        } catch (RuntimeException e) {
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("product", dto);
             return "products/product-edit";
         }
-        return "redirect:/products/list";
     }
 
     @GetMapping("delete/{id}")
