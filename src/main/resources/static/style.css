@@ -271,7 +271,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+    background: url('https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1974&auto=format&fit=crop') no-repeat center center;
     background-size: cover;
 
     /* ✨ [NÂNG CẤP] Hiệu ứng Ken Burns (ảnh nền zoom chậm) */
@@ -386,7 +386,7 @@ html { scroll-behavior: smooth; }
 body {
     font-family: var(--font-body);
     color: var(--text-color);
-    background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+    background-image: url('https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1974&auto=format&fit=crop');
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -566,7 +566,7 @@ body::before {
 
 /* --- Phần Hero Section (Trang chủ) --- */
 .hero-section { height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding: 0 5%; position: relative; overflow: hidden; background: var(--dark-bg); }
-.hero-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop') no-repeat center center; background-size: cover; animation: kenburns 20s ease-out infinite; z-index: 0; }
+.hero-section::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1974&auto=format&fit=crop') no-repeat center center; background-size: cover; animation: kenburns 20s ease-out infinite; z-index: 0; }
 .hero-section::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.4)); z-index: 1; }
 @keyframes kenburns { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 .hero-content { position: relative; z-index: 2; max-width: 800px; animation: fadeIn 1.5s ease-in-out; }
@@ -627,6 +627,7 @@ body::before {
 .popup-actions .action-btn.confirm-delete { background-color: #e74c3c; color: white; }
 .popup-actions .action-btn.confirm-delete:hover { background-color: #c0392b; }
 .popup-actions .action-btn.cancel-delete { background-color: #444; color: var(--text-light); }
+
 .popup-actions .action-btn.cancel-delete:hover { background-color: #555; }
 
 
@@ -638,3 +639,217 @@ body::before {
     .page-title { font-size: 2.5rem; }
     .page-header { flex-direction: column; gap: 1rem; }
 }
+/* === CSS CHO TRANG CHI TIẾT HLV (Bố cục mới) === */
+
+/* --- Thẻ Header Profile --- */
+.profile-header {
+    background: var(--secondary-bg);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+    margin-bottom: 2rem;
+}
+
+.profile-image {
+    width: 250px;  /* To ra */
+    height: 250px; /* To ra */
+    border-radius: 50%;
+    object-fit: cover;
+    border: 6px solid var(--primary-color);
+    box-shadow: 0 0 35px rgba(255, 215, 0, 0.3);
+}
+
+.profile-header-info {
+    flex: 1; /* Tự động co giãn lấp đầy không gian */
+}
+
+.profile-header-info h1 {
+    font-family: var(--font-heading);
+    font-size: 4rem; /* To ra */
+    color: var(--text-color);
+    line-height: 1.1;
+}
+
+.profile-header-info .specialization {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* --- Lưới nội dung bên dưới --- */
+.profile-content-grid {
+    display: grid;
+    /* [THAY ĐỔI] Chia thành 2 cột, cột trái chiếm 1 phần, cột phải chiếm 2 phần */
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+}
+
+.content-card {
+    background: var(--secondary-bg);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.content-card h2 {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Lưới thông số */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 2rem;
+}
+
+.stat-item { text-align: center; }
+.stat-item i { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 1rem; }
+.stat-item .stat-value { font-size: 1.1rem; font-weight: 600; color: var(--text-color); word-wrap: break-word; }
+.stat-item .stat-label { font-size: 0.9rem; color: var(--text-gray); margin-top: 0.25rem; }
+.stat-item a { color: var(--text-color); text-decoration: none; transition: color 0.3s ease; }
+.stat-item a:hover { color: var(--primary-color); }
+
+/* Phần giới thiệu */
+.bio-section p { line-height: 1.8; color: var(--text-gray); }
+
+
+/* --- Responsive cho bố cục Profile --- */
+@media (max-width: 900px) {
+    .profile-header {
+        flex-direction: column; /* Chuyển thành cột trên màn hình nhỏ */
+        padding: 2rem;
+        gap: 1.5rem;
+    }
+    .profile-image {
+        width: 200px;
+        height: 200px;
+    }
+    .profile-header-info {
+        text-align: center; /* Căn giữa nội dung khi xếp dọc */
+    }
+    .profile-header-info h1 {
+        font-size: 3rem;
+    }
+}
+/* === [MỚI] CSS CHO CÁC FORM CHUNG (CREATE/EDIT) === */
+
+/* --- Thẻ chứa form --- */
+.form-card {
+    background: var(--card-bg);
+    padding: 2rem 2.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    backdrop-filter: blur(10px);
+}
+
+/* --- Lưới bố cục cho form --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Mặc định 2 cột */
+    gap: 1.5rem 2rem; /* khoảng cách giữa hàng và cột */
+}
+
+/* --- Nhóm Label + Input --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1; /* Trải dài hết 2 cột */
+}
+
+/* --- Style cho Label --- */
+.form-group label {
+    font-weight: 600;
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+/* --- Style chung cho Input, Select, Textarea --- */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    color: var(--text-color);
+    font-family: var(--font-body);
+    transition: all 0.3s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-gray);
+    opacity: 0.7;
+}
+
+/* Hiệu ứng khi focus vào ô input */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+}
+
+.form-group textarea {
+    resize: vertical; /* Cho phép thay đổi chiều cao */
+    min-height: 80px;
+}
+
+/* --- Khu vực chứa các nút bấm --- */
+.form-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end; /* Đẩy nút về bên phải */
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* Nút phụ (Hủy) */
+.btn-secondary {
+    padding: 12px 25px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: 2px solid var(--text-gray);
+    color: var(--text-gray);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--secondary-bg);
+    color: var(--text-color);
+    border-color: var(--text-color);
+}
+
+/* --- Responsive cho Form --- */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Chuyển thành 1 cột */
+    }
+}
+
+

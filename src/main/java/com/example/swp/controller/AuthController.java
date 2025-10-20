@@ -55,10 +55,10 @@ public class AuthController extends BaseAPIController {
 
         switch (user.getRole()) {
             case ADMIN:
-                return "redirect:/auth/dashBoard";
+                return "redirect:/home";
 
             case MANAGER:
-                return "redirect:/products/list"; // màn dành cho Manager
+                return "redirect:/home"; // màn dành cho Manager
 
             case TRAINER:
                 return "redirect:/home"; // ví dụ màn riêng của Trainer

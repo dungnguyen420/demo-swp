@@ -75,7 +75,7 @@ public class ClassesController {
                        @RequestParam(defaultValue="createdAt") String sortBy,
                        @RequestParam(defaultValue="desc") String dir,
                        @RequestParam(defaultValue="0") int page,
-                       @RequestParam(defaultValue="10") int size,
+                       @RequestParam(defaultValue="6") int size,
                        Model model) {
         Pageable p = PageRequest.of(page, size,
                 "asc".equalsIgnoreCase(dir)? Sort.by(sortBy).ascending(): Sort.by(sortBy).descending());

@@ -14,10 +14,10 @@
 <body>
 
 <header class="navbar">
-    <a href="/" class="logo">GymCare</a>
+    <a href="/home" class="logo">GymCare</a>
     <nav>
         <ul>
-            <li><a href="/">Trang chủ</a></li>
+            <li><a href="/home">Trang chủ</a></li>
             <li><a href="/packages">Gói tập</a></li>
             <li><a href="/trainers">Huấn luyện viên</a></li>
             <li><a href="/classes">Lớp học</a></li>
@@ -26,13 +26,24 @@
     </nav>
     <div class="auth-section">
     </div>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
 </header>
 
 <main class="page-container">
 
     <div class="page-header">
         <h1 class="page-title">Huấn Luyện Viên</h1>
-        <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')" th:href="@{/trainers/create}" class="cta-button">
+        <a  sec:authorize="hasAuthority('ROLE_ADMIN')" th:href="@{/trainers/create}" class="cta-button">
             <i class="fas fa-plus"></i> Tạo mới
         </a>
     </div>
@@ -73,7 +84,7 @@
                     <p class="bio" th:text="${#strings.abbreviate(trainer.bio, 70)} ?: 'Chưa có thông tin giới thiệu.'"></p>
                 </div>
             </a>
-            <div class="card-actions" sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')">
+            <div class="card-actions" sec:authorize="hasAuthority('ROLE_ADMIN')">
                 <a th:href="@{/trainers/edit/{id}(id=${trainer.id})}" class="action-btn edit">
                     <i class="fas fa-pencil-alt"></i> Sửa
                 </a>

@@ -41,10 +41,6 @@ public class SecurityConfig {
                                 "/classes",
                                 "/packages",
                                 "/trainers",
-                                "/trainers/create",
-                                "/trainers/edit/**",
-                                "/trainers/delete/**",
-                                "/classes/create",
                                 "/classes",
                                 "/classes/**",
                                 "/cart/view",
@@ -56,7 +52,10 @@ public class SecurityConfig {
 
                         ).permitAll()// cho phép trang login
                         .requestMatchers("/cart/**").authenticated()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/admin/**",
+                                "/trainers/create",
+                                "/trainers/edit/**",
+                                "/trainers/delete/**").hasRole("ADMIN")
                         .requestMatchers("/products/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
                 )

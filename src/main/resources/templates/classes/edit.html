@@ -1,31 +1,154 @@
 <!DOCTYPE html>
 <html lang="vi"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Sửa lớp</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Sửa lớp - GymCare</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
-        .row { margin: 6px 0; }
-        .slot-row { display: flex; gap: 8px; align-items: center; margin: 6px 0; }
-        .slot-row input[type="date"], .slot-row select { padding: 4px; }
-        .btn { padding: 6px 10px; border: none; border-radius: 6px; cursor: pointer; }
-        .btn-add { background: #0d6efd; color: #fff; }
-        .btn-del { background: #dc3545; color: #fff; }
-        .btn-save { background: #198754; color: #fff; }
-        .form-label { display: inline-block; width: 110px; }
+        /* --- Google Fonts --- */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Teko:wght@700&display=swap');
+
+        /* --- BIẾN MÀU: INDUSTRIAL CHIC --- */
+        :root {
+            --primary-color: #FF6B00;
+            --primary-gradient: linear-gradient(90deg, #FF8C00, #FF6B00);
+            --light-bg: #F1F3F5;
+            --secondary-bg: #FFFFFF;
+            --text-color: #18191A;
+            --text-gray: #495057;
+            --font-heading: 'Teko', sans-serif;
+            --font-body: 'Poppins', sans-serif;
+            --border-radius: 10px;
+            --border-color: #DEE2E6;
+            --card-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        /* --- Thiết lập chung --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 17px; }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            line-height: 1.7;
+            padding: 2rem;
+        }
+
+        /* --- Style cho các thành phần gốc của bạn --- */
+        h2 {
+            font-family: var(--font-heading);
+            font-size: 3.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--text-color);
+        }
+
+        h3 {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid var(--border-color);
+            margin: 2rem 0;
+        }
+
+        form {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--card-shadow);
+            padding: 2.5rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Thông báo */
+        div[style*="color:red"], div[style*="color:green"] {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+        }
+        div[style*="color:red"] { background-color: rgba(220, 53, 69, 0.1); color: #c82333; }
+        div[style*="color:green"] { background-color: rgba(40, 167, 69, 0.1); color: #218838; }
+
+        /* Bố cục Form */
+        .row {
+            margin-bottom: 1.5rem;
+            display: grid;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            gap: 1rem;
+        }
+        .form-label {
+            font-weight: 600;
+            color: var(--text-gray);
+            text-align: right;
+        }
+        input[type="text"], input[type="number"], input[type="email"], textarea {
+            width: 100%;
+            background-color: var(--light-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+        }
+
+        /* Bảng */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1rem;
+            background: var(--light-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        thead { background-color: #f8f9fa; }
+        thead th { font-weight: 700; color: var(--text-color); }
+        tbody tr:last-child td { border-bottom: none; }
+
+        /* Các dòng thêm lịch */
+        .slot-container { display: flex; flex-direction: column; gap: 1rem; }
+        .slot-row { display: flex; gap: 1rem; align-items: center; }
+        .slot-row input, .slot-row select { padding: 0.8rem 1rem; background-color: var(--light-bg); border: 1px solid var(--border-color); border-radius: 8px; font-size: 1rem; color: var(--text-color); }
+        .slot-row .form-label { width: auto; text-align: left; }
+
+        /* Các nút bấm */
+        .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 50px; cursor: pointer; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s ease; }
+        .btn-add { background-color: #E9ECEF; color: var(--text-gray); }
+        .btn-add:hover { background-color: #ced4da; color: var(--text-color); }
+        .btn-del { background-color: #dc3545; color: #fff; }
+        .btn-del:hover { background-color: #c82333; }
+        .btn-save { background: var(--primary-gradient); color: #fff; box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3); }
+        .btn-save:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255, 107, 0, 0.4); }
+        form a[style*="margin-left"] { color: var(--text-gray); font-weight: 600; text-decoration: none; }
+
     </style>
 </head>
 <body>
-<h2>Sửa lớp</h2>
+<h2 th:text="'Sửa lớp: ' + ${clazz.name}">Sửa lớp</h2>
 
-<!-- Thông báo -->
-<div th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></div>
-<div th:if="${message}" style="color:green" th:text="${message}"></div>
-
-<!-- Form edit: bind vào 'dto' -->
 <form th:action="@{|/classes/${clazz.id}/edit|}" th:object="${dto}" method="post">
+    <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
+    <div th:if="${message}" th:text="${message}"></div>
 
     <div class="row">
         <label class="form-label" for="nameInput">Tên lớp</label>
@@ -45,7 +168,7 @@
     <hr>
 
     <h3>Lịch hiện có</h3>
-    <table border="1" cellspacing="0" cellpadding="6">
+    <table>
         <thead>
         <tr>
             <th>Ngày</th>
@@ -65,7 +188,7 @@
             <td th:text="${s.status}">CONFIRMED</td>
         </tr>
         <tr th:if="${#lists.isEmpty(clazz.schedules)}">
-            <td colspan="4">Chưa có lịch</td>
+            <td colspan="4" style="text-align: center;">Chưa có lịch</td>
         </tr>
         </tbody>
     </table>
@@ -74,27 +197,22 @@
 
     <h3>Thêm lịch mới</h3>
 
-    <!-- Container danh sách slot mới -->
     <div id="slotContainer">
-        <!-- Render từ DTO: cần dto.newSlots có sẵn ít nhất 1 phần tử rỗng từ controller -->
         <div class="slot-row" th:each="r, stat : *{newSlots}">
             <label class="form-label">Ngày</label>
             <input type="date" th:field="*{newSlots[__${stat.index}__].date}" required>
-
             <label class="form-label" style="width:auto">Slot</label>
             <select th:field="*{newSlots[__${stat.index}__].slotNumber}" required>
                 <option value="" disabled selected>Chọn slot</option>
-                <option th:each="n : ${slotNumbers}" th:value="${n}" th:text="${n}">1</option>
+                <option th:each="n : ${slotNumbers}" th:value="${n}" th:text="${n}"></option>
             </select>
-
-
-            <button type="button" class="btn btn-del" onclick="removeRow(this)">Xóa</button>
+            <button type="button" class="btn btn-del" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i></button>
         </div>
     </div>
 
-    <button type="button" class="btn btn-add" onclick="addRow()">+ Thêm dòng</button>
+    <button type="button" class="btn btn-add" onclick="addRow()"><i class="fas fa-plus"></i> Thêm dòng</button>
 
-    <div class="row" style="margin-top:12px">
+    <div class="row" style="margin-top:2rem; grid-template-columns: auto auto 1fr;">
         <button type="submit" class="btn btn-save">Lưu</button>
         <a th:href="@{|/classes/${clazz.id}|}" style="margin-left:8px">Hủy</a>
     </div>
@@ -108,33 +226,41 @@
 
         const row = document.createElement('div');
         row.className = 'slot-row';
+
+        // Tạo HTML cho dòng mới. Lấy các option từ select có sẵn đầu tiên.
+        const existingSelect = document.querySelector('.slot-row select');
+        let optionsHTML = '<option value="" disabled selected>Chọn slot</option>';
+        if (existingSelect) {
+            optionsHTML = existingSelect.innerHTML;
+        }
+
         row.innerHTML = `
-      <label class="form-label">Ngày</label>
-      <input type="date" name="newSlots[${idx}].date" required>
-
-      <label class="form-label" style="width:auto">Slot</label>
-      <select name="newSlots[${idx}].slotNumber" required>
-        <option value="" disabled selected>Chọn slot</option>
-        <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-        <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-      </select>
-
-      <button type="button" class="btn btn-del" onclick="removeRow(this)">Xóa</button>
-    `;
+            <div class="form-group">
+                <label>Ngày</label>
+                <input type="date" name="newSlots[${idx}].date" required>
+            </div>
+            <div class="form-group">
+                <label>Slot</label>
+                <select name="newSlots[${idx}].slotNumber" required>
+                    ${optionsHTML}
+                </select>
+            </div>
+            <button type="button" class="btn-icon btn-danger" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i></button>
+        `;
         container.appendChild(row);
     }
 
-    // Xóa dòng và re-index name để Spring bind List<SlotRequest>
+    // Xóa dòng và re-index name
     function removeRow(btn) {
         const container = document.getElementById('slotContainer');
         btn.parentElement.remove();
 
         const rows = container.querySelectorAll('.slot-row');
         rows.forEach((r, i) => {
-            const date = r.querySelector('input[type="date"]');
-            const slot = r.querySelector('select');
-            date.setAttribute('name', `newSlots[${i}].date`);
-            slot.setAttribute('name', `newSlots[${i}].slotNumber`);
+            const dateInput = r.querySelector('input[type="date"]');
+            const slotSelect = r.querySelector('select');
+            if(dateInput) dateInput.setAttribute('name', `newSlots[${i}].date`);
+            if(slotSelect) slotSelect.setAttribute('name', `newSlots[${i}].slotNumber`);
         });
     }
 </script>
