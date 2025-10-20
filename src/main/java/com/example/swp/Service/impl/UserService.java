@@ -142,5 +142,30 @@ public class UserService implements IUserService {
         return userRepository.searchByKeyword(keyword, pageable);
     }
 
+    @Override
+    public UserEntity updateProfile(String userName, UserEntity formUser) {
+        UserEntity currentUser = userRepository.findByUserName(userName)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
+
+        if (!formUser.getUserName().equals(currentUser.getUserName())
+                && userRepository.findByUserName(formUser.getUserName()).isPresent()){
+            throw new RuntimeException("Tên đăng nhập đã tồn tại");
+        }
+
+        if (!formUser.getEmail().equals(currentUser.getEmail())
+                && userRepository.findByEmail(formUser.getEmail()).isPresent()){
+            throw new RuntimeException("Email đã được sử dụng!");
+        }
+        currentUser.setUserName(formUser.getUserName());
+        currentUser.setFirstName(formUser.getFirstName());
+        currentUser.setLastName(formUser.getLastName());
+        currentUser.setEmail(formUser.getEmail());
+
+        if(formUser.getPassword() != null && !formUser.getPassword().isEmpty()){
+            currentUser.setPassword(passwordEncoder.encode(formUser.getPassword()));
+        }
+        return userRepository.save(currentUser);
+    }
+
 
 }

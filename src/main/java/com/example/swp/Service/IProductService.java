@@ -14,8 +14,8 @@ public interface IProductService {
     List<ProductEntity> getListProduct();
     String deleteProduct(Long id);
     ProductEntity findById(Long id);
-    Optional<ProductEntity> findByName(String name);
     List<ProductEntity> searchProduct(String keyword);
     Page<ProductEntity> findAllPaged(String keyword, Pageable pageable);
+    Optional<ProductEntity> findByName(String name);
 
 }

@@ -104,7 +104,7 @@
             <img th:src="@{/images/default-avatar.png}" alt="Avatar">
             <span sec:authentication="principal.username">Username</span>
             <ul class="dropdown-menu">
-                <li><a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
             </ul>
         </div>

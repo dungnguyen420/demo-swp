@@ -5,6 +5,8 @@ import com.example.swp.Entity.ProductEntity;
 import com.example.swp.Repository.IProductRepository;
 import com.example.swp.Service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
