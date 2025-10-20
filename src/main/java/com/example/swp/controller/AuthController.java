@@ -61,7 +61,7 @@ public class AuthController extends BaseAPIController {
                 return "redirect:/products/list"; // màn dành cho Manager
 
             case TRAINER:
-                return "redirect:/trainers/dashboard"; // ví dụ màn riêng của Trainer
+                return "redirect:/home"; // ví dụ màn riêng của Trainer
 
             case MEMBER:
             default:

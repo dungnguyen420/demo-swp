@@ -65,12 +65,13 @@
             <form th:action="@{/cart/add}" method="post">
                 <input type="hidden" name="productId" th:value="${p.id}">
                 <input class="qty" type="number" name="quantity" value="1" min="1" th:attr="max=${p.quantity}">
-                <button type="submit" th:disabled="${p.quantity <= 0}">Thêm vào giỏ</button>
+                <button type="submit">Thêm vào giỏ</button>
             </form>
         </div>
     </div>
 </div>
-
+<div th:if="${msg}" style="color:green" th:text="${msg}"></div>
+<div th:if="${error}" style="color:red" th:text="${error}"></div>
 <div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
     <a th:if="${page > 0}"
        th:href="@{/shop(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>

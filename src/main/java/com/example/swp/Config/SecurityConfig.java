@@ -48,9 +48,14 @@ public class SecurityConfig {
                                 "/classes",
                                 "/classes/**",
                                 "/cart/view",
-                                "/shop/list"
+                                "/shop",
+                                "/shop/add",
+                                "/cart/add",
+                                "/cart/update",
+                                "/cart/clear"
 
                         ).permitAll()// cho phép trang login
+                        .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/products/**").hasRole("MANAGER")
                         .anyRequest().authenticated()

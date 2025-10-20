@@ -29,5 +29,9 @@ public class ProductEntity {
     private  int quantity;
 
     private String image;
+
+    @Version
+    @Column(name = "version")
+    private Integer version;
 }
 
