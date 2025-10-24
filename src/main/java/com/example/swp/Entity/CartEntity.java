@@ -2,25 +2,25 @@ package com.example.swp.Entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.security.core.userdetails.User;
-
 import java.time.LocalDateTime;
 
-import jakarta.persistence.*;
-import java.time.LocalDateTime;
 @Data
 @Entity
-@Table(name = "carts")
+@Table(name = "cart")
 public class CartEntity {
 
     @Id
-    @Column(name = "user_id")
-    private Long userId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "cart_id")
+    private long id;
 
     @OneToOne
-    @MapsId
     @JoinColumn(name = "user_id")
     private UserEntity user;
+
+    private double totalPrice;
+
+    private long paymentId;
 
     @Column(name = "created_at", updatable = false, insertable = false)
     private LocalDateTime createdAt;
@@ -33,10 +33,5 @@ public class CartEntity {
 
     public CartEntity(UserEntity user) {
         this.user = user;
-        this.userId = user.getId();
     }
-
-
 }
-
-

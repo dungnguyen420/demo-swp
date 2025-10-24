@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(
                                 "/trainers/detail/**",
                                 "/classes",
@@ -48,7 +48,9 @@ public class SecurityConfig {
                                 "/shop/add",
                                 "/cart/add",
                                 "/cart/update",
-                                "/cart/clear"
+                                "/cart/clear",
+                                "/orders/create",
+                                "/orders/**"
 
                         ).permitAll()// cho phép trang login
                         .requestMatchers("/cart/**").authenticated()
@@ -66,7 +68,12 @@ public class SecurityConfig {
                         .logoutUrl("/auth/logout")
                         .logoutSuccessUrl("/auth/login?logout=true")
                         .permitAll()
+
+                ).csrf(csrf -> csrf
+
+                        .ignoringRequestMatchers("/api/cart/**", "/orders/**")
                 );
+
 
         return http.build();
     }

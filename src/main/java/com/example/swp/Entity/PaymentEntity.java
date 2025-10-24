@@ -2,6 +2,7 @@ package com.example.swp.Entity;
 
 import com.example.swp.Enums.PaymentMethod;
 import com.example.swp.Enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,26 +17,21 @@ import java.time.LocalDateTime;
 @Builder
 public class PaymentEntity extends BaseEntity {
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
+    private String orderCode;
+    private Integer amount;
+    private String description;
+    private String checkoutUrl;
+    private String status;
+    private String qrCode;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscription_id", nullable = false)
-    private SubscriptionEntity subscription;
-
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal amount;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PaymentMethod method;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private PaymentStatus status;
+    @OneToOne(mappedBy = "paymentEntity",
+            cascade = CascadeType.ALL, orphanRemoval = true
+    )
+    @JsonBackReference
+    private OrderEntity orderEntity;
 
 }
 

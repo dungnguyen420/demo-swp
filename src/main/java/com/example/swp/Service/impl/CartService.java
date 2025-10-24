@@ -72,7 +72,6 @@ public class CartService implements ICartService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"));
 
         if (qty > p.getQuantity()) throw new RuntimeException("Vượt quá tồn kho");
-
         CartEntity cart = ensureCart(userId);
 
         CartItemEntity item = itemRepo.findByCart_UserIdAndProduct_Id(userId, req.getProductId())
@@ -164,5 +163,3 @@ public class CartService implements ICartService {
         return toSummary(userId);
     }
 }
-
-

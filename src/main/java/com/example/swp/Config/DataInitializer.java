@@ -5,8 +5,10 @@ import com.example.swp.Enums.Status;
 import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
 import com.example.swp.Service.impl.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -76,7 +78,10 @@ public class DataInitializer implements CommandLineRunner {
 
     }
 
-
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
 }
 
 

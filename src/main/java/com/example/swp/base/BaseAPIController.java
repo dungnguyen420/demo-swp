@@ -3,11 +3,16 @@ package com.example.swp.base;
 import com.example.swp.Config.JwtUtil;
 import com.example.swp.DTO.response.PageResponseDTO;
 import com.example.swp.DTO.response.TFUResponse;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+
+import java.io.IOException;
 
 public abstract class BaseAPIController {
 
@@ -79,4 +84,7 @@ public abstract class BaseAPIController {
         return null;
     }
 
+    public abstract void onAuthenticationSuccess(HttpServletRequest request,
+                                                 HttpServletResponse response,
+                                                 Authentication authentication) throws IOException, ServletException;
 }

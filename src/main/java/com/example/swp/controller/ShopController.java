@@ -1,4 +1,4 @@
-package com.example.swp.controller;
+package com.example.swp.Controller;
 
 import com.example.swp.Entity.ProductEntity;
 import com.example.swp.Repository.IProductRepository;

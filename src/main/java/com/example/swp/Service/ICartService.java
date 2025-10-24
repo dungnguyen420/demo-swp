@@ -8,16 +8,15 @@ import com.example.swp.Entity.CartItemEntity;
 import java.util.List;
 
 
-    public interface ICartService {
+public interface ICartService {
 
-        CartSummaryDTO getCart(Long userId);
+    CartSummaryDTO getCart(Long userId);
 
-        CartSummaryDTO addItem(Long userId, CartRequestDTO req);
+    CartSummaryDTO addItem(Long userId, CartRequestDTO req);
 
-        CartSummaryDTO updateItem(Long userId, CartRequestDTO req);
+    CartSummaryDTO updateItem(Long userId, CartRequestDTO req);
 
-        CartSummaryDTO removeItem(Long userId, Long productId);
+    CartSummaryDTO removeItem(Long userId, Long productId);
 
-        void clear(Long userId);
-    }
-
+    void clear(Long userId);
+}

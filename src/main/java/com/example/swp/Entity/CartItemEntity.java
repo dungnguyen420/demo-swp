@@ -8,7 +8,6 @@ import lombok.Data;
 @Table(name = "cart_items")
 @IdClass(CartItemId.class)
 public class CartItemEntity {
-
     @Id
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
