@@ -1,98 +1,174 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Cửa hàng</title>
-    <style>
-        .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:16px; }
-        .card { border:1px solid #e5e5e5; border-radius:8px; padding:12px; background:#fff; display:flex; flex-direction:column; }
-        .card img { width:100%; height:160px; object-fit:cover; border-radius:6px; background:#f6f6f6; }
-        .name { font-weight:600; margin:8px 0 4px; }
-        .price { color:#e03131; font-weight:600; }
-        .row { display:flex; gap:8px; align-items:center; justify-content:space-between; margin-top:8px; }
-        .actions form { display:flex; gap:6px; align-items:center; }
-        .qty { width:64px; text-align:right; }
-        .toolbar { display:flex; gap:10px; align-items:center; margin:10px 0 16px; flex-wrap:wrap; }
-        .pagination a { margin:0 4px; text-decoration:none; }
-        .pagination .current { font-weight:bold; }
-    </style>
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymCare - Cửa hàng</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}"> </head>
 <body>
 
-<h2>Cửa hàng</h2>
-
-<form class="toolbar" method="get" th:action="@{/shop}">
-    <input type="text" name="keyword" placeholder="Tìm sản phẩm..." th:value="${keyword}">
-    <label>Size:</label>
-    <input type="number" name="size" th:value="${size}" min="1" max="100" style="width:80px">
-    <label>Sắp xếp:</label>
-    <select name="sortBy">
-        <option value="name" th:selected="${sortBy=='name'}">Tên</option>
-        <option value="price" th:selected="${sortBy=='price'}">Giá</option>
-        <option value="quantity" th:selected="${sortBy=='quantity'}">Tồn kho</option>
-        <option value="id" th:selected="${sortBy=='id'}">Mới nhất</option>
-    </select>
-    <select name="dir">
-        <option value="asc" th:selected="${dir=='asc'}">Tăng dần</option>
-        <option value="desc" th:selected="${dir=='desc'}">Giảm dần</option>
-    </select>
-    <button type="submit">Áp dụng</button>
-    <a th:href="@{/shop(size=${size}, sortBy=${sortBy}, dir=${dir})}">Clear</a>
-
-    <a th:href="@{/cart/view}"
-       style="margin-left:auto; position:relative; padding:8px 12px; border:1px solid #ccc; border-radius:6px; text-decoration:none;">
-        🛒 Giỏ hàng
-        <span th:if="${cartCount != null and cartCount > 0}"
-              th:text="${cartCount}"
-              style="position:absolute; top:-6px; right:-6px; background:#e03131; color:#fff; border-radius:999px; padding:0 6px; font-size:12px; line-height:18px; min-width:18px; text-align:center;">
-    0
-  </span>
-    </a>
-</form>
-
-<div class="grid">
-    <div class="card" th:each="p : ${products}">
-        <img th:if="${p.image != null}" th:src="${p.image}" alt="image">
-        <div class="name" th:text="${p.name}">Tên sản phẩm</div>
-        <div th:text="${p.description}" style="font-size:13px; color:#555; min-height:36px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
-            Mô tả
+<header class="navbar">
+    <a th:href="@{/}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/packages}">Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
         </div>
-        <div class="row">
-            <div class="price" th:text="${p.price}">0</div>
-            <div style="font-size:12px; color:#666">Còn: <span th:text="${p.quantity}">0</span></div>
-        </div>
-        <div class="row actions">
-            <form th:action="@{/cart/add}" method="post">
-                <input type="hidden" name="productId" th:value="${p.id}">
-                <input class="qty" type="number" name="quantity" value="1" min="1" th:attr="max=${p.quantity}">
-                <button type="submit">Thêm vào giỏ</button>
-            </form>
-        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
     </div>
-</div>
-<div th:if="${msg}" style="color:green" th:text="${msg}"></div>
-<div th:if="${error}" style="color:red" th:text="${error}"></div>
-<div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
-    <a th:if="${page > 0}"
-       th:href="@{/shop(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>
+</header>
 
-    <a th:if="${page > 0}"
-       th:href="@{/shop(page=${page -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trước</a>
 
-    <span th:each="i : ${#numbers.sequence(0, totalPages -1)}">
-    <a th:if="${i != page}"
-       th:text="${i+1}"
-       th:href="@{/shop(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">1</a>
-    <span th:if="${i == page}" class="current" th:text="${i+1}">1</span>
-    <span> </span>
-  </span>
+<main>
+    <div class="page-container">
 
-    <a th:if="${page < totalPages -1}"
-       th:href="@{/shop(page=${page+1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Sau</a>
+        <h2 class="page-title">Cửa hàng</h2>
 
-    <a th:if="${page < totalPages -1}"
-       th:href="@{/shop(page=${totalPages -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang cuối</a>
-</div>
+        <form class="filter-form" method="get" th:action="@{/shop}">
+            <input type="text" name="keyword" placeholder="Tìm sản phẩm..." th:value="${keyword}">
+            <select name="sortBy">
+                <option value="name" th:selected="${sortBy=='name'}">Sắp xếp theo Tên</option>
+                <option value="price" th:selected="${sortBy=='price'}">Sắp xếp theo Giá</option>
+                <option value="id" th:selected="${sortBy=='id'}">Sắp xếp theo Mới nhất</option>
+            </select>
+            <select name="dir">
+                <option value="asc" th:selected="${dir=='asc'}">Tăng dần</option>
+                <option value="desc" th:selected="${dir=='desc'}">Giảm dần</option>
+            </select>
+            <button type="submit">Áp dụng</button>
+            <a th:href="@{/shop(size=${size}, sortBy=${sortBy}, dir=${dir})}" class="btn-reset" style="margin-left: auto;">
+                <i class="fas fa-times"></i> Clear
+            </a>
+        </form>
 
+        <div class="cart-link-wrapper">
+            <a th:href="@{/cart/view}" class="cta-button cart-nav-button">
+                <i class="fas fa-shopping-cart"></i>
+                Giỏ hàng
+                <span th:if="${cartCount != null and cartCount > 0}"
+                      th:text="${cartCount}"
+                      class="cart-count-badge">
+                0
+              </span>
+            </a>
+        </div>
+
+        <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <div class="product-grid">
+
+            <div class="product-card" th:each="p : ${products}">
+                <div class="product-image">
+                    <div class="image-background-fix">
+                        <img th:if="${p.image != null}" th:src="${p.image}" alt="image">
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3 th:text="${p.name}">Tên sản phẩm</h3>
+                    <div class="product-bio" th:text="${p.description}">Mô tả ngắn</div>
+                    <div class="product-details">
+                        <span class="price" th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span>
+                        <span class="quantity">Còn: <span th:text="${p.quantity}">0</span></span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <form th:action="@{/cart/add}" method="post" style="width: 100%;">
+                        <input type="hidden" name="productId" th:value="${p.id}">
+                        <input class="qty-input" type="number" name="quantity" value="1" min="1" th:attr="max=${p.quantity}">
+                        <button type="submit" class="cta-button">Thêm vào giỏ</button>
+                    </form>
+                </div>
+            </div>
+
+        </div> <div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
+        <a th:if="${page > 0}"
+           th:href="@{/shop(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>
+        <a th:if="${page > 0}"
+           th:href="@{/shop(page=${page -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trước</a>
+        <span th:each="i : ${#numbers.sequence(0, totalPages -1)}">
+                <a th:if="${i != page}"
+                   th:text="${i+1}"
+                   th:href="@{/shop(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">1</a>
+                <span th:if="${i == page}" class="current" th:text="${i+1}">1</span>
+                <span> </span>
+            </span>
+        <a th:if="${page < totalPages -1}"
+           th:href="@{/shop(page=${page+1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Sau</a>
+        <a th:if="${page < totalPages -1}"
+           th:href="@{/shop(page=${totalPages -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang cuối</a>
+    </div>
+
+    </div> </main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Script cho Navbar (Đã có)
+        const navbar = document.querySelector('.navbar');
+        if(navbar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // Script cho Dropdown (Cần sửa lại cho đúng)
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileDropdown) {
+            // Click vào toàn bộ dropdown để toggle
+            profileDropdown.addEventListener('click', (e) => {
+                // Ngăn click vào link con đóng dropdown
+                if (!e.target.closest('a')) {
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+
+            // Tùy chọn: Đóng dropdown khi click ra ngoài
+            document.addEventListener('click', (e) => {
+                if (profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Script cho animation (Đã có)
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
+        elementsToAnimate.forEach(el => observer.observe(el));
+    });
+</script>
 </body>
 </html>

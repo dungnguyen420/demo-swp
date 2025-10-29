@@ -37,9 +37,6 @@ public class OrderService implements IOrderService {
     private OrderRepository orderRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
-    @Autowired
-    private OrderItemEntityRepository orderItemEntityRepository;
-
     public OrderService(CartRepository cartRepository) {
         this.cartRepository = cartRepository;
     }
@@ -77,8 +74,8 @@ public class OrderService implements IOrderService {
 
        int amount = (int) totalPrice;
 
-        String returnUrl = "https://abc.com/return";
-        String cancelUrl = "https://abc.com/cancel";
+        String returnUrl = "http://localhost:8080/home";
+        String cancelUrl = "http://localhost:8080/home";
         Long orderCode = System.currentTimeMillis() / 1000;
 
         PaymentData paymentData = PaymentData.builder()
@@ -126,13 +123,63 @@ public class OrderService implements IOrderService {
             orderItemRepository.save(orderItemEntity);
         }
 
-        existingCart.setTotalPrice(0);
-        cartItemRepository.deleteAll(cartsItems);
-        cartRepository.save(existingCart);
-
         return result;
     }
+    @Override
+    public void processSuccessfulPayment(String orderCode) throws Exception {
+        OrderEntity order = orderRepository.findByOrderCode(orderCode)
+                .orElseThrow(() -> new Exception("Không tìm thấy đơn hàng với mã: " + orderCode));
 
+        // Chỉ xử lý nếu đơn hàng đang chờ
+        if (order.getStatus() == OrderStatus.PENDING) {
+            //  Cập nhật trạng thái Đơn hàng
+            order.setStatus(OrderStatus.COMPLETED);
+            orderRepository.save(order);
+
+            //  Cập nhật trạng thái Payment
+            PaymentEntity payment = order.getPaymentEntity();
+            if (payment != null) {
+                payment.setStatus("PAID");
+                paymentRepository.save(payment);
+            }
+
+            //  Lấy User từ Order
+            UserEntity user = order.getUserEntity();
+            if (user == null) {
+                throw new Exception("Đơn hàng không liên kết với người dùng nào.");
+            }
+
+            //  XÓA giỏ hàng của User này
+            CartEntity cart = cartRepository.findByUserId(user.getId());
+            if (cart != null) {
+                List<CartItemEntity> cartItems = cartItemRepository.findByCart_UserId(user.getId());
+                cartItemRepository.deleteAll(cartItems);
+                cart.setTotalPrice(0);
+                cartRepository.save(cart);
+            }
+        }
+
+    }
+
+    @Override
+    public void processFailedPayment(String orderCode) throws Exception {
+        OrderEntity order = orderRepository.findByOrderCode(orderCode)
+                .orElseThrow(() -> new Exception("Không tìm thấy đơn hàng với mã: " + orderCode));
+
+        // Chỉ xử lý nếu đơn hàng đang chờ
+        if (order.getStatus() == OrderStatus.PENDING) {
+            // 1. Cập nhật trạng thái Đơn hàng
+            order.setStatus(OrderStatus.CANCELLED);
+            orderRepository.save(order);
+
+            // 2. Cập nhật trạng thái Payment
+            PaymentEntity payment = order.getPaymentEntity();
+            if (payment != null) {
+                payment.setStatus("CANCELLED");
+                paymentRepository.save(payment);
+            }
+        }
+    }
 
 
 }

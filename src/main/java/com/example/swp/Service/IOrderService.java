@@ -11,4 +11,6 @@ import vn.payos.type.CheckoutResponseData;
 
 public interface IOrderService {
     CheckoutResponseData createOrder(OrderDTO dto) throws Exception;
+    void processSuccessfulPayment(String orderCode) throws Exception;
+    void processFailedPayment(String orderCode) throws Exception;
 }
