@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymCare - Chi tiết Đơn hàng</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}"> <style>
+    /* CSS tương tự như trang Lịch sử của bạn */
+    .page-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+    .page-title { text-align: center; margin-bottom: 1.5rem; }
+    .content-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 1.5rem; overflow-x: auto; }
+
+    .alert-success, .alert-danger { padding: 1rem; margin-bottom: 1rem; border-radius: 5px; }
+    .alert-success { color: #155724; background-color: #d4edda; }
+    .alert-danger { color: #721c24; background-color: #f8d7da; }
+
+    /* CSS cho bảng Tóm tắt */
+    .order-summary { list-style: none; padding: 0; margin-bottom: 20px; }
+    .order-summary li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+    .order-summary li:last-child { border-bottom: none; }
+    .order-summary li strong { color: #333; }
+    .order-summary li span { color: #555; }
+    .status-PENDING { color: #f0ad4e; font-weight: bold; }
+    .status-COMPLETED { color: #5cb85c; font-weight: bold; }
+    .status-CANCELLED { color: #d9534f; font-weight: bold; }
+
+    /* CSS cho bảng Chi tiết */
+    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .data-table th, .data-table td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; vertical-align: middle; }
+    .data-table th { background: #f9f9f9; }
+    .data-table th:nth-child(2), .data-table td:nth-child(2) { text-align: center; } /* Căn giữa SL */
+    .data-table th:nth-child(3), .data-table td:nth-child(3) { text-align: right; } /* Căn phải Giá */
+    .data-table th:nth-child(4), .data-table td:nth-child(4) { text-align: right; } /* Căn phải Tạm tính */
+
+    .action-links { margin-top: 2rem; }
+    .cta-button.secondary { background-color: #6c757d; } /* Nút Quay lại */
+</style>
+</head>
+<body>
+
+<header class="navbar">
+    <a th:href="@{/}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/packages}">Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}" class="nav-button">Cửa hàng</a></li> </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+<main>
+    <div class="page-container">
+        <h2 class="page-title">Chi tiết Đơn hàng</h2>
+
+        <div class="content-card">
+
+            <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+            <div th:if="${order != null}">
+
+                <h3>Thông tin chung</h3>
+                <ul class="order-summary">
+                    <li>
+                        <strong>Mã đơn hàng:</strong>
+                        <span th:text="${order.orderCode}"></span>
+                    </li>
+                    <li>
+                        <strong>Ngày tạo:</strong>
+                        <span th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}"></span>
+                    </li>
+                    <li>
+                        <strong>Trạng thái:</strong>
+                        <span th:text="${order.status}" th:classappend="'status-' + ${order.status}"></span>
+                    </li>
+                    <li>
+                        <strong>Tổng tiền:</strong>
+                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'" style="font-weight:bold; color: #d9534f;"></span>
+                    </li>
+                </ul>
+
+                <h3 style="margin-top: 2rem;">Chi tiết sản phẩm</h3>
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th style="text-align: center;">Số lượng</th>
+                        <th style="text-align: right;">Đơn giá</th>
+                        <th style="text-align: right;">Thành tiền</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${order.items}">
+                        <td data-label="Sản phẩm" th:text="${item.productName}">Tên sản phẩm</td>
+                        <td data-label="Số lượng" style="text-align: center;" th:text="${item.quantity}"></td>
+                        <td data-label="Đơn giá" style="text-align: right;" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
+                        <td data-label="Thành tiền" style="text-align: right;" th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div class="action-links">
+                    <a th:href="@{/orders/history}" class="cta-button secondary">Quay lại Lịch sử</a>
+                </div>
+
+            </div> </div> </div> </main>
+
+<footer class="site-footer">
+    <div class="container"> <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
+    </div>
+</footer>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileDropdown) {
+            profileDropdown.addEventListener('click', (e) => {
+                if (!e.target.closest('a')) {
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

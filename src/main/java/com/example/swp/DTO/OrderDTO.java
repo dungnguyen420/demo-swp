@@ -18,6 +18,7 @@ public class OrderDTO {
     private String returnUrl;
     private String paymentUrl;
     private String description;
+    private LocalDateTime createdAt;
 
     public void setPaymentUrl(String paymentUrl) {
         this.paymentUrl = paymentUrl;

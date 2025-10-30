@@ -1,64 +1,107 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Đơn hàng đã tạo thành công</title>
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
-        }
-        .card {
-            border: none;
-            border-radius: 15px;
-        }
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymCare - Tiến hành thanh toán</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}">
+
 </head>
 <body>
 
-<div class="container mt-5">
-    <div class="card shadow-lg text-center">
-        <div class="card-header bg-success text-white py-4">
-            <h3 class="mb-0">🎉 Đơn hàng đã được tạo thành công!</h3>
+<header class="navbar">
+    <a th:href="@{/}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/}">Trang chủ</a></li>
+            <li><a th:href="@{/packages}">Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
         </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
 
-        <div class="card-body py-5">
-            <p class="lead">Mã đơn hàng của bạn là:
-                <strong class="text-primary" th:text="${orderCode}"></strong>
+<main>
+    <div class="page-container" style="text-align: center;">
+
+        <h2 class="page-title">🎉 Đơn hàng đã tạo thành công!</h2>
+
+        <div class="content-card" style="padding: 2.5rem;">
+
+            <p style="font-size: 1.2rem; color: var(--text-gray); margin-top: 1rem;">
+                Mã đơn hàng của bạn là:
+                <strong style="color: var(--primary-color); font-size: 1.3rem;" th:text="${orderCode}">[Mã Đơn Hàng]</strong>
             </p>
 
-            <p class="mb-4">Nhấn vào nút bên dưới để tiến hành thanh toán.</p>
+            <p style="font-size: 1.1rem; margin-bottom: 2.5rem; color: var(--text-color);">
+                Nhấn vào nút bên dưới để hoàn tất thanh toán.
+            </p>
 
             <a th:href="${checkoutUrl}" target="_blank"
-               class="btn btn-primary btn-lg px-5">
-                💳 Thanh toán qua PayOS
+               class="cta-button"
+               style="padding: 15px 40px; font-size: 1.1rem;">
+                <i class="fas fa-credit-card"></i>
+                Thanh toán qua PayOS
             </a>
-        </div>
 
-        <div class="card-footer text-muted py-3">
-            Cảm ơn bạn đã mua hàng cùng chúng tôi ❤️
-        </div>
+            <p style="color: var(--text-gray); margin-top: 2.5rem; font-size: 0.9rem;">
+                Cảm ơn bạn đã mua hàng cùng chúng tôi ❤️
+            </p>
+
+        </div> <a th:href="@{/cart/view}" style="color: var(--text-gray); margin-top: 2rem; display: inline-block; text-decoration: none;">
+        <i class="fas fa-arrow-left"></i> Quay lại giỏ hàng
+    </a>
+
+    </div> </main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
     </div>
-</div>
+</footer>
 
 <script>
-    Swal.fire({
-        title: 'Đơn hàng đã tạo thành công!',
-        text: 'Bạn có thể thanh toán ngay bằng PayOS.',
-        icon: 'success',
-        confirmButtonText: 'OK',
-        timer: 3000
+    document.addEventListener('DOMContentLoaded', () => {
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileDropdown) {
+            profileDropdown.addEventListener('click', (e) => {
+                if (!e.target.closest('a')) {
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+        }
     });
 </script>
 

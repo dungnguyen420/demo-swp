@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,5 +26,20 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long>, 
     @Query("select p from ProductEntity p where p.id = :id")
     Optional<ProductEntity> findForUpdate(@Param("id") Long id);
 
+    @Query("""
+        SELECT p FROM ProductEntity p
+        WHERE 
+            (:keyword IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+             OR LOWER(p.description) LIKE LOWER(CONCAT('%', :keyword, '%')))
+        AND (:minPrice IS NULL OR p.price >= :minPrice)
+        AND (:maxPrice IS NULL OR p.price <= :maxPrice)
+        AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
+        AND (:toDate IS NULL OR p.createdDate <= :toDate)
+        """)
+    List<ProductEntity> searchAdvanced(String keyword,
+                                       Double minPrice,
+                                       Double maxPrice,
+                                       LocalDateTime fromDate,
+                                       LocalDateTime toDate);
 
 }

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -44,6 +45,10 @@ public class OrderEntity {
     @OneToOne()
     @JoinColumn(name = "payment_id", unique = true)
     private PaymentEntity paymentEntity;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "orderEntity",
             cascade = CascadeType.ALL, orphanRemoval = true)

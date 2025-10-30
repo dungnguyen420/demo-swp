@@ -60,19 +60,19 @@ public class AuthController extends BaseAPIController {
 
         switch (user.getRole()) {
             case ADMIN:
-                return "redirect:/home";
+                return "redirect:/dashBoard";
 
             case MANAGER:
                 return "redirect:/products/list"; // màn dành cho Manager
 
             case TRAINER:
-                return "redirect:/home"; // ví dụ màn riêng của Trainer
+                return "redirect:/home"; // ví dụ màn riêng của Traine
 
             case MEMBER:
             default:
                 return "redirect:/home"; // người dùng bình thườn
         }
-    }
+        }
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute RegisterDTO dto, Model model) {

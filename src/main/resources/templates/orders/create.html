@@ -18,37 +18,9 @@
 
             <form th:action="@{/orders/create}" th:object="${order}" method="post">
 
-                <div class="mb-3">
-                    <label class="form-label">Mô tả đơn hàng</label>
-                    <input type="text" th:field="*{description}" class="form-control"
-                           placeholder="VD: Thanh toán đơn hàng laptop">
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Tổng tiền (VNĐ)</label>
-                    <input type="number" th:field="*{totalPrice}" class="form-control" placeholder="Nhập tổng tiền">
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">URL sau khi thanh toán thành công</label>
-                    <input type="text" th:field="*{returnUrl}" class="form-control"
-                           placeholder="VD: https://example.com/success">
-                </div>
 
-                <div class="mb-3">
-                    <label class="form-label">URL khi hủy thanh toán</label>
-                    <input type="text" th:field="*{cancelUrl}" class="form-control"
-                           placeholder="VD: https://example.com/cancel">
-                </div>
-
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success btn-lg px-4">
-                        💳 Tạo đơn hàng
-                    </button>
-                </div>
-            </form>
-
-        </div>
     </div>
 </div>
 
