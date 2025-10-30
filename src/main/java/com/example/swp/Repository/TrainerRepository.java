@@ -42,6 +42,7 @@ public interface TrainerRepository extends JpaRepository<UserEntity, Long>, JpaS
             @Param("specialization") String specialization,
             Pageable pageable
     );
+    Optional<UserEntity> findByUserName(String userName);
 
 
     Long id(Long id);

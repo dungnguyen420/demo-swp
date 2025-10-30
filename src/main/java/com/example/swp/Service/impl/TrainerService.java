@@ -40,14 +40,17 @@ public Page<UserEntity> search(String name, UserGender gender, String specializa
         if (trainerRepository.findByEmail(dto.getEmail()).isPresent()){
             throw new RuntimeException("Email đã được sử dụng");
         }
+        if (trainerRepository.findByUserName(dto.getUserName()).isPresent()){
+            throw new RuntimeException("Email đã được sử dụng");
+        }
         UserEntity trainer = new UserEntity();
 
-            trainer.setEmail(dto.getEmail());
+            trainer.setEmail(dto.getEmail().trim().replaceAll("\\s{2,}", " ") );
             trainer.setRole(UserRole.TRAINER);
             trainer.setPassword(encoder.encode(dto.getPassWord()));
-            trainer.setUserName(dto.getUserName());
-            trainer.setFirstName(dto.getFirstName());
-            trainer.setLastName(dto.getLastName());
+            trainer.setUserName(dto.getUserName().trim().replaceAll("\\s{2,}", " ") );
+            trainer.setFirstName(dto.getFirstName().trim().replaceAll("\\s{2,}", " ") );
+            trainer.setLastName(dto.getLastName().trim().replaceAll("\\s{2,}", " ") );
             trainer.setGender(dto.getGender());
             trainer.setStatus(Status.ACTIVE);
             trainer.setActive(true);
@@ -68,14 +71,14 @@ public Page<UserEntity> search(String name, UserGender gender, String specializa
         UserEntity existingTrainer = trainerRepository.findById(dto.getId())
                 .orElseThrow(()-> new RuntimeException("không tìm thấy trainer này"));
 
-            existingTrainer.setFirstName(dto.getFirstName());
-            existingTrainer.setLastName(dto.getLastName());
-            existingTrainer.setEmail(dto.getEmail());
+            existingTrainer.setFirstName(dto.getFirstName().trim().replaceAll("\\s{2,}", " "));
+            existingTrainer.setLastName(dto.getLastName().trim().replaceAll("\\s{2,}", " "));
+            existingTrainer.setEmail(dto.getEmail().trim().replaceAll("\\s{2,}", " "));
             if (dto.getPassWord() != null && !dto.getPassWord().isEmpty()) {
-                existingTrainer.setPassword(encoder.encode(dto.getPassWord()));
+                existingTrainer.setPassword(encoder.encode(dto.getPassWord().trim().replaceAll("\\s{2,}", " ")));
             }
             existingTrainer.setRole(UserRole.TRAINER);
-            existingTrainer.setUserName(dto.getUserName());
+            existingTrainer.setUserName(dto.getUserName().trim().replaceAll("\\s{2,}", " "));
             existingTrainer.setBio(dto.getBio());
 
         TrainerProfileEntity profile = existingTrainer.getTrainerProfile();
