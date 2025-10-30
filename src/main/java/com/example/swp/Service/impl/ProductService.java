@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,6 +107,13 @@ public class ProductService implements IProductService {
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
 
+    public List<ProductEntity> searchAdvanced(String keyword,
+                                              Double minPrice,
+                                              Double maxPrice,
+                                              LocalDateTime fromDate,
+                                              LocalDateTime toDate) {
+        return productRepository.searchAdvanced(keyword, minPrice, maxPrice, fromDate, toDate);
+    }
 
     @Override
     public Page<ProductEntity> findAllPaged(String keyword, Pageable pageable) {

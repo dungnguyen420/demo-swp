@@ -6,99 +6,119 @@
     <title>Đăng ký - GymCare</title>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         :root {
-            --primary-color: #00f6ff;
-            --card-bg: rgba(26, 26, 58, 0.65);
-            --text-light: #e0e0e0;
-            --text-secondary: #a0a0c0;
+            --primary-color: #FFD700; /* Vàng năng lượng */
+            --primary-gradient: linear-gradient(90deg, #FFD700, #FBB03B); /* Gradient vàng-cam */
+            --card-bg: rgba(26,26,26,0.73); /* Kính mờ đen */
+            --border-color: rgba(255, 215, 0, 0.25); /* Viền vàng nhạt */
+            --text-color: #FFFFFF;
+            --text-gray: #AAAAAA;
+            --border-radius: 18px;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            color: var(--text-light);
-            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background-image: url('https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1974&auto=format&fit=crop');
             background-attachment: fixed;
             background-position: center;
+            background-repeat: no-repeat;
             background-size: cover;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
             padding: 2rem 0;
+            background-color: #121212;
         }
-        .auth-container { width: 100%; max-width: 450px; padding: 2rem; }
+        .auth-container {
+            width: 100%; max-width: 450px; padding: 2rem;
+        }
         .auth-form {
             background: var(--card-bg);
             padding: 2.5rem;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 246, 255, 0.2);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 18px 38px rgba(255,215,0,0.09), 0 1.5px 5px rgba(0,0,0,0.25);
             text-align: center;
+            backdrop-filter: blur(12px);
             opacity: 0;
             transform: translateY(30px);
             animation: fadeInSlideUp 0.8s ease-out forwards;
         }
         .auth-form h1 {
             color: var(--primary-color);
-            margin-bottom: 2rem;
-            font-size: 2rem;
+            font-size: 2.1rem;
             font-weight: 700;
-            text-shadow: 0 0 10px var(--primary-color);
+            margin-bottom: 2rem;
+            text-shadow: 0 0 15px var(--primary-color);
+            font-family: 'Teko', sans-serif;
         }
-        .input-group { position: relative; margin-bottom: 1.2rem; }
+        .input-group {
+            position: relative; margin-bottom: 1.2rem;
+        }
         .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
+            position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+            color: var(--text-gray);
+            font-size: 1.05rem;
         }
         .auth-form input {
             width: 100%;
             padding: 1rem 1rem 1rem 3rem;
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(0,0,0,0.21);
+            border: 1px solid var(--border-color);
             border-radius: 10px;
-            color: var(--text-light);
+            color: var(--text-color);
             font-size: 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
         }
         .auth-form input:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 15px rgba(0, 246, 255, 0.5);
+            box-shadow: 0 0 16px rgba(255,215,0,0.2);
+            background: rgba(255,215,0,0.08);
         }
         .auth-button {
             width: 100%;
             padding: 1rem;
             border: none;
             border-radius: 10px;
-            background: linear-gradient(45deg, #00f6ff, #00aaff);
+            background: var(--primary-gradient);
             color: #121212;
             font-size: 1.1rem;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s, box-shadow 0.3s, background 0.24s;
             margin-top: 1rem;
+            box-shadow: 0 5px 18px rgba(255,215,0,0.19);
         }
         .auth-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
+            background: linear-gradient(90deg,#FBB03B,#FFD700);
+            box-shadow: 0 0 28px rgba(255,215,0,0.33);
         }
-        .form-footer { margin-top: 2rem; }
+        .form-footer {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
         .form-footer a {
-            color: var(--text-secondary);
+            color: var(--text-gray);
             text-decoration: none;
             font-size: 0.9rem;
-            transition: color 0.3s ease;
+            font-weight: 600;
+            transition: color 0.3s;
         }
         .form-footer a:hover { color: var(--primary-color); }
         .name-group { display: flex; gap: 1rem; }
         .name-group .input-group { flex: 1; }
+        .error-message { color: #ff5c5c; margin-bottom: 10px; }
         @keyframes fadeInSlideUp {
             to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 540px) {
+            .auth-form { padding: 1rem; }
         }
     </style>
 </head>

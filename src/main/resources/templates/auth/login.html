@@ -4,145 +4,89 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - GymCare</title>
+    <!-- Google Fonts mới -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap">
+    <!-- Font Awesome Icons cho input -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700&display=swap');
-
         :root {
-            --primary-color: #00f6ff; /* Xanh Cyan Neon */
-            --card-bg: rgba(26, 26, 58, 0.65); /* Nền thẻ kính mờ */
-            --text-light: #e0e0e0;
-            --text-secondary: #a0a0c0;
+            --primary-color: #FFD700; /* Vàng năng lượng */
+            --primary-gradient: linear-gradient(90deg, #FFD700, #FBB03B);
+            --dark-bg: #121212;
+            --card-bg: rgba(26, 26, 26, 0.7); /* Nền kính mờ vàng */
+            --border-color: rgba(255, 215, 0, 0.2);
+            --text-color: #FFFFFF;
+            --text-gray: #AAAAAA;
+            --border-radius: 18px;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * {margin: 0; padding: 0; box-sizing: border-box;}
         body {
-            font-family: 'Be Vietnam Pro', sans-serif;
-            color: var(--text-light);
-
-            /* Nền Galaxy với hiệu ứng Parallax */
-            background-image: url('https://images.unsplash.com/photo-1534796636912-3b95b3ab5986?q=80&w=2071&auto=format&fit=crop');
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-color);
+            background-image: url('https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1974&auto=format&fit=crop');
             background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-
-            /* Căn giữa form đăng nhập */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background-color: var(--dark-bg);
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
         }
-
-        .login-container {
-            width: 100%;
-            max-width: 400px;
-            padding: 2rem;
-        }
-
+        .login-container { width: 100%; max-width: 400px; padding: 2rem;}
         .login-form {
-            background: var(--card-bg);
-            padding: 3rem;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 246, 255, 0.2);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            text-align: center;
-
-            /* Animation */
-            opacity: 0;
-            transform: translateY(30px);
+            background: var(--card-bg); padding: 2.5rem 2rem; border-radius: var(--border-radius);
+            border: 1px solid var(--border-color); backdrop-filter: blur(12px);
+            box-shadow: 0 15px 45px rgba(0,0,0,0.6); text-align: center;
             animation: fadeInSlideUp 0.8s ease-out forwards;
+            opacity: 0; transform: translateY(30px);
+            transition: box-shadow 0.4s;
         }
-
         .login-form h1 {
-            color: var(--primary-color);
-            margin-bottom: 2rem;
-            font-size: 2rem;
-            font-weight: 700;
-            text-shadow: 0 0 10px var(--primary-color);
+            color: var(--primary-color); margin-bottom: 2rem; font-size: 2.1rem; font-weight: 700;
+            text-shadow: 0 0 12px var(--primary-color);
+            font-family: 'Teko', sans-serif;
         }
-
-        .input-group {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-        }
-
+        .input-group {position: relative; margin-bottom: 1.5rem;}
+        .input-group i {position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-gray);}
         .login-form input {
-            width: 100%;
-            padding: 1rem 1rem 1rem 3rem; /* Thêm padding cho icon */
-            background: rgba(0,0,0,0.2);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px;
-            color: var(--text-light);
-            font-size: 1rem;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%; padding: 1rem 1rem 1rem 3rem; background: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-color); font-size: 1rem;
+            transition: border-color 0.4s, box-shadow 0.4s;
         }
-
         .login-form input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 15px rgba(0, 246, 255, 0.5);
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+            background: rgba(255,215,0,0.07);
         }
-
         .login-button {
-            width: 100%;
-            padding: 1rem;
-            border: none;
-            border-radius: 10px;
-            background: linear-gradient(45deg, #00f6ff, #00aaff);
-            color: #121212;
-            font-size: 1.1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.3s ease;
+            width: 100%; padding: 1rem; border: none; border-radius: 10px;
+            background: var(--primary-gradient); color: var(--dark-bg);
+            font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
             margin-top: 1rem;
+            box-shadow: 0 5px 18px rgba(255, 215, 0, 0.18);
         }
-
         .login-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 0 25px rgba(0, 246, 255, 0.6);
+            background: linear-gradient(90deg, #FBB03B, #FFD700);
+            box-shadow: 0 0 32px rgba(255, 215, 0, 0.34);
+            color: #121212;
         }
-
-        .form-footer {
-            margin-top: 2rem;
-            display: flex;
-            justify-content: space-between;
-        }
-
+        .form-footer {margin-top: 2rem; display: flex; justify-content: space-between;}
         .form-footer a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s ease;
+            color: var(--text-gray); text-decoration: none; font-size: 0.9rem; transition: color 0.3s;
+            font-weight: 600;
         }
-
-        .form-footer a:hover {
-            color: var(--primary-color);
-        }
-
+        .form-footer a:hover { color: var(--primary-color);}
         @keyframes fadeInSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .error-message { color: #ff4c4c; margin-bottom: 10px; }
+
+        /* Responsive */
+        @media (max-width: 540px) {
+            .login-form { padding: 1rem;}
         }
     </style>
 </head>
