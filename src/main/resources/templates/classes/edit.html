@@ -146,7 +146,16 @@
 <body>
 <h2 th:text="'Sửa lớp: ' + ${clazz.name}">Sửa lớp</h2>
 
+
+
 <form th:action="@{|/classes/${clazz.id}/edit|}" th:object="${dto}" method="post">
+    <div th:if="${#fields.hasGlobalErrors() or #fields.hasAnyErrors()}">
+        <ul class="text-danger" style="margin-left:16px;">
+            <li th:each="e : ${#fields.allErrors()}" th:text="${e}"></li>
+        </ul>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     <div th:if="${errorMessage}" th:text="${errorMessage}"></div>
     <div th:if="${message}" th:text="${message}"></div>
 
@@ -218,52 +227,65 @@
     </div>
 </form>
 
-<script>
-    // Thêm dòng slot mới
-    function addRow() {
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
         const container = document.getElementById('slotContainer');
-        const idx = container.querySelectorAll('.slot-row').length;
+        const today = new Date().toISOString().split("T")[0];
 
-        const row = document.createElement('div');
-        row.className = 'slot-row';
-
-        // Tạo HTML cho dòng mới. Lấy các option từ select có sẵn đầu tiên.
-        const existingSelect = document.querySelector('.slot-row select');
-        let optionsHTML = '<option value="" disabled selected>Chọn slot</option>';
-        if (existingSelect) {
-            optionsHTML = existingSelect.innerHTML;
-        }
-
-        row.innerHTML = `
-            <div class="form-group">
-                <label>Ngày</label>
-                <input type="date" name="newSlots[${idx}].date" required>
-            </div>
-            <div class="form-group">
-                <label>Slot</label>
-                <select name="newSlots[${idx}].slotNumber" required>
-                    ${optionsHTML}
-                </select>
-            </div>
-            <button type="button" class="btn-icon btn-danger" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i></button>
-        `;
-        container.appendChild(row);
-    }
-
-    // Xóa dòng và re-index name
-    function removeRow(btn) {
-        const container = document.getElementById('slotContainer');
-        btn.parentElement.remove();
-
-        const rows = container.querySelectorAll('.slot-row');
-        rows.forEach((r, i) => {
-            const dateInput = r.querySelector('input[type="date"]');
-            const slotSelect = r.querySelector('select');
-            if(dateInput) dateInput.setAttribute('name', `newSlots[${i}].date`);
-            if(slotSelect) slotSelect.setAttribute('name', `newSlots[${i}].slotNumber`);
+        // Set min cho các input date đã render từ server (nếu có)
+        container.querySelectorAll('input[type="date"]').forEach(inp => {
+            inp.min = today;
         });
-    }
+
+        // Gán min cho input tạo mới trong addRow()
+        window.addRow = function() {
+            const idx = container.querySelectorAll('.slot-row').length;
+
+            // Lấy option slot từ select đầu tiên để giữ đồng nhất
+            const existingSelect = container.querySelector('.slot-row select');
+            const optionsHTML = existingSelect ? existingSelect.innerHTML
+                : '<option value="" disabled selected>Chọn slot</option>';
+
+            const row = document.createElement('div');
+            row.className = 'slot-row';
+
+            row.innerHTML = `
+        <label class="form-label">Ngày</label>
+        <input type="date" name="newSlots[${idx}].date" required>
+        <label class="form-label" style="width:auto">Slot</label>
+        <select name="newSlots[${idx}].slotNumber" required>
+          ${optionsHTML}
+        </select>
+        <button type="button" class="btn btn-del" onclick="removeRow(this)"><i class="fas fa-trash-alt"></i></button>
+      `;
+
+            container.appendChild(row);
+
+            // Chặn ngày quá khứ cho input vừa thêm
+            const dateInput = row.querySelector('input[type="date"]');
+            if (dateInput) dateInput.min = today;
+        };
+
+        // Xóa dòng và re-index, giữ nguyên min
+        window.removeRow = function(btn) {
+            btn.closest('.slot-row').remove();
+            const rows = container.querySelectorAll('.slot-row');
+            rows.forEach((r, i) => {
+                const dateInput = r.querySelector('input[type="date"]');
+                const slotSelect = r.querySelector('select');
+                if (dateInput) {
+                    dateInput.name = `newSlots[${i}].date`;
+                    // đảm bảo vẫn có min
+                    if (!dateInput.min) dateInput.min = today;
+                }
+                if (slotSelect) {
+                    slotSelect.name = `newSlots[${i}].slotNumber`;
+                }
+            });
+        };
+    });
 </script>
+
 
 </body>
 </html>

@@ -1,5 +1,6 @@
 package com.example.swp.DTO;
 
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -7,13 +8,22 @@ import java.util.List;
 
 @Data
 public class CreateClassBySlotDTO {
-    private Long trainerUserId;             // để trống nếu actor là TRAINER
+    private Long trainerUserId;
+
+    @NotBlank(message = "Tên lớp không được để trống")
+    @Size(min = 2, max = 100, message = "Tên lớp từ 2-100 ký tự")
+    @Pattern(regexp = "^(?!\\s)(?!.*\\s$)(?!\\d+$)[\\p{L}\\p{N}][\\p{L}\\p{N}\\s\\-._]*$",
+            message = "Tên lớp không hợp lệ")
     private String name;
+
+    @Size(max = 2000, message = "Mô tả tối đa 2000 ký tự")
     private String description;
+
+    @NotNull(message = "Sức chứa bắt buộc")
+    @Min(value = 1, message = "Sức chứa tối thiểu 1")
+    @Max(value = 8, message = "Sức chứa tối đa 8")
     private Integer capacity;
-    // Danh sách ngày + slotNumber muốn tạo (ví dụ: 2025-10-14, slot 2)
     private List<LocalDate> dates;
     private List<Integer> slotNumbers;
-    private List<SlotRequest> slots; // phải có field này
-// mỗi date ghép với 1 slot hoặc nhiều (tùy bạn)
+    private List<SlotRequest> slots;
 }
