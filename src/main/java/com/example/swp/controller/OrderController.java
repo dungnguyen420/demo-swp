@@ -2,12 +2,14 @@ package com.example.swp.Controller;
 
 import com.example.swp.DTO.OrderDTO;
 import com.example.swp.Service.IOrderService;
+import com.example.swp.Service.impl.CustomUserDetails;
 import com.example.swp.base.BaseAPIController;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,25 +26,34 @@ public class OrderController extends BaseAPIController {
     private IOrderService orderService;
 
 
-    @GetMapping("/create")
-    public String showCreateOrderPage(Model model) {
-        model.addAttribute("order", new OrderDTO());
-        return "orders/create";
-    }
-
-
     @PostMapping("/create")
-    public String createOrder(@ModelAttribute("order") OrderDTO dto,
-                              Model model) throws Exception {
-        Long userId = getCurrentUserId();
-        dto.setUserId(userId);
+    public String createOrderAndRedirect(
 
-        CheckoutResponseData result = orderService.createOrder(dto);
+            @AuthenticationPrincipal CustomUserDetails principal,
+            RedirectAttributes redirectAttributes) {
 
-        model.addAttribute("checkoutUrl", result.getCheckoutUrl());
-        model.addAttribute("orderCode", result.getOrderCode());
+        if (principal == null) {
+            return "redirect:/auth/login";
+        }
 
-        return "orders/success";
+        try {
+
+            OrderDTO orderRequest = new OrderDTO();
+            orderRequest.setUserId(principal.getUser().getId());
+
+
+            CheckoutResponseData paymentInfo = orderService.createOrder(orderRequest);
+
+
+            return "redirect:" + paymentInfo.getCheckoutUrl();
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi tạo đơn hàng: " + e.getMessage());
+
+            return "redirect:/cart/view";
+        }
     }
 
     @Override
@@ -56,22 +67,20 @@ public class OrderController extends BaseAPIController {
             RedirectAttributes redirectAttributes) {
 
         try {
-            // Kiểm tra status PayOS trả về (PAID, CANCELLED, ...)
-            // Giả sử "PAID" là trạng thái thành công, bạn cần kiểm tra tài liệu PayOS
+
             if ("PAID".equalsIgnoreCase(status)) {
 
-                // Gọi service để xử lý đơn hàng thành công và xóa giỏ hàng
                 orderService.processSuccessfulPayment(orderCode);
 
                 redirectAttributes.addFlashAttribute("successMessage", "Thanh toán đơn hàng thành công!");
-                // Chuyển hướng đến trang lịch sử đơn hàng hoặc trang chủ
-                return "redirect:/user/orders"; // (Hoặc "redirect:/")
+
+                return "redirect:/cart/view";
 
             } else {
-                // Nếu thanh toán bị hủy hoặc thất bại
+
                 orderService.processFailedPayment(orderCode);
                 redirectAttributes.addFlashAttribute("errorMessage", "Thanh toán thất bại hoặc đã bị hủy.");
-                return "redirect:/cart/view"; // Quay lại giỏ hàng
+                return "redirect:/cart/view";
             }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi xử lý thanh toán: " + e.getMessage());

@@ -74,8 +74,8 @@ public class OrderService implements IOrderService {
 
        int amount = (int) totalPrice;
 
-        String returnUrl = "http://localhost:8080/home";
-        String cancelUrl = "http://localhost:8080/home";
+        String returnUrl = "http://localhost:8080/orders/payment-success";
+        String cancelUrl = "http://localhost:8080/cart/view";
         Long orderCode = System.currentTimeMillis() / 1000;
 
         PaymentData paymentData = PaymentData.builder()
@@ -130,12 +130,12 @@ public class OrderService implements IOrderService {
         OrderEntity order = orderRepository.findByOrderCode(orderCode)
                 .orElseThrow(() -> new Exception("Không tìm thấy đơn hàng với mã: " + orderCode));
 
-        // Chỉ xử lý nếu đơn hàng đang chờ
+
         if (order.getStatus() == OrderStatus.PENDING) {
             //  Cập nhật trạng thái Đơn hàng
             order.setStatus(OrderStatus.COMPLETED);
             orderRepository.save(order);
-
+        }
             //  Cập nhật trạng thái Payment
             PaymentEntity payment = order.getPaymentEntity();
             if (payment != null) {
@@ -143,7 +143,6 @@ public class OrderService implements IOrderService {
                 paymentRepository.save(payment);
             }
 
-            //  Lấy User từ Order
             UserEntity user = order.getUserEntity();
             if (user == null) {
                 throw new Exception("Đơn hàng không liên kết với người dùng nào.");
@@ -159,7 +158,7 @@ public class OrderService implements IOrderService {
             }
         }
 
-    }
+
 
     @Override
     public void processFailedPayment(String orderCode) throws Exception {
