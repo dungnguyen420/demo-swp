@@ -109,7 +109,7 @@
                     <tbody>
                     <tr th:each="item : ${order.items}">
                         <td data-label="Sản phẩm" th:text="${item.productName}">Tên sản phẩm</td>
-                        <td data-label="Số lượng" style="text-align: center;" th:text="${item.quantity}">1</td>
+                        <td data-label="Số lượng" style="text-align: center;" th:text="${item.quantity}"></td>
                         <td data-label="Đơn giá" style="text-align: right;" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
                         <td data-label="Thành tiền" style="text-align: right;" th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
                     </tr>
