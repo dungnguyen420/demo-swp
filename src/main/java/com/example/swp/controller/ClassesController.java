@@ -13,6 +13,7 @@ import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Service.IClassesService;
 import com.example.swp.Service.IScheduleService;
 import com.example.swp.Service.impl.CustomUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -48,14 +50,21 @@ public class ClassesController {
     public String showCreateForm(Model model) {
         CreateClassBySlotDTO dto = new CreateClassBySlotDTO();
         dto.setSlots(new ArrayList<>(List.of(new SlotRequest())));
-        model.addAttribute("dto", dto);
+        model.addAttribute("classDTO", dto);
         model.addAttribute("trainers", userRepository.findAllByRole(UserRole.TRAINER));
         model.addAttribute("slotNumbers", List.of(1,2,3,4,5,6));
         return "classes/createClass";
     }
 
     @PostMapping("/create")
-    public String create(@ModelAttribute("dto") CreateClassBySlotDTO dto, Model model) {
+    public String create(@Valid @ModelAttribute("classDTO") CreateClassBySlotDTO dto,
+                         BindingResult br, Model model) {
+
+        if (br.hasErrors()) {
+            model.addAttribute("classDTO", dto);
+            model.addAttribute("trainers", userRepository.findAllByRole(UserRole.TRAINER));
+            model.addAttribute("slotNumbers", List.of(1,2,3,4,5,6));
+            return "classes/createClass";        }
         try {
             ClassesEntity created = classesService.createClassBySlots(dto);
             return "redirect:/classes/" + created.getId();
@@ -108,7 +117,6 @@ public class ClassesController {
             dto.setNewSlots(new ArrayList<>());
             dto.getNewSlots().add(new SlotRequest());
         }
-// một dòng trống ban đầu
 
         model.addAttribute("clazz", clazz);
         model.addAttribute("dto", dto);
@@ -119,8 +127,17 @@ public class ClassesController {
     @PostMapping("/{id}/edit")
     @PreAuthorize("hasRole('MANAGER')")
     public String editSubmit(@PathVariable Long id,
-                             @ModelAttribute("dto") EditClassDTO dto,
+                             @Valid @ModelAttribute("dto") EditClassDTO dto,
+                             BindingResult br,
+                             Model model,
                              RedirectAttributes ra) {
+        if (br.hasErrors()) {
+            ClassesEntity clazz = classesRepo.findById(id)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Class not found"));
+            model.addAttribute("clazz", clazz);
+            model.addAttribute("slotNumbers", List.of(1,2,3,4,5,6));
+            return "classes/edit";
+        }
         try {
             // 1) Cập nhật thông tin lớp
             ClassesEntity updated = classesService.updateBasicInfo(id, dto.getName(), dto.getDescription(), dto.getCapacity());

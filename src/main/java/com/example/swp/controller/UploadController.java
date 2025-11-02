@@ -32,6 +32,6 @@ public class UploadController {
         }catch (Exception e){
             model.addAttribute("message","Upload fail" + e.getMessage());
         }
-        return "upload_resuld";
+        return "upload_result";
     }
 }

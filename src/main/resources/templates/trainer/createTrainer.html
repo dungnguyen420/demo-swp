@@ -11,7 +11,7 @@
 </head>
 <body>
 <header class="navbar">
-    <a th:href="@{/}" class="logo">GymCare</a>
+    <a th:href="@{/home}" class="logo">GymCare</a>
 </header>
 
 <main class="page-container">
@@ -19,6 +19,15 @@
 
     <div class="form-card">
         <form th:action="@{/trainers/create}" th:object="${trainerDTO}" method="post">
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${#fields.hasGlobalErrors() or #fields.hasAnyErrors()}">
+                <ul class="text-danger" style="margin-left:16px;">
+                    <li th:each="e : ${#fields.allErrors()}" th:text="${e}"></li>
+                </ul>
+            </div>
+
+
             <div class="form-grid">
                 <div class="form-group">
                     <label for="firstName">Tên</label>

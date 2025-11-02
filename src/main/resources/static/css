@@ -1,0 +1,363 @@
+/* --- Google Fonts: Import font chữ năng động --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Teko:wght@700&display=swap');
+
+/* --- Biến màu và Font chữ toàn cục (Dễ dàng tùy chỉnh) --- */
+:root {
+    --primary-color: #FFD700; /* Vàng năng lượng */
+    --primary-gradient: linear-gradient(90deg, #FFD700, #FBB03B);
+    --dark-bg: #121212; /* Nền tối sâu */
+    --secondary-bg: #1A1A1A; /* Nền phụ có chiều sâu hơn */
+    --text-color: #FFFFFF; /* Chữ trắng */
+    --text-gray: #AAAAAA; /* Chữ xám nhạt */
+    --font-heading: 'Teko', sans-serif; /* Font cho tiêu đề lớn */
+    --font-body: 'Poppins', sans-serif; /* Font cho nội dung chính */
+    --border-radius: 12px; /* Dùng chung bo góc cho nhất quán */
+}
+
+/* --- Thiết lập chung & Hiệu ứng toàn trang --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ✨ [NÂNG CẤP] Thêm hiệu ứng cuộn mượt mà */
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--dark-bg);
+    color: var(--text-color);
+    line-height: 1.6;
+    overflow-x: hidden; /* Chống tràn ngang */
+}
+
+/* ✨ [NÂNG CẤP] Tùy chỉnh màu khi bôi đen chữ */
+::selection {
+    background-color: var(--primary-color);
+    color: var(--dark-bg);
+}
+
+/* ✨ [NÂNG CẤP] Tùy chỉnh thanh cuộn */
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #ffc400;
+}
+
+/* --- Header và Navbar --- */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 5%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: background-color 0.4s ease, padding 0.4s ease;
+}
+
+.navbar.scrolled {
+    background-color: rgba(18, 18, 18, 0.85);
+    padding: 15px 5%;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    text-decoration: none;
+    letter-spacing: 2px;
+    /* ✨ [NÂNG CẤP] Hiệu ứng cho logo */
+    transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+.logo:hover {
+    transform: scale(1.05);
+    text-shadow: 0 0 15px var(--primary-color);
+}
+
+.navbar nav ul {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 35px; /* Tăng khoảng cách một chút */
+}
+
+.navbar nav ul li a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: 600;
+    position: relative;
+    padding: 5px 0;
+    transition: color 0.3s ease;
+}
+
+.navbar nav ul li a::after {
+    content: '';
+    position: absolute;
+    bottom: -4px; /* Đẩy gạch chân xuống một chút */
+    left: 0;
+    width: 0;
+    height: 3px; /* Làm gạch chân dày hơn */
+    background: var(--primary-gradient); /* ✨ [NÂNG CẤP] Gạch chân Gradient */
+    border-radius: 2px;
+    transition: width 0.4s ease;
+}
+
+.navbar nav ul li a:hover {
+    color: var(--primary-color);
+}
+
+.navbar nav ul li a:hover::after {
+    width: 100%;
+}
+
+/* --- Nút Cửa hàng trên Navbar --- */
+.nav-button {
+    font-weight: 600;
+    padding: 8px 20px !important;
+    border: 2px solid var(--primary-color);
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+.nav-button:hover {
+    background: var(--primary-gradient);
+    border-color: transparent;
+    color: var(--dark-bg) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.2);
+}
+.nav-button::after {
+    display: none !important;
+}
+
+/* --- Phần xác thực và Dropdown --- */
+.auth-section {
+    display: flex;
+    align-items: center;
+}
+
+.profile-dropdown {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.profile-dropdown img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    margin-right: 10px;
+    transition: transform 0.3s ease;
+}
+.profile-dropdown:hover img {
+    transform: scale(1.1);
+}
+
+.profile-dropdown span {
+    font-weight: 600;
+}
+
+.dropdown-menu {
+    /* ✨ [NÂNG CẤP] Hiệu ứng xuất hiện cho dropdown */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+
+    position: absolute;
+    top: 120%;
+    right: 0;
+    background-color: var(--secondary-bg);
+    list-style: none;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    width: 200px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    padding: 5px;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.profile-dropdown:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-menu li a {
+    display: block;
+    padding: 12px 15px;
+    color: var(--text-gray);
+    text-decoration: none;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 8px;
+    font-weight: 500;
+}
+.dropdown-menu li a i {
+    margin-right: 10px;
+    color: var(--primary-color);
+    width: 20px;
+    text-align: center;
+}
+.dropdown-menu li a:hover {
+    background-color: rgba(255, 215, 0, 0.1);
+    color: var(--primary-color);
+}
+.dropdown-menu li.logout a:hover {
+    background-color: rgba(255, 92, 92, 0.1);
+    color: #ff5c5c;
+}
+.dropdown-menu li.logout a i {
+    color: #ff5c5c;
+}
+
+/* --- Nút Kêu gọi Hành động (CTA) --- */
+.cta-button {
+    padding: 14px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 700;
+    display: inline-block;
+    border: none;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+
+    /* ✨ [NÂNG CẤP] Nút bấm gradient sống động */
+    color: var(--dark-bg);
+    background: var(--primary-gradient);
+    background-size: 200% auto;
+    transition: all 0.4s ease;
+}
+.cta-button:hover {
+    background-position: right center; /* Thay đổi vị trí gradient */
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(251, 176, 59, 0.3);
+}
+
+/* --- Phần Hero Section --- */
+.hero-section {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 5%;
+    position: relative;
+    overflow: hidden; /* Quan trọng cho hiệu ứng zoom */
+    background: var(--dark-bg); /* Thêm nền dự phòng */
+}
+
+/* Lớp phủ tối để làm nổi bật chữ */
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop') no-repeat center center;
+    background-size: cover;
+
+    /* ✨ [NÂNG CẤP] Hiệu ứng Ken Burns (ảnh nền zoom chậm) */
+    animation: kenburns 20s ease-out infinite;
+    z-index: 0;
+}
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(18, 18, 18, 0.9), rgba(18, 18, 18, 0.4));
+    z-index: 1;
+}
+
+/* Keyframes cho hiệu ứng Ken Burns */
+@keyframes kenburns {
+    0% {
+        transform: scale(1);
+    }
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-content h1 {
+    font-family: var(--font-heading);
+    font-size: 6rem;
+    line-height: 1;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.7);
+    margin-bottom: 20px;
+
+    /* ✨ [NÂNG CẤP] Tiêu đề dạng Gradient */
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    color: var(--text-gray);
+    margin-bottom: 40px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+}
+
+/* --- Hiệu ứng Animation khi cuộn --- */
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- Responsive cho màn hình nhỏ hơn --- */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 3.5rem;
+    }
+    .hero-content p {
+        font-size: 1rem;
+    }
+    .navbar nav {
+        display: none;
+    }
+}

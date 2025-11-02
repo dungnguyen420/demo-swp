@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(
+                                "/home",
                                 "/trainers/detail/**",
                                 "/classes",
                                 "/packages",
@@ -52,7 +53,7 @@ public class SecurityConfig {
                                 "/orders/create",
                                 "/orders/**"
 
-                        ).permitAll()// cho phép trang login
+                        ).permitAll()// cho phép trang chua login
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/admin/**",
                                 "/trainers/create",

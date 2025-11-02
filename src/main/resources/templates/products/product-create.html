@@ -1,48 +1,227 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Thêm sản phẩm mới</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FFD700;
+            --primary-gradient: linear-gradient(90deg, #FFD700, #FBB03B);
+            --dark-bg: #121212;
+            --secondary-bg: #1A1A1A;
+            --text-color: #f1f1f1;
+            --text-gray: #CCCCCC;
+            --border-radius: 14px;
+            --border-color: rgba(255, 215, 0, 0.23);
+        }
+        /* Header và Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo {
+            font-family: 'Teko', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        .navbar nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 0;
+        }
+        .navbar nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+        .navbar nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+            transition: width 0.4s;
+        }
+        .navbar nav ul li a:hover {
+            color: var(--primary-color);
+        }
+        .navbar nav ul li a:hover::after {
+            width: 100%;
+        }
+        .nav-button {
+            font-weight: 600;
+            padding: 8px 20px !important;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+        }
+        .auth-section { display: flex; align-items: center; }
+        /* End Header CSS */
+
+        body {
+            background-image: url('https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1974&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: var(--text-color);
+        }
+        h2 {
+            color: var(--primary-color);
+            text-shadow: 0 0 14px var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        form {
+            background: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 32px rgba(255,215,0,0.10);
+            padding: 2.4rem 2.1rem;
+            max-width: 540px;
+            margin: 2rem auto;
+            color: var(--text-color);
+        }
+        .form-label {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        .form-control {
+            background: var(--dark-bg);
+            color: #fff;
+            border-radius: 9px;
+            border: 1px solid var(--border-color);
+            margin-top: 6px;
+            margin-bottom: 10px;
+            font-size: 1rem;
+            box-shadow: none;
+        }
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 9px var(--primary-color);
+            background: rgba(255,215,0,0.07);
+            color: #fff;
+        }
+        textarea.form-control {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .btn-success {
+            background: var(--primary-gradient);
+            color: #181818;
+            border: none;
+            font-weight: 700;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(255,215,0,0.12);
+            transition: background 0.2s, color 0.2s;
+            padding: 0.8rem 2.2rem;
+        }
+        .btn-success:hover, .btn-success:focus {
+            background: linear-gradient(90deg,#FBB03B,#FFD700);
+            color: #000;
+        }
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--text-gray);
+            color: var(--text-gray);
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 0.8rem 2.2rem;
+            margin-left: 7px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .btn-secondary:hover, .btn-secondary:focus {
+            background: var(--secondary-bg);
+            color: var(--text-color);
+            border-color: var(--text-color);
+        }
+        .alert {
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 9px;
+            margin-bottom: 1.2rem;
+        }
+        .alert-danger {
+            background: rgba(220,53,69,0.15);
+            color: #ff5b5b;
+        }
+        .alert-success {
+            background: rgba(40,167,69,0.15);
+            color: #28a745;
+        }
+        @media (max-width: 700px) {
+            form { padding: 1.2rem 0.6rem; }
+            h2 { font-size: 1.3rem; }
+            .navbar { flex-direction: column; gap: 1rem; }
+        }
+    </style>
 </head>
-<body class="container mt-4">
+<body>
 
-<h2>Thêm sản phẩm mới</h2>
-
-<div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-
-<div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-
-
-<form th:action="@{/products/create}" th:object="${product}" method="post">
-    <div class="mb-3">
-        <label class="form-label">Tên sản phẩm</label>
-        <input type="text" th:field="*{name}" class="form-control" required>
+<header class="navbar">
+    <a href="/home" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a href="/home">Trang chủ</a></li>
+            <li><a href="/packages">Gói tập</a></li>
+            <li><a href="/trainers">Huấn luyện viên</a></li>
+            <li><a href="/classes">Lớp học</a></li>
+            <li><a href="/shop" class="nav-button">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section"></div>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
     </div>
+</header>
 
-    <div class="mb-3">
-        <label class="form-label">Mô tả</label>
-        <textarea th:field="*{description}" class="form-control"></textarea>
-    </div>
+<div class="container mt-4">
 
-    <div class="mb-3">
-        <label class="form-label">Giá</label>
-        <input type="number" th:field="*{price}" class="form-control" required>
-    </div>
+    <h2>Thêm sản phẩm mới</h2>
 
-    <div class="mb-3">
-        <label class="form-label">Số lượng</label>
-        <input type="number" th:field="*{quantity}" class="form-control" required>
-    </div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-    <div class="mb-3">
-        <label class="form-label">Hình ảnh (URL)</label>
-        <input type="text" th:field="*{image}" class="form-control">
-    </div>
-
-    <button type="submit" class="btn btn-success">Lưu</button>
-    <a th:href="@{/products/list}" class="btn btn-secondary">Hủy</a>
-</form>
-
-</body>
-</html>
+    <form th:action="@{/products/create}" th:object="${product}" method="post">
+        <div class="mb-3">
+            <label class="form-label">Tên sản phẩm</label>
+            <input type="text" th:field="*{name}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mô tả</label>
+            <textarea th:field="*{description}" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Giá</label>
+            <input type="number" th:field="*{price}" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Số lượng</label>
+            <input type="number" th:field="*{quantity}" class="form-control" required>
+        </div>

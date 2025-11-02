@@ -59,6 +59,9 @@ public class ClassesService implements IClassesService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy trainer"));
         if (trainer.getRole() != UserRole.TRAINER) throw new RuntimeException("User chỉ định không phải trainer");
 
+        List<SlotRequest> reqs = mergePickOne(dto);
+        if (reqs.isEmpty()) throw new IllegalArgumentException("Chưa chọn slot hợp lệ");
+
         ClassesEntity clazz = new ClassesEntity();
         clazz.setTrainer(trainer);
         clazz.setName(dto.getName().trim());
@@ -66,7 +69,7 @@ public class ClassesService implements IClassesService {
         clazz.setCapacity(dto.getCapacity());
 
         List<ScheduleEntity> schedules = new ArrayList<>();
-        for (SlotRequest r : dto.getSlots()) {
+        for (SlotRequest r : reqs) {
             ScheduleEntity s = scheduleService.createSchedule(trainer, r.getDate(), r.getSlotNumber());
             schedules.add(s);
         }
@@ -182,6 +185,25 @@ public class ClassesService implements IClassesService {
         memberRepo.deleteById(id);
     }
 
+    private List<SlotRequest> mergePickOne(CreateClassBySlotDTO dto) {
+        var map = new java.util.LinkedHashMap<String, SlotRequest>();
+
+        // ưu tiên danh sách slots
+        if (dto.getSlots() != null)
+            for (var s : dto.getSlots())
+                if (s != null && s.getDate() != null && s.getSlotNumber() != null)
+                    map.putIfAbsent(s.getDate() + "#" + s.getSlotNumber(), s);
+
+        // bổ sung từ dates + slotNumbers nếu key chưa có
+        if (dto.getDates() != null && dto.getSlotNumbers() != null)
+            for (int i = 0, n = Math.min(dto.getDates().size(), dto.getSlotNumbers().size()); i < n; i++) {
+                var d = dto.getDates().get(i); var sn = dto.getSlotNumbers().get(i);
+                if (d != null && sn != null) map.putIfAbsent(d + "#" + sn, new SlotRequest(d, sn));
+            }
+
+        return new java.util.ArrayList<>(map.values());
+    }
+
     public Page<ClassesEntity> search(String className, String trainerLast, String genderStr,
                                       String mode, Pageable pageable) {
         UserGender gender = null;
@@ -193,6 +215,7 @@ public class ClassesService implements IClassesService {
         mode = (mode == null || mode.isBlank()) ? "all" : mode; // all | upcoming | finished
         return classesRepo.search(className, trainerLast, gender, mode, pageable);
     }
+
     }
 
 

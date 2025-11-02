@@ -41,6 +41,15 @@
     <div class="form-card">
         <form th:action="@{/trainers/edit}" th:object="${trainerDTO}" method="post">
 
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${#fields.hasGlobalErrors() or #fields.hasAnyErrors()}">
+                <ul class="text-danger" style="margin-left:16px;">
+                    <li th:each="e : ${#fields.allErrors()}" th:text="${e}"></li>
+                </ul>
+            </div>
+
+
+
             <input type="hidden" th:field="*{id}" />
 
             <div class="form-grid">

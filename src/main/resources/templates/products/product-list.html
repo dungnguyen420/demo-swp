@@ -1,50 +1,303 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Danh sách sản phẩm</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #FFD700;
+            --primary-gradient: linear-gradient(90deg, #FFD700, #FBB03B);
+            --dark-bg: #121212;
+            --secondary-bg: #1A1A1A;
+            --card-bg: rgba(26, 26, 26, 0.96);
+            --border-color: rgba(255, 215, 0, 0.23);
+            --table-header-bg: rgba(255,215,0, 0.15);
+            --table-row-hover: rgba(255, 215, 0, 0.10);
+            --form-bg: rgba(26, 26, 26, 0.8);
+            --text-color: #f1f1f1;
+            --text-gray: #CCCCCC;
+            --border-radius: 15px;
+        }
+        /* Header và Navbar */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: rgba(26, 26, 26, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .logo {
+            font-family: 'Teko', sans-serif;
+            font-size: 2.3rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            letter-spacing: 2px;
+        }
+        .navbar nav ul {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            margin-bottom: 0;
+        }
+        .navbar nav ul li a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s;
+        }
+        .navbar nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+            transition: width 0.4s;
+        }
+        .navbar nav ul li a:hover {
+            color: var(--primary-color);
+        }
+        .navbar nav ul li a:hover::after {
+            width: 100%;
+        }
+        .nav-button {
+            font-weight: 600;
+            padding: 8px 20px !important;
+            border: 2px solid var(--primary-color);
+            border-radius: 30px;
+        }
+        .auth-section { display: flex; align-items: center; }
+        /* End Header CSS */
+
+        body {
+            background-image: url('https://images.unsplash.com/photo-1576678927484-cc907957088c?q=80&w=1974&auto=format&fit=crop');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: var(--text-color);
+        }
+        h2.mb-3 {
+            color: var(--primary-color);
+            text-shadow: 0 0 16px var(--primary-color);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        /* Form Search */
+        form.filters {
+            background: var(--form-bg);
+            border-radius: var(--border-radius);
+            padding: 1.2rem 1rem 0.5rem 1rem;
+            box-shadow: 0 8px 28px rgba(255,215,0,0.10);
+            margin-bottom: 2rem !important;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 1rem;
+        }
+        .filters input, .filters select {
+            font-size: 1rem;
+            padding: 0.8rem;
+            background-color: var(--dark-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+        }
+        .filters button {
+            font-size: 1rem;
+            padding: 0.8rem 1.2rem;
+            background: var(--primary-gradient);
+            color: var(--dark-bg);
+            border:none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 700;
+        }
+        .btn-reset {
+            padding: 12px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: transparent;
+            border: 2px solid var(--text-gray);
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+        }
+        .btn-reset:hover {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            border-color: var(--text-color);
+        }
+        /* Table style */
+        .table {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 12px 35px rgba(255,215,0,0.10);
+            color: var(--text-color);
+            backdrop-filter: blur(10px);
+        }
+        .table thead {
+            background: var(--table-header-bg);
+        }
+        .table thead th {
+            color: var(--primary-color);
+            font-weight: 700;
+            border-bottom-width: 2px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        .table tbody tr:hover {
+            background: var(--table-row-hover) !important;
+            transition: background 0.3s;
+        }
+        .table td, .table th {
+            color: #fff !important;
+            vertical-align: middle;
+            background: transparent !important;
+        }
+        img[th\\:src] {
+            border-radius: 10px;
+            border: 1.5px solid var(--primary-color);
+            background: #fff3;
+            box-shadow: 0 2px 7px rgba(255,215,0,0.11);
+        }
+        /* Button style overrides */
+        .btn-success {
+            background: var(--primary-gradient);
+            border: none;
+            color: #181818;
+            font-weight: 700;
+            box-shadow: 0 3px 12px rgba(255,215,0,0.14);
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-success:hover, .btn-success:focus {
+            background: linear-gradient(90deg, #FBB03B, #FFD700);
+            color: #000;
+        }
+        .btn-primary {
+            background: #191c30;
+            border: 1.5px solid var(--primary-color);
+            color: var(--primary-color);
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+        }
+        .btn-primary:hover, .btn-primary:focus {
+            background: var(--primary-color);
+            color: #111;
+            border-color: var(--primary-color);
+        }
+        .btn-danger {
+            background: #2f1317;
+            border: 1.5px solid #ff5b5b;
+            color: #ff5b5b;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+        .btn-danger:hover, .btn-danger:focus {
+            background: #ff5b5b;
+            color: #fff;
+            border-color: #ff4455;
+        }
+        @media (max-width: 700px) {
+            .table { font-size: 0.98rem; }
+            .auth-container { padding: 0.6rem;}
+            .navbar { flex-direction: column; gap: 1rem; }
+            form.filters { padding: 0.5rem 0.3rem; }
+        }
+    </style>
 </head>
-<body class="container mt-4">
+<body>
 
-<h2 class="mb-3">Danh sách sản phẩm</h2>
+<header class="navbar">
+    <a href="/home" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a href="/home">Trang chủ</a></li>
+            <li><a href="/packages">Gói tập</a></li>
+            <li><a href="/trainers">Huấn luyện viên</a></li>
+            <li><a href="/classes">Lớp học</a></li>
+            <li><a href="/shop" class="nav-button">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section"></div>
 
-<form th:action="@{/products/list}" method="get" style="margin-bottom: 15px;">
-    <input type="text" name="keyword" placeholder="Search name product..." th:value="${keyword}">
-    <button type="submit">Search</button>
-</form>
+</header>
 
-<a th:href="@{/products/create}" class="btn btn-success mb-3">+ Thêm sản phẩm</a>
+<div class="container mt-4">
 
-<table class="table table-bordered">
-    <thead class="table-light">
-    <tr>
-        <th>ID</th>
-        <th>Tên sản phẩm</th>
-        <th>Mô tả</th>
-        <th>Giá</th>
-        <th>Số lượng</th>
-        <th>Hình ảnh</th>
-        <th>Hành động</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="p : ${listProduct}">
-        <td th:text="${p.id}"></td>
-        <td th:text="${p.name}"></td>
-        <td th:text="${p.description}"></td>
-        <td th:text="${p.price}"></td>
-        <td th:text="${p.quantity}"></td>
-        <td><img th:src="${p.image}" style="width:80px;height:80px;object-fit:cover"></td>
-        <td>
-            <a th:href="@{/products/edit/{id}(id=${p.id})}" class="btn btn-primary btn-sm">Sửa</a>
-            <a th:href="@{/products/delete/{id}(id=${p.id})}"
-               class="btn btn-danger btn-sm"
-               onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?');">Xóa</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
+    <h2 class="mb-3">Danh sách sản phẩm</h2>
 
+    <form th:action="@{/products/search}" method="get" class="filters mb-3">
+        <input type="text" name="keyword" placeholder="Tìm theo tên hoặc mô tả"
+               class="form-control mb-2"
+               th:value="${keyword}">
+        <input type="number" name="minPrice" placeholder="Giá tối thiểu"
+               class="form-control mb-2"
+               th:value="${minPrice}">
+        <input type="number" name="maxPrice" placeholder="Giá tối đa"
+               class="form-control mb-2"
+               th:value="${maxPrice}">
+        <input type="datetime-local" name="fromDate"
+               class="form-control mb-2"
+               th:value="${fromDate}">
+        <input type="datetime-local" name="toDate"
+               class="form-control mb-2"
+               th:value="${toDate}">
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+        <a th:href="@{/products}" class="btn-reset">Xóa</a>
+    </form>
+
+    <a th:href="@{/products/create}" class="btn btn-success mb-3">+ Thêm sản phẩm</a>
+
+    <table class="table table-bordered">
+        <thead class="table-light">
+        <tr>
+            <th>ID</th>
+            <th>Tên sản phẩm</th>
+            <th>Mô tả</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Ngày tạo</th>
+            <th>Hình ảnh</th>
+            <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="p : ${listProduct}" class="row-glass">
+            <td th:text="${p.id}"></td>
+            <td th:text="${p.name}"></td>
+            <td th:text="${p.description}"></td>
+            <td th:text="${p.price}"></td>
+            <td th:text="${p.quantity}"></td>
+            <td th:text="${#temporals.format(p.createdDate, 'dd/MM/yyyy HH:mm')}"></td>
+            <td><img th:src="${p.image}" style="width:80px;height:80px;object-fit:cover"></td>
+            <td>
+                <a th:href="@{/products/edit/{id}(id=${p.id})}" class="btn btn-primary btn-sm">Sửa</a>
+                <a th:href="@{/products/delete/{id}(id=${p.id})}"
+                   class="btn btn-danger btn-sm"
+                   onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?');">Xóa</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</div>
 </body>
 </html>

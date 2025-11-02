@@ -5,6 +5,7 @@ import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
 import com.example.swp.Service.ITrainerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,9 +54,19 @@ public class TrainerController {
     }
 
     @PostMapping("/create")
-    public String createTrainer(@ModelAttribute TrainerDTO trainerDTO) {
-        trainerService.createTrainer(trainerDTO);
-        return "redirect:/trainers";
+    public String createTrainer(@Valid @ModelAttribute("trainerDTO") TrainerDTO trainerDTO,
+                                BindingResult br,
+                                Model model) {
+        if (br.hasErrors()) {
+            return "trainer/createTrainer";
+        }
+        try {
+            trainerService.createTrainer(trainerDTO);
+            return "redirect:/trainers";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "trainer/createTrainer";
+        }
     }
 
     @GetMapping("/edit/{id}")
@@ -65,9 +77,19 @@ public class TrainerController {
     }
 
     @PostMapping("/edit")
-    public String updateTrainer(@ModelAttribute TrainerDTO trainerDTO) {
-        trainerService.updateTrainer(trainerDTO);
-        return "redirect:/trainers";
+    public String updateTrainer(@Valid @ModelAttribute("trainerDTO") TrainerDTO trainerDTO,
+                                BindingResult br,
+                                Model model) {
+        if (br.hasErrors()) {
+            return "trainer/editTrainer";
+        }
+        try {
+            trainerService.updateTrainer(trainerDTO);
+            return "redirect:/trainers";
+        } catch (IllegalArgumentException ex) {
+            model.addAttribute("error", ex.getMessage());
+            return "trainer/editTrainer";
+        }
     }
 
     @GetMapping("/delete/{id}")

@@ -1,13 +1,16 @@
-package com.example.swp.Controller;
+package com.example.swp.controller;
 
 import com.example.swp.DTO.ProductDTO;
 import com.example.swp.Entity.ProductEntity;
 import com.example.swp.Service.IProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -84,12 +87,36 @@ public class ProductController {
         }
     }
 
-    @GetMapping("delete/{id}")
-    public String deleteProduct(@PathVariable("id") Long id, Model model){
-        String result = productService.deleteProduct(id);
-        model.addAttribute("mess", result);
+    @GetMapping("/delete/{id}")
+    public String deleteProduct(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            String result = productService.deleteProduct(id);
+            redirectAttributes.addFlashAttribute("mess", result);
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Xóa sản phẩm thất bại: " + e.getMessage());
+        }
         return "redirect:/products/list";
     }
 
+    @GetMapping("/search")
+    public String searchProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            Model model) {
+
+        List<ProductEntity> products = productService.searchAdvanced(keyword, minPrice, maxPrice, fromDate, toDate);
+        model.addAttribute("listProduct", products);
+
+        model.addAttribute("keyword", keyword);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("fromDate", fromDate);
+        model.addAttribute("toDate", toDate);
+
+        return "products/product-list";
+    }
 
 }
