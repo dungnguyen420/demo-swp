@@ -10,13 +10,13 @@ import java.util.List;
 
 public interface ICartService {
 
-    CartSummaryDTO getCart(Long userId);
 
-    CartSummaryDTO addItem(Long userId, CartRequestDTO req);
+    void addProductToCart(Long userId, Long productId, int quantity) throws Exception;
 
-    CartSummaryDTO updateItem(Long userId, CartRequestDTO req);
+    void addPackageToCart(Long userId, Long packageId, int quantity) throws Exception;
 
-    CartSummaryDTO removeItem(Long userId, Long productId);
+    void removeItemFromCart(Long userId, Long cartItemId) throws Exception;
 
-    void clear(Long userId);
+    CartSummaryDTO getCartSummary(Long userId) throws Exception;
+
 }

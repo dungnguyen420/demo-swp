@@ -18,7 +18,7 @@ public class PackageDTO {
 
     @NotNull
     @PositiveOrZero
-    private BigDecimal price;
+    private double price;
 
     @NotNull
     @Positive

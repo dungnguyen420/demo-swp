@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymCare - Gói tập</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}">
+
+    <style>
+        .page-container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+        .page-title { text-align: center; margin-bottom: 2rem; }
+        .filter-form { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; margin-bottom: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 8px; }
+        .filter-form input, .filter-form select { padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .filter-form button { padding: 9px 15px; border-radius: 4px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .filter-form .btn-reset { margin-left: auto; color: #6c757d; text-decoration: none; align-self: center; }
+        .cart-link-wrapper { text-align: right; margin-bottom: 1rem; }
+        .cart-nav-button { display: inline-flex; align-items: center; }
+        .cart-count-badge { background-color: #d9534f; color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8em; margin-left: 5px; }
+        .alert { padding: 1rem; margin-bottom: 1.5rem; border-radius: 5px; }
+        .alert-success { color: #155724; background-color: #d4edda; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+        .product-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); overflow: hidden; display: flex; flex-direction: column; }
+        .product-image { width: 100%; height: 200px; overflow: hidden; }
+        .product-image .image-background-fix { width: 100%; height: 100%; }
+        .product-image img { width: 100%; height: 100%; object-fit: cover; }
+        .product-info { padding: 1rem; flex-grow: 1; }
+        .product-bio { font-size: 0.9rem; color: #555; margin: 0.5rem 0 1rem; }
+        .product-details { display: flex; justify-content: space-between; align-items: center; }
+        .price { font-size: 1.2rem; font-weight: bold; color: #d9534f; }
+        .card-actions { padding: 1rem; border-top: 1px solid #f0f0f0; background: #fafafa; }
+        .card-actions form { display: flex; justify-content: space-between; align-items: center; }
+        .card-actions .qty-input { width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 2rem; list-style: none; padding: 0; }
+        .pagination a, .pagination span { padding: 8px 12px; border: 1px solid #ddd; text-decoration: none; border-radius: 4px; }
+        .pagination .current { background-color: #007bff; color: white; border-color: #007bff; }
+
+        /* (Style cho Header/Footer) */
+        .navbar { /* (Style header của bạn) */ }
+        .profile-dropdown { /* (Style header của bạn) */ }
+        .site-footer { /* (Style footer của bạn) */ }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" class="nav-button active">Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}" class="nav-button">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+<main>
+    <div class="page-container">
+
+        <h2 class="page-title">Khám phá Gói tập</h2>
+
+        <form class="filter-form" method="get" th:action="@{/templates/package}">
+            <input type="text" name="keyword" placeholder="Tìm gói tập..." th:value="${keyword}">
+            <select name="sortBy">
+                <option value="name" th:selected="${sortBy=='name'}">Sắp xếp theo Tên</option>
+                <option value="price" th:selected="${sortBy=='price'}">Sắp xếp theo Giá</option>
+                <option value="id" th:selected="${sortBy=='id'}">Sắp xếp theo Mới nhất</option>
+            </select>
+            <select name="dir">
+                <option value="asc" th:selected="${dir=='asc'}">Tăng dần</option>
+                <option value="desc" th:selected="${dir=='desc'}">Giảm dần</option>
+            </select>
+            <button type="submit">Áp dụng</button>
+            <a th:href="@{/package-shop(size=${size}, sortBy=${sortBy}, dir=${dir})}" class="btn-reset">
+                <i class="fas fa-times"></i> Clear
+            </a>
+        </form>
+
+        <div class="cart-link-wrapper">
+            <a th:href="@{/cart/view}" class="cta-button cart-nav-button">
+                <i class="fas fa-shopping-cart"></i> Giỏ hàng
+                <span th:if="${cartCount != null and cartCount > 0}" th:text="${cartCount}" class="cart-count-badge">0</span>
+            </a>
+        </div>
+        <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+        <div class="product-grid">
+            <div class="product-card" th:each="pkg : ${packages}">
+
+                <div class="product-info">
+                    <h3 th:text="${pkg.name}">Tên gói tập</h3>
+                    <div class="product-bio" th:text="${pkg.description}">Mô tả ngắn</div>
+                    <div class="product-details">
+                        <span class="price" th:text="${#numbers.formatDecimal(pkg.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <form th:action="@{/cart/add/package}" method="post" style="width: 100%;">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <input type="hidden" name="packageId" th:value="${pkg.id}">
+                        <input class="qty-input" type="number" name="quantity" value="1" min="1">
+                        <button type="submit" class="cta-button">Thêm vào giỏ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
+            <a th:if="${page > 0}" th:href="@{/package(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>
+            <a th:if="${page > 0}" th:href="@{/package(page=${page -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trước</a>
+            <span th:each="i : ${#numbers.sequence(0, totalPages -1)}">
+                <a th:if="${i != page}" th:text="${i+1}" th:href="@{/package(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">1</a>
+                <span th:if="${i == page}" class="current" th:text="${i+1}">1</span>
+            </span>
+            <a th:if="${page < totalPages -1}" th:href="@{/package-shop(page=${page+1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Sau</a>
+            <a th:if="${page < totalPages -1}" th:href="@{/package-shop(page=${totalPages -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang cuối</a>
+        </div>
+
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const navbar = document.querySelector('.navbar');
+        if(navbar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileDropdown) {
+            profileDropdown.addEventListener('click', (e) => {
+                if (!e.target.closest('a')) {
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
+        elementsToAnimate.forEach(el => observer.observe(el));
+    });
+</script>
+</body>
+</html>

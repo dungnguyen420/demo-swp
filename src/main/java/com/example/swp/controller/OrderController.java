@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.payos.type.CheckoutResponseData;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 
 @Controller
@@ -76,7 +78,7 @@ public class OrderController extends BaseAPIController {
 
                 redirectAttributes.addFlashAttribute("successMessage", "Thanh toán đơn hàng thành công!");
 
-                return "redirect:/cart/view";
+                return "redirect:/shop";
 
             } else {
 
@@ -95,7 +97,11 @@ public class OrderController extends BaseAPIController {
             Model model,
             RedirectAttributes redirectAttributes,
 
-            @RequestParam(name = "page", defaultValue = "1") int page) {
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "keyword", required = false) String keyword,
+            @RequestParam(name = "date", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
 
         if (principal == null) {
             redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng đăng nhập.");
@@ -104,26 +110,27 @@ public class OrderController extends BaseAPIController {
 
         try {
             Long userId = principal.getUser().getId();
-
-
             int pageSize = 10;
+            int pageIndex = page - 1;
 
-
-            Page<OrderDTO> orderPage = orderService.findOrdersByUserId(userId, page - 1, pageSize);
-
+            Page<OrderDTO> orderPage = orderService.findOrdersByUserId(
+                    userId, keyword, date, pageIndex, pageSize
+            );
 
             model.addAttribute("orders", orderPage.getContent());
-
             model.addAttribute("totalPages", orderPage.getTotalPages());
-            model.addAttribute("currentPage", page); // Gửi lại trang hiện tại (1-based)
+            model.addAttribute("currentPage", page);
             model.addAttribute("totalItems", orderPage.getTotalElements());
 
+
+            model.addAttribute("keyword", keyword);
+            model.addAttribute("date", (date != null) ? date.toString() : "");
 
             return "orders/order-history";
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi tải lịch sử: " + e.getMessage());
-            return "redirect:/auth/home";
+            return "redirect:/home";
         }
     }
     @GetMapping("/detail/{orderCode}")
@@ -134,7 +141,7 @@ public class OrderController extends BaseAPIController {
         try {
             OrderDTO order = orderService.findByOrderCode(orderCode);
 
-            // Bảo mật: Đảm bảo người xem là chủ đơn hàng
+
             if (!order.getUserId().equals(principal.getUser().getId())) {
                 model.addAttribute("errorMessage", "Bạn không có quyền xem đơn hàng này.");
                 return "orders/order-history";
@@ -145,7 +152,7 @@ public class OrderController extends BaseAPIController {
 
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Không tìm thấy đơn hàng: " + e.getMessage());
-            return "orders/order-history"; // Quay lại lịch sử
+            return "orders/order-history";
         }
     }
 }
