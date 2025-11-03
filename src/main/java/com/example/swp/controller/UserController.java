@@ -41,7 +41,7 @@ public class UserController {
         return "user/edit-profile";
     }
 
-    @PostMapping("/edit")
+    @PostMapping("/edit-profile")
     public String updateProdfile(@AuthenticationPrincipal UserDetails userDetails,
                                  @ModelAttribute("user") UserEntity formUser,
                                  Model model){
