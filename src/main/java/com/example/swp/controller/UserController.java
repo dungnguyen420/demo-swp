@@ -41,13 +41,13 @@ public class UserController {
         return "user/edit-profile";
     }
 
-    @PostMapping("/edit-profile")
+    @PostMapping("/edit")
     public String updateProdfile(@AuthenticationPrincipal UserDetails userDetails,
                                  @ModelAttribute("user") UserEntity formUser,
                                  Model model){
         try {
         userService.updateProfile(userDetails.getUsername(), formUser);
-        return "redirect:/user/profile?succes";
+        return "redirect:/user/profile?success";
         }catch (RuntimeException e){
             model.addAttribute("user", formUser);
             model.addAttribute("error" , e.getMessage());

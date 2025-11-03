@@ -26,9 +26,6 @@
                 <li sec:authorize="hasRole('MANAGER')">
                     <a th:href="@{/products/list}">Danh sách sản phẩm</a>
                 </li>
-                <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/auth/dashBoard}">DashBoard</a>
-                </li>
             </ul>
         </nav>
         <div class="auth-section">
