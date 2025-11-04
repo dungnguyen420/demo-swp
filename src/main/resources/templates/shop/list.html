@@ -29,6 +29,9 @@
             <ul class="dropdown-menu">
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
