@@ -147,25 +147,67 @@ public class UserService implements IUserService {
         UserEntity currentUser = userRepository.findByUserName(userName)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng"));
 
+        validateUserData(formUser, currentUser);
+
         if (!formUser.getUserName().equals(currentUser.getUserName())
-                && userRepository.findByUserName(formUser.getUserName()).isPresent()){
-            throw new RuntimeException("Tên đăng nhập đã tồn tại");
+                && userRepository.findByUserName(formUser.getUserName()).isPresent()) {
+            throw new RuntimeException("Tên đăng nhập đã tồn tại!");
         }
 
         if (!formUser.getEmail().equals(currentUser.getEmail())
-                && userRepository.findByEmail(formUser.getEmail()).isPresent()){
+                && userRepository.findByEmail(formUser.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã được sử dụng!");
         }
+
         currentUser.setUserName(formUser.getUserName());
         currentUser.setFirstName(formUser.getFirstName());
         currentUser.setLastName(formUser.getLastName());
         currentUser.setEmail(formUser.getEmail());
+        currentUser.setPhone(formUser.getPhone());
+        currentUser.setBirthDate(formUser.getBirthDate());
 
-        if(formUser.getPassword() != null && !formUser.getPassword().isEmpty()){
+        if (formUser.getPassword() != null && !formUser.getPassword().isEmpty()) {
             currentUser.setPassword(passwordEncoder.encode(formUser.getPassword()));
         }
+
         return userRepository.save(currentUser);
     }
 
+    private void validateUserData(UserEntity user, UserEntity currentUser) {
+        // --- 1. Kiểm tra null hoặc trống ---
+        if (user.getUserName() == null || user.getUserName().trim().isEmpty()) {
+            throw new RuntimeException("Tên đăng nhập không được để trống!");
+        }
+        if (user.getFirstName() == null || user.getFirstName().trim().isEmpty()) {
+            throw new RuntimeException("Họ không được để trống!");
+        }
+        if (user.getLastName() == null || user.getLastName().trim().isEmpty()) {
+            throw new RuntimeException("Tên không được để trống!");
+        }
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new RuntimeException("Email không được để trống!");
+        }
+
+        // --- 2. Kiểm tra định dạng email ---
+        if (!user.getEmail().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
+            throw new RuntimeException("Định dạng email không hợp lệ!");
+        }
+
+        // --- 3. Kiểm tra số điện thoại ---
+        if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
+            throw new RuntimeException("Số điện thoại không được để trống!");
+        }
+        if (!user.getPhone().matches("^[0-9]{9,11}$")) {
+            throw new RuntimeException("Số điện thoại chỉ được chứa 9–11 chữ số!");
+        }
+
+        // --- 4. Kiểm tra ngày sinh ---
+        if (user.getBirthDate() == null) {
+            throw new RuntimeException("Ngày sinh không được để trống!");
+        }
+        if (user.getBirthDate().isAfter(java.time.LocalDateTime.now())) {
+            throw new RuntimeException("Ngày sinh phải là ngày trong quá khứ!");
+        }
+    }
 
 }

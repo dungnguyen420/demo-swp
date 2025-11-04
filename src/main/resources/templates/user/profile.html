@@ -5,17 +5,62 @@
     <title>Thông tin cá nhân</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
+
+<style>
+    .profile-card {
+        max-width: 600px;
+        margin: auto;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        border-radius: 12px;
+    }
+    .avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #007bff;
+        margin-bottom: 15px;
+    }
+</style>
+
 <body class="container mt-4">
 <h2>Thông tin cá nhân</h2>
-<div class="card p-3">
-    <p><b>Tên đăng nhập:</b> <span th:text="${user.userName}"></span></p>
-    <p><b>Họ:</b> <span th:text="${user.firstName}"></span></p>
-    <p><b>Tên:</b> <span th:text="${user.lastName}"></span></p>
-    <p><b>Email:</b> <span th:text="${user.email}"></span></p>
-</div>
+
 <div th:if="${param.success}" class="alert alert-success mt-3">
     Cập nhật thông tin thành công!
 </div>
-<a href="/user/edit" class="btn btn-primary mt-3">Chỉnh sửa thông tin</a>
+
+<div class="card profile-card p-4">
+    <div class="text-center">
+        <img th:src="${user.avatar != null ? user.avatar : '/images/default-avatar.png'}"
+             alt="Avatar" class="avatar">
+        <h4 class="mt-2" th:text="${user.firstName + ' ' + user.lastName}">Tên người dùng</h4>
+        <p class="text-muted" th:text="${user.role}">ROLE_MEMBER</p>
+    </div>
+
+    <hr>
+
+    <div class="mb-2"><b>Tên đăng nhập:</b> <span th:text="${user.userName}">Username</span></div>
+    <div class="mb-2"><b>Email:</b> <span th:text="${user.email}">Email</span></div>
+    <div class="mb-2"><b>Số điện thoại:</b>
+        <span th:text="${user.phone != null ? user.phone : 'Chưa cập nhật'}"></span>
+    </div>
+    <div class="mb-2"><b>Ngày sinh:</b>
+        <span th:text="${user.birthDate != null ? user.birthDate : 'Chưa cập nhật'}"></span>
+    </div>
+    <div class="mb-2"><b>Giới tính:</b>
+        <span th:text="${user.gender != null ? user.gender : 'Chưa cập nhật'}"></span>
+    </div>
+    <div class="mb-2"><b>Trạng thái tài khoản:</b>
+        <span th:text="${user.status}"></span>
+    </div>
+    <div class="mb-2"><b>Tiểu sử:</b>
+        <p th:text="${user.bio != null ? user.bio : 'Chưa có thông tin'}"></p>
+    </div>
+
+    <div class="text-center mt-3">
+        <a href="/user/edit" class="btn btn-primary">Chỉnh sửa thông tin</a>
+    </div>
+</div>
 </body>
 </html>
