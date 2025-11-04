@@ -12,15 +12,15 @@
 <body>
 
 <header class="navbar">
-    <a th:href="@{/}" class="logo">GymCare</a>
+    <a th:href="@{/home}" class="logo">GymCare</a>
     <nav>
         <ul>
-            <li><a th:href="@{/}">Trang chủ</a></li>
-            <li><a th:href="@{/packages}">Gói tập</a></li>
-            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
-            <li><a th:href="@{/classes}">Lớp học</a></li>
-            <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
-        </ul>
+        <li><a th:href="@{/home}">Trang chủ</a></li>
+        <li><a th:href="@{/package}">Gói tập</a></li>
+        <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+        <li><a th:href="@{/classes}">Lớp học</a></li>
+        <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
+    </ul>
     </nav>
     <div class="auth-section">
         <div sec:authorize="isAuthenticated()" class="profile-dropdown">
@@ -29,6 +29,9 @@
             <ul class="dropdown-menu">
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
@@ -90,7 +93,7 @@
                     </div>
                 </div>
                 <div class="card-actions">
-                    <form th:action="@{/cart/add}" method="post" style="width: 100%;">
+                    <form th:action="@{/cart/add/product}" method="post" style="width: 100%;">
                         <input type="hidden" name="productId" th:value="${p.id}">
                         <input class="qty-input" type="number" name="quantity" value="1" min="1" th:attr="max=${p.quantity}">
                         <button type="submit" class="cta-button">Thêm vào giỏ</button>

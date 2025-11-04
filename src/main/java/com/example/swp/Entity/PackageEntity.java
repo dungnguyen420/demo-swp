@@ -29,8 +29,8 @@ public class PackageEntity {
     private String description;
 
 
-    @Column(nullable = false, precision = 12, scale = 2)
-    private BigDecimal price;
+    @Column(nullable = false, precision = 12)
+    private double price;
 
     @Column(name = "duration_month", nullable = false)
     private Integer durationMonth;

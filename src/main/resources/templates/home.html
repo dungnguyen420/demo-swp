@@ -15,11 +15,11 @@
     <body>
 
     <header class="navbar">
-        <a th:href="@{/}" class="logo">GymCare</a>
+        <a th:href="@{/home}" class="logo">GymCare</a>
         <nav>
             <ul>
-                <li><a th:href="@{/}">Trang chủ</a></li>
-                <li><a th:href="@{/packages}">Gói tập</a></li>
+                <li><a th:href="@{/home}">Trang chủ</a></li>
+                <li><a th:href="@{/package}" class="nav-button active">Gói tập</a></li>
                 <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
                 <li><a th:href="@{/classes}">Lớp học</a></li>
                 <li><a th:href="@{/shop}" class="nav-button">Cửa hàng</a></li>
@@ -31,6 +31,9 @@
                 <span sec:authentication="principal.username">Username</span>
                 <ul class="dropdown-menu">
                     <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                    <li sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                    </li>
                     <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
                 </ul>
             </div>
@@ -38,15 +41,17 @@
         </div>
     </header>
 
-    <main>
-        <section class="hero-section">
-            <div class="hero-content">
-                <h1>VƯỢT QUA GIỚI HẠN. <br> ĐỊNH HÌNH PHONG CÁCH.</h1>
-                <p>Nền tảng quản lý và tập luyện hàng đầu, đồng hành cùng bạn trên mọi hành trình.</p>
-                <a th:href="@{/register}" class="cta-button">Trở thành Hội viên</a>
-            </div>
-        </section>
-    </main>
+<main>
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>VƯỢT QUA GIỚI HẠN. <br> ĐỊNH HÌNH PHONG CÁCH.</h1>
+            <p>Nền tảng quản lý và tập luyện hàng đầu, đồng hành cùng bạn trên mọi hành trình.</p>
+            <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Dăng nhập</a>
+            <a th:href="@{/shop}" class="cta-button secondary-button">Xem sản phẩm</a>
+
+        </div>
+    </section>
+</main>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {

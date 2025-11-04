@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/index","/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(
                                 "/home",
                                 "/trainers/detail/**",
@@ -62,19 +62,20 @@ public class SecurityConfig {
                         .requestMatchers("/products/**").hasRole("MANAGER")
                         .anyRequest().authenticated()
                 )
-
-                .formLogin(form -> form.disable())
+                .formLogin(form -> form
+                        .loginPage("/index")
+                        .loginProcessingUrl("/index")
+                        .usernameParameter("usernameOrEmail")
+                        .passwordParameter("password")
+                        .defaultSuccessUrl("/home", true)
+                        .permitAll()
+                )
 
                 .logout(logout -> logout
-                        .logoutUrl("/auth/logout")
-                        .logoutSuccessUrl("/auth/login?logout=true")
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/index")
                         .permitAll()
-
-                ).csrf(csrf -> csrf
-
-                        .ignoringRequestMatchers("/api/cart/**", "/orders/**")
                 );
-
 
         return http.build();
     }

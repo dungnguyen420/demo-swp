@@ -13,11 +13,11 @@
 <body>
 
 <header class="navbar">
-    <a th:href="@{/}" class="logo">GymCare</a>
+    <a th:href="@{/home}" class="logo">GymCare</a>
     <nav>
         <ul>
-            <li><a th:href="@{/}">Trang chủ</a></li>
-            <li><a th:href="@{/packages}">Gói tập</a></li>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}">Gói tập</a></li>
             <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
             <li><a th:href="@{/classes}">Lớp học</a></li>
             <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
@@ -29,8 +29,11 @@
             <span sec:authentication="principal.username">Username</span>
             <ul class="dropdown-menu">
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
-                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                </li>
                 <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
@@ -68,18 +71,20 @@
                     </thead>
                     <tbody>
                     <tr th:each="it : ${cart.items}">
-                        <td data-label="Sản phẩm" th:text="${it.productName}">Tên SP</td>
+                        <td data-label="Sản phẩm" th:text="${it.itemName}">Tên SP</td>
                         <td data-label="Đơn giá" th:text="${#numbers.formatDecimal(it.unitPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
                         <td data-label="Số lượng" th:text="${it.quantity}">1</td>
                         <td data-label="Thành tiền" th:text="${#numbers.formatDecimal(it.unitPrice * it.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
-                        <td data-label="Xóa">
-                            <form th:action="@{/cart/remove}" method="post" style="margin:0;">
-                                <input type="hidden" name="productId" th:value="${it.productId}" />
+                        <td data-label="Xóa"><form th:action="@{/cart/remove}" method="post">
 
-                                <button type="submit" class="action-btn delete-trigger" title="Xóa sản phẩm">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                            <input type="hidden" name="cartItemId" th:value="${it.cartItemId}" />
+
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                            <button type="submit" class="action-btn delete-trigger" title="Xóa sản phẩm">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
                         </td>
                     </tr>
                     </tbody>

@@ -30,7 +30,7 @@ public class PackageService implements IPackageService {
         newPackage.setDurationMonth(dto.getDurationMonth());
         newPackage.setIsActive(true);
         newPackage.setPtSessionsCount(0);
-        newPackage.setAccessLevel(PackageEntity.AccessLevel.BASIC); // Mặc định
+        newPackage.setAccessLevel(PackageEntity.AccessLevel.BASIC); 
         newPackage.setCreatedAt(LocalDateTime.now());
         newPackage.setUpdatedAt(LocalDateTime.now());
         return packageRepository.save(newPackage);

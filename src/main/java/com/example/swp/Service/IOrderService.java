@@ -18,8 +18,8 @@ public interface IOrderService {
     void processSuccessfulPayment(String orderCode) throws Exception;
     void processFailedPayment(String orderCode) throws Exception;
 
-    Page<OrderDTO> findOrdersByUserId(Long userId, int page, int size);
 
+    Page<OrderDTO> findOrdersByUserId(Long userId, String keyword, LocalDate date, int page, int size);
     OrderDTO findByOrderCode(String orderCode) throws Exception;
 
 }

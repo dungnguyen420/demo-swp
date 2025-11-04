@@ -4,6 +4,7 @@ import com.example.swp.Entity.ProductEntity;
 import com.example.swp.Repository.IProductRepository;
 import com.example.swp.Service.ICartService;
 import com.example.swp.Service.IProductService;
+import com.example.swp.Service.impl.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,7 +25,12 @@ public class ShopController {
 
     private final IProductService productService;
     private final ICartService cartService;
-
+    private Long getUserId(CustomUserDetails principal) throws Exception {
+        if (principal == null) {
+            throw new Exception("Vui lòng đăng nhập.");
+        }
+        return principal.getUser().getId();
+    }
     @GetMapping
     public String shop(@RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
                        @RequestParam(defaultValue = "0") int page,
@@ -52,8 +58,12 @@ public class ShopController {
         model.addAttribute("dir", dir);
 
         if (principal != null) {
-            var summary = cartService.getCart(principal.getUser().getId());
-            model.addAttribute("cartCount", summary.getTotalItems());
+            try {
+                var summary = cartService.getCartSummary(principal.getUser().getId());
+                model.addAttribute("cartCount", summary.getTotalItems());
+            } catch (Exception e) { // <-- THÊM CATCH
+                model.addAttribute("cartCount", 0);
+            }
         } else {
             model.addAttribute("cartCount", 0);
         }

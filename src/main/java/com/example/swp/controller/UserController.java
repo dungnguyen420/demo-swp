@@ -47,7 +47,7 @@ public class UserController {
                                  Model model){
         try {
         userService.updateProfile(userDetails.getUsername(), formUser);
-        return "redirect:/user/profile?succes";
+        return "redirect:/user/profile?success";
         }catch (RuntimeException e){
             model.addAttribute("user", formUser);
             model.addAttribute("error" , e.getMessage());

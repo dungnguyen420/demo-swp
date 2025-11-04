@@ -7,6 +7,7 @@ import io.jsonwebtoken.lang.Classes;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -33,6 +34,7 @@ public class UserEntity extends BaseEntity {
 
     private String lastName;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime birthDate;
 
     private String avatar;

@@ -16,8 +16,7 @@ public class CustomUserDetails implements UserDetails {
     private final UserEntity user;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Nếu có phân quyền thì thêm role vào đây
+    public Collection<? extends GrantedAuthority> getAuthorities() {// Nếu có phân quyền thì thêm role vào đây
         return Collections.singletonList(
                 new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" +user.getRole().name())
         );
