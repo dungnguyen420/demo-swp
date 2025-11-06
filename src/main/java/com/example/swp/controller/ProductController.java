@@ -93,7 +93,7 @@ public class ProductController {
             String result = productService.deleteProduct(id);
             redirectAttributes.addFlashAttribute("mess", result);
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Xóa sản phẩm thất bại: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/products/list";
     }

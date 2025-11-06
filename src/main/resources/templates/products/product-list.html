@@ -244,6 +244,9 @@
 
     <h2 class="mb-3">Danh sách sản phẩm</h2>
 
+    <div th:if="${mess}" class="alert alert-success" th:text="${mess}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
     <form th:action="@{/products/search}" method="get" class="filters mb-3">
         <input type="text" name="keyword" placeholder="Tìm theo tên hoặc mô tả"
                class="form-control mb-2"
@@ -280,7 +283,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="p : ${listProduct}" class="row-glass">
+        <tr th:each="p : ${listProduct}">
             <td th:text="${p.id}"></td>
             <td th:text="${p.name}"></td>
             <td th:text="${p.description}"></td>
@@ -292,7 +295,8 @@
                 <a th:href="@{/products/edit/{id}(id=${p.id})}" class="btn btn-primary btn-sm">Sửa</a>
                 <a th:href="@{/products/delete/{id}(id=${p.id})}"
                    class="btn btn-danger btn-sm"
-                   onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?');">Xóa</a>
+                   onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này không?');">Xóa
+                </a>
             </td>
         </tr>
         </tbody>

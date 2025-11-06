@@ -164,6 +164,7 @@ public class UserService implements IUserService {
         currentUser.setLastName(formUser.getLastName());
         currentUser.setEmail(formUser.getEmail());
         currentUser.setPhone(formUser.getPhone());
+        currentUser.setGender(formUser.getGender());
         currentUser.setBirthDate(formUser.getBirthDate());
 
         if (formUser.getPassword() != null && !formUser.getPassword().isEmpty()) {
