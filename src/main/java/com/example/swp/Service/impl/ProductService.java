@@ -33,7 +33,7 @@ public class ProductService implements IProductService {
         }
 
         if(dto.getQuantity() < 0){
-            throw new RuntimeException("Quantity not negative");
+            throw new IllegalArgumentException("Số lượng phải lớn hơn 0");
         }
 
         ProductEntity newProduct = new ProductEntity();
@@ -52,11 +52,11 @@ public class ProductService implements IProductService {
         ProductEntity existingProduct = productRepository.findById(dto.getId()).get();
         if(existingProduct != null){
             if(dto.getPrice() < 0){
-                throw new RuntimeException("Price not negative and not empty");
+                throw new RuntimeException("Giá phải lớn hơn 0");
             }
 
             if(dto.getQuantity() < 0){
-                throw new RuntimeException("Quantity not negative");
+                throw new RuntimeException("Số lượng phải lớn hơn 0");
             }
 
             Optional<ProductEntity> duplicate = productRepository.findByName(dto.getName());
@@ -83,12 +83,14 @@ public class ProductService implements IProductService {
 
     @Override
     public String deleteProduct(Long id) {
-        ProductEntity existingProduct = productRepository.findById(id).get();
+        ProductEntity existingProduct = productRepository.findById(id).orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-        if (existingProduct != null){
-            productRepository.deleteById(id);
+        if (existingProduct.getQuantity() > 0){
+            throw new RuntimeException("Không thể xóa sản phẩm khi số lượng còn:" + existingProduct.getQuantity());
         }
-        return "Delete product successfully";
+            productRepository.delete(existingProduct);
+
+        return "Xóa sản phẩm thành công!";
     }
 
     @Override
