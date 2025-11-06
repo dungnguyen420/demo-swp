@@ -119,10 +119,12 @@ public class OrderService implements IOrderService {
                 orderItemEntity.setProductId(item.getProduct().getId());
                 orderItemEntity.setProductName(item.getProduct().getName());
                 orderItemEntity.setProductPrice(item.getProduct().getPrice());
+                orderItemEntity.setPackageId(null);
             } else if (item.getPackageEntity() != null) {
-                orderItemEntity.setProductId(item.getPackageEntity().getId());
+                orderItemEntity.setPackageId(item.getPackageEntity().getId());
                 orderItemEntity.setProductName(item.getPackageEntity().getName());
                 orderItemEntity.setProductPrice(item.getPackageEntity().getPrice());
+                orderItemEntity.setProductId(null);
             }
             orderItemRepository.save(orderItemEntity);
         }
@@ -259,6 +261,7 @@ public class OrderService implements IOrderService {
         if (itemEntity == null) return null;
         OrderItemDTO itemDTO = new OrderItemDTO();
         itemDTO.setPackageId(itemEntity.getProductId());
+        itemDTO.setPackageId(itemEntity.getPackageId());
         itemDTO.setProductName(itemEntity.getProductName());
         itemDTO.setQuantity(itemEntity.getQuantity());
         itemDTO.setPrice(itemEntity.getProductPrice());
