@@ -5,11 +5,13 @@ import com.example.swp.Entity.*;
 import com.example.swp.Enums.OrderStatus;
 import com.example.swp.Repository.*;
 import com.example.swp.Service.IOrderService;
+import com.example.swp.Service.IProductService;
 import jakarta.persistence.criteria.Predicate; // <-- THÊM
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor; // <-- THÊM
 import org.modelmapper.ModelMapper;
 // import org.springframework.beans.factory.annotation.Autowired; // (Xóa)
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -32,8 +34,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class OrderService implements IOrderService {
-
-
     private final PayOS payos;
     private final CartRepository cartRepository;
     private final IUserRepository userRepository;
@@ -42,6 +42,7 @@ public class OrderService implements IOrderService {
     private final OrderRepository orderRepository;
     private final CartItemRepository cartItemRepository;
     private final ModelMapper modelMapper;
+    private final IProductService productService;
 
 
 
@@ -138,7 +139,16 @@ public class OrderService implements IOrderService {
             order.setStatus(OrderStatus.COMPLETED);
             orderRepository.save(order);
         }
+        List<OrderItemEntity> orderItems = order.getOrderItems();
+        for (OrderItemEntity item : orderItems) {
 
+            if (item.getProductId() != null) {
+
+                productService.decreaseStock(item.getProductId(), item.getQuantity());
+            }
+
+        }
+        orderRepository.save(order);
         PaymentEntity payment = order.getPaymentEntity();
         if (payment != null) {
             payment.setStatus("PAID");

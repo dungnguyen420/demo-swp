@@ -16,7 +16,7 @@ public class OrderItemEntity extends BaseEntity {
     private String productName;
     @Column(name = "product_price", nullable = false)
     private double productPrice;
-    private long productId;
+    private Long productId;
     private int quantity;
 
     @ManyToOne

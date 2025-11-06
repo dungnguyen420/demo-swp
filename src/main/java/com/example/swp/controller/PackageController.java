@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,14 +37,26 @@ public class PackageController {
             @RequestParam(name = "keyword", required = false) String keyword) {
 
         try {
-            Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(dir), sortBy));
-            Page<PackageEntity> packagePage;
+            Sort sort = Sort.by(Sort.Direction.fromString(dir), sortBy);
+            Pageable pageable = PageRequest.of(page, size, sort);
 
-            if (keyword != null && !keyword.trim().isEmpty()) {
-                packagePage = packageRepository.findByNameContaining(keyword.trim(), pageable);
-            } else {
-                packagePage = packageRepository.findAll(pageable);
-            }
+
+            Specification<PackageEntity> spec = (root, query, criteriaBuilder) -> {
+                if (keyword == null || keyword.trim().isEmpty()) {
+                    return criteriaBuilder.conjunction();
+                }
+
+                String searchKeyword = "%" + keyword.toLowerCase().trim() + "%";
+
+
+                return criteriaBuilder.or(
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchKeyword),
+                        criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), searchKeyword)
+                );
+            };
+
+
+            Page<PackageEntity> packagePage = packageRepository.findAll(spec, pageable);
 
             model.addAttribute("packages", packagePage.getContent());
             model.addAttribute("totalPages", packagePage.getTotalPages());
@@ -59,7 +72,6 @@ public class PackageController {
         } catch (Exception e) {
             model.addAttribute("error", "Lỗi tải trang: " + e.getMessage());
         }
-
 
         return "package/package";
     }

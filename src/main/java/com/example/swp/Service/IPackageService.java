@@ -11,4 +11,6 @@ public interface IPackageService {
     void deletePackage(Long id);
     PackageEntity updatePackage(PackageDTO dto,Long id);
     PackageDTO findPackageById(Long id);
+
+    Page<PackageEntity> searchAndSortPackage(String keyword, Pageable pageable);
 }

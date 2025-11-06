@@ -8,12 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+
 public class ProductService implements IProductService {
 
     @Autowired
@@ -119,6 +121,36 @@ public class ProductService implements IProductService {
     public Page<ProductEntity> findAllPaged(String keyword, Pageable pageable) {
         if (keyword == null || keyword.isBlank()) return productRepository.findAll(pageable);
         return productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+    }
+    @Override
+    @Transactional(rollbackFor = Exception.class) // Quan trọng: Nếu lỗi, rollback lại
+    public void decreaseStock(Long productId, int quantityToDecrease) throws Exception {
+
+        // 1. Kiểm tra số lượng hợp lệ
+        if (quantityToDecrease <= 0) {
+            throw new Exception("Số lượng cần giảm phải lớn hơn 0");
+        }
+
+        // 2. Lấy sản phẩm từ CSDL
+        ProductEntity product = productRepository.findById(productId)
+                .orElseThrow(() -> new Exception("Không tìm thấy sản phẩm với ID: " + productId));
+
+        // 3. Lấy số lượng tồn kho hiện tại
+        int currentStock = product.getQuantity();
+
+        // 4. KIỂM TRA TỒN KHO
+        // Đây là bước kiểm tra an toàn cuối cùng
+        if (currentStock < quantityToDecrease) {
+            throw new Exception("Không đủ hàng tồn kho cho sản phẩm: '" + product.getName()
+                    + "'. Chỉ còn " + currentStock + " sản phẩm.");
+        }
+
+
+        int newStock = currentStock - quantityToDecrease;
+        product.setQuantity(newStock);
+
+
+        productRepository.save(product);
     }
 
 }

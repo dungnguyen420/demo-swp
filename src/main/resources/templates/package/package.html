@@ -78,19 +78,26 @@
 
         <h2 class="page-title">Khám phá Gói tập</h2>
 
-        <form class="filter-form" method="get" th:action="@{/templates/package}">
+        <form class="filter-form" method="get" th:action="@{/package}">
+
             <input type="text" name="keyword" placeholder="Tìm gói tập..." th:value="${keyword}">
+
             <select name="sortBy">
                 <option value="name" th:selected="${sortBy=='name'}">Sắp xếp theo Tên</option>
                 <option value="price" th:selected="${sortBy=='price'}">Sắp xếp theo Giá</option>
                 <option value="id" th:selected="${sortBy=='id'}">Sắp xếp theo Mới nhất</option>
             </select>
+
             <select name="dir">
-                <option value="asc" th:selected="${dir=='asc'}">Tăng dần</option>
-                <option value="desc" th:selected="${dir=='desc'}">Giảm dần</option>
+                <option value="asc" th:selected="${dir=='desc'}">Tăng dần</option>
+                <option value="desc" th:selected="${dir=='asc'}">Giảm dần</option>
             </select>
+
+            <input type="hidden" name="size" th:value="${size}">
+
             <button type="submit">Áp dụng</button>
-            <a th:href="@{/package-shop(size=${size}, sortBy=${sortBy}, dir=${dir})}" class="btn-reset">
+
+            <a th:href="@{/package(size=${size})}" class="btn-reset">
                 <i class="fas fa-times"></i> Clear
             </a>
         </form>

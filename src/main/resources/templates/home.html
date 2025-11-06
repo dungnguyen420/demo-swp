@@ -19,10 +19,10 @@
         <nav>
             <ul>
                 <li><a th:href="@{/home}">Trang chủ</a></li>
-                <li><a th:href="@{/package}" class="nav-button active">Gói tập</a></li>
+                <li><a th:href="@{/package}">Gói tập</a></li>
                 <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
                 <li><a th:href="@{/classes}">Lớp học</a></li>
-                <li><a th:href="@{/shop}" class="nav-button">Cửa hàng</a></li>
+                <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
             </ul>
         </nav>
         <div class="auth-section">
@@ -32,8 +32,9 @@
                 <ul class="dropdown-menu">
                     <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                     <li sec:authorize="hasRole('ADMIN')">
-                        <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                        <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
                     </li>
+                    <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
                     <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
                 </ul>
             </div>

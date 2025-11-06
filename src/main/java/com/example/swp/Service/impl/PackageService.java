@@ -7,7 +7,9 @@ import com.example.swp.Service.IPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
 
 import java.time.LocalDateTime;
 
@@ -67,5 +69,27 @@ public class PackageService implements IPackageService {
     @Override
     public void deletePackage(Long Id) {
         packageRepository.deleteById(Id);
+    }
+
+    @Override
+    public Page<PackageEntity> searchAndSortPackage(String keyword, Pageable pageable) {
+
+        // 3. SỬA Ở ĐÂY
+        Specification<PackageEntity> spec = (root, query, criteriaBuilder) -> {
+
+            if (keyword == null || keyword.trim().isEmpty()) {
+                return criteriaBuilder.conjunction();
+            }
+
+            String searchKeyword = "%" + keyword.toLowerCase().trim() + "%";
+
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), searchKeyword),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), searchKeyword)
+            );
+        };
+
+        // Dòng này bây giờ sẽ hoạt động
+        return packageRepository.findAll(spec, pageable);
     }
 }
