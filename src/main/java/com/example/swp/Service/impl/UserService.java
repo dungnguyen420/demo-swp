@@ -175,7 +175,6 @@ public class UserService implements IUserService {
     }
 
     private void validateUserData(UserEntity user, UserEntity currentUser) {
-        // --- 1. Kiểm tra null hoặc trống ---
         if (user.getUserName() == null || user.getUserName().trim().isEmpty()) {
             throw new RuntimeException("Tên đăng nhập không được để trống!");
         }
@@ -188,21 +187,15 @@ public class UserService implements IUserService {
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
             throw new RuntimeException("Email không được để trống!");
         }
-
-        // --- 2. Kiểm tra định dạng email ---
         if (!user.getEmail().matches("^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,6}$")) {
             throw new RuntimeException("Định dạng email không hợp lệ!");
         }
-
-        // --- 3. Kiểm tra số điện thoại ---
         if (user.getPhone() == null || user.getPhone().trim().isEmpty()) {
             throw new RuntimeException("Số điện thoại không được để trống!");
         }
         if (!user.getPhone().matches("^[0-9]{9,11}$")) {
             throw new RuntimeException("Số điện thoại chỉ được chứa 9–11 chữ số!");
         }
-
-        // --- 4. Kiểm tra ngày sinh ---
         if (user.getBirthDate() == null) {
             throw new RuntimeException("Ngày sinh không được để trống!");
         }

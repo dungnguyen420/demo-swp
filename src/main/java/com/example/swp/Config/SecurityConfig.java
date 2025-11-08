@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .usernameParameter("usernameOrEmail")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/home", true)
+                        .failureUrl("/index?error=true")
                         .permitAll()
                 )
 
