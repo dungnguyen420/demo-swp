@@ -138,7 +138,6 @@ public class ClassesService implements IClassesService {
         UserEntity user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
 
-        // Đã đăng ký?
         if (memberRepo.existsById_ClassIdAndId_UserId(classId, userId)) {
             throw new RuntimeException("Bạn đã đăng ký lớp này");
         }
@@ -188,7 +187,6 @@ public class ClassesService implements IClassesService {
     private List<SlotRequest> mergePickOne(CreateClassBySlotDTO dto) {
         var map = new java.util.LinkedHashMap<String, SlotRequest>();
 
-        // ưu tiên danh sách slots
         if (dto.getSlots() != null)
             for (var s : dto.getSlots())
                 if (s != null && s.getDate() != null && s.getSlotNumber() != null)
@@ -212,7 +210,7 @@ public class ClassesService implements IClassesService {
         }
         className   = (className == null || className.isBlank()) ? null : className;
         trainerLast = (trainerLast == null || trainerLast.isBlank()) ? null : trainerLast;
-        mode = (mode == null || mode.isBlank()) ? "all" : mode; // all | upcoming | finished
+        mode = (mode == null || mode.isBlank()) ? "all" : mode;
         return classesRepo.search(className, trainerLast, gender, mode, pageable);
     }
 
