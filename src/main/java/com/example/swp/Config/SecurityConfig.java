@@ -61,6 +61,9 @@ public class SecurityConfig {
                                 "/trainers/edit/**",
                                 "/trainers/delete/**").hasRole("ADMIN")
                         .requestMatchers("/products/**").hasRole("MANAGER")
+                        .requestMatchers("/trainers/profile",
+                                          "/trainers/profile").hasRole("TRAINER")
+
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
