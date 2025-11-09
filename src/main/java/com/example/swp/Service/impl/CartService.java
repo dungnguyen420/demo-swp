@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,13 +25,7 @@ public class CartService implements ICartService {
     private final IPackageRepository packageRepo;
     private final IUserRepository userRepo;
 
-    // (Tất cả các hàm cũ như addItem, updateItem, removeItem, clear, getCart, toSummary... đã được XÓA)
 
-
-
-    /**
-     * HÀM MỚI: Thêm SẢN PHẨM vào giỏ
-     */
     @Override
     @Transactional
     public void addProductToCart(Long userId, Long productId, int quantity) throws Exception {
@@ -40,27 +35,44 @@ public class CartService implements ICartService {
         ProductEntity product = productRepo.findById(productId)
                 .orElseThrow(() -> new Exception("Sản phẩm không tồn tại"));
 
-        CartItemEntity item = cartItemRepository.findByCart_UserIdAndProduct_Id(userId, productId)
-                .map(existingItem -> {
-                    existingItem.setQuantity(existingItem.getQuantity() + quantity);
-                    return existingItem;
-                })
-                .orElseGet(() -> {
-                    CartItemEntity newItem = new CartItemEntity();
-                    newItem.setCart(cart);
-                    newItem.setProduct(product);
-                    newItem.setPackageEntity(null);
-                    newItem.setQuantity(quantity);
-                    return newItem;
-                });
+        int availableStock = product.getQuantity();
 
-        cartItemRepository.save(item);
+
+        Optional<CartItemEntity> existingItemOpt = cartItemRepository.findByCart_UserIdAndProduct_Id(userId, productId);
+
+        CartItemEntity itemToSave;
+        int newTotalQuantityInCart;
+
+        if (existingItemOpt.isPresent()) {
+
+            itemToSave = existingItemOpt.get();
+
+            newTotalQuantityInCart = itemToSave.getQuantity() + quantity;
+
+        } else {
+
+            itemToSave = new CartItemEntity();
+            itemToSave.setCart(cart);
+            itemToSave.setProduct(product);
+            itemToSave.setPackageEntity(null);
+
+            newTotalQuantityInCart = quantity;
+        }
+
+        if (newTotalQuantityInCart > availableStock) {
+            throw new Exception("Số lượng yêu cầu (" + newTotalQuantityInCart
+                    + ") vượt quá số lượng tồn kho hiện có (" + availableStock + ")");
+        }
+
+
+        itemToSave.setQuantity(newTotalQuantityInCart);
+        cartItemRepository.save(itemToSave);
+
+
         updateCartTotalPrice(cart);
     }
 
-    /**
-     * HÀM MỚI: Thêm GÓI TẬP vào giỏ
-     */
+
     @Override
     @Transactional
     public void addPackageToCart(Long userId, Long packageId, int quantity) throws Exception {

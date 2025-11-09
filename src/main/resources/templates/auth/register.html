@@ -125,34 +125,39 @@
 <body>
 
 <div class="auth-container">
-    <form class="auth-form" th:action="@{/auth/register}" method="POST">
+    <form class="auth-form" th:action="@{/auth/register}" th:object="${register}" method="POST">
         <h1>Tạo tài khoản</h1>
 
         <div class="input-group">
             <i class="fas fa-user-astronaut"></i>
-            <input type="text" name="userName" placeholder="Tên đăng nhập" required>
+            <input type="text" th:field="*{userName}" placeholder="Tên đăng nhập" required>
         </div>
+        <p th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}" class="error-message"></p>
 
         <div class="input-group">
             <i class="fas fa-envelope"></i>
-            <input type="email" name="email" placeholder="Email" required>
+            <input type="email" th:field="*{email}" placeholder="Email" >
         </div>
+        <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></p>
 
-        <div class="name-group">
+
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" name="firstName" placeholder="Tên" required>
+                <input type="text" th:field="*{firstName}" placeholder="Tên" required>
             </div>
+            <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error-message"></p>
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" name="lastName" placeholder="Họ" required>
+                <input type="text" th:field="*{lastName}" placeholder="Họ" required>
             </div>
-        </div>
+            <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error-message"></p>
+
 
         <div class="input-group">
             <i class="fas fa-lock"></i>
-            <input type="password" name="passWord" placeholder="Mật khẩu" required>
+            <input type="password" th:field="*{passWord}" placeholder="Mật khẩu" required>
         </div>
+        <p th:if="${#fields.hasErrors('passWord')}" th:errors="*{passWord}" class="error-message"></p>
 
         <button type="submit" class="auth-button">Đăng ký</button>
 
