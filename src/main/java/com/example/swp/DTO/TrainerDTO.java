@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class TrainerDTO {
+
     private long id;
 
     @NotBlank(message = "Email không được để trống")

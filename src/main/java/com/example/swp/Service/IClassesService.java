@@ -10,10 +10,10 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface IClassesService {
+
     ClassesEntity createClassBySlots(CreateClassBySlotDTO dto);
     Page<ClassesEntity> listPaged(int page, int size, String sortBy, String dir);
     ClassesEntity getDetail(Long id);
-
     void register(Long classId, Long userId);
     void unregister(Long classId, Long userId);
     Page<ClassesEntity> listUpcoming(int page, int size, String sortBy, String dir);
@@ -21,10 +21,8 @@ public interface IClassesService {
     void deleteById(Long classId);
     Page<ClassesEntity> search(String className,
                                String trainerLast,
-                               String gender,   // chuỗi enum, có thể null
-                               String mode,     // all | upcoming | finished
+                               String gender,
+                               String mode,
                                Pageable pageable);
-
-
 
 }

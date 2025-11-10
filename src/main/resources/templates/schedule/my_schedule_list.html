@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title th:text="${pageTitle}">Lịch của tôi</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        .schedule-item { background: var(--card-bg); border: 1px solid rgba(0, 246, 255, 0.2); border-radius: 10px; padding: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .schedule-date { text-align: center; background-color: rgba(0, 246, 255, 0.1); border-radius: 8px; padding: 1rem; min-width: 80px; }
+        .schedule-date-month { font-size: 0.9rem; text-transform: uppercase; font-weight: 700; color: var(--primary-color); }
+        .schedule-date-day { font-size: 2rem; font-weight: 900; color: #fff; }
+        .schedule-details h3 { font-size: 1.25rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.5rem; }
+        .schedule-details p { color: var(--text-secondary); margin-bottom: 0.25rem; }
+    </style>
+</head>
+<body>
+<header class="navbar" th:replace="~{fragments/header :: header}"></header>
+
+<main class="page-container" style="max-width: 900px;">
+    <h1 class="page-title" th:text="${pageTitle}">Lịch của tôi</h1>
+
+    <div class="toggle-buttons" style="margin-bottom: 2rem; display: flex; gap: 1rem;">
+
+        <a th:href="@{${baseURL}(mode='upcoming')}"
+           th:classappend="${mode == 'upcoming' ? 'cta-button' : 'btn-secondary'}"
+           class="toggle-btn">
+            <i class="fas fa-calendar-check"></i> Sắp tới
+        </a>
+
+        <a th:href="@{${baseURL}(mode='all')}"
+           th:classappend="${mode == 'all' ? 'cta-button' : 'btn-secondary'}"
+           class="toggle-btn">
+            <i class="fas fa-history"></i> Tất cả
+        </a>
+    </div>
+
+    <div th:if="${schedules.isEmpty()}" class="form-card">
+        <p>Không tìm thấy lịch nào phù hợp.</p>
+    </div>
+
+    <div th:unless="${schedules.isEmpty()}">
+        <div th:each="schedule : ${schedules}" class="schedule-item">
+            <div class="schedule-date">
+                <div class="schedule-date-month"
+                     th:text="${#temporals.format(schedule.slot.slotDate, 'MMM')}">Thg 11</div>
+                <div class.schedule-date-day
+                     th:text="${#temporals.format(schedule.slot.slotDate, 'dd')}">09</div>
+            </div>
+
+            <div class.schedule-details>
+                <h3 th:if="${schedule.member != null}">
+                    <span th:if="${currentUser.role.name() == 'TRAINER'}">
+                        Dạy 1:1 cho <span th:text="${schedule.member.firstName}"></span>
+                    </span>
+                    <span th:if="${currentUser.role.name() == 'MEMBER'}">
+                        Học 1:1 với HLV <span th:text="${schedule.trainer.firstName}"></span>
+                    </span>
+                </h3>
+                <h3 th:if="${schedule.member == null && !schedule.classes.isEmpty()}"
+                    th:text="'Lớp: ' + ${schedule.classes[0].name}">
+                </h3>
+
+                <p>
+                    <i class="fas fa-clock"></i>
+                    <span th:text="${schedule.slot.startTime} + ' - ' + ${schedule.slot.endTime}"></span>
+                </p>
+                <p>
+                    <i class="fas fa-user"></i>
+                    <span th:if="${currentUser.role.name() == 'TRAINER'}">
+                        Học viên: <span th:text="${schedule.member != null ? schedule.member.firstName : 'Lớp học'}"></span>
+                    </span>
+                    <span th:if="${currentUser.role.name() == 'MEMBER'}">
+                        HLV: <span th:text="${schedule.trainer.firstName + ' ' + schedule.trainer.lastName}"></span>
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+</body>
+</html>

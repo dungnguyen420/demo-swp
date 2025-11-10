@@ -4,10 +4,12 @@ package com.example.swp.controller;
 import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Service.IUserService;
-import jakarta.servlet.http.HttpSession;
+
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -24,7 +26,8 @@ public class AuthController {
     }
 
     @GetMapping("/auth/register")
-    public String showRegisterForm(){
+    public String showRegisterForm(Model model){
+        model.addAttribute("register", new RegisterDTO());
         return "auth/register";
     }
 
@@ -47,7 +50,7 @@ public class AuthController {
 //
 //        session.setAttribute("loggedInUser", user);
 //
-//        // ✅ In ra role để kiểm tra
+//
 //        System.out.println(">>> ROLE LOGIN: " + user.getRole());
 //
 //        String role = user.getRole().toString();
@@ -66,7 +69,13 @@ public class AuthController {
 //        }
 
     @PostMapping("/auth/register")
-    public String registerUser(@ModelAttribute RegisterDTO dto, Model model) {
+    public String registerUser(@Valid @ModelAttribute("register") RegisterDTO dto,
+                               BindingResult bindingResult,
+                               Model model) {
+
+        if(bindingResult.hasErrors()){
+            return "auth/register";
+        }
         UserEntity newUser = userService.registerUser(dto);
 
         if (newUser == null) {
@@ -75,8 +84,12 @@ public class AuthController {
         }
 
         model.addAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
-        return "redirect:/login";
+        return "redirect:/index";
     }
 
+//    @Override
+//    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+//
+//    }
 }
     

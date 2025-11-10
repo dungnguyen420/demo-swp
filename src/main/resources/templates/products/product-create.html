@@ -188,6 +188,17 @@
         </ul>
     </nav>
     <div class="auth-section"></div>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    </div>
 </header>
 
 <div class="container mt-4">
@@ -217,5 +228,7 @@
         <div>
             <button type="submit" class="btn btn-primary">Lưu</button>
         </div>
+    </form>
+</div>
     </form>
 </div>
