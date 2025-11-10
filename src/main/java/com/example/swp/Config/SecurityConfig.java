@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .csrf(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/index","/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/index","/ws/**","/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(
                                 "/home",
                                 "/trainers/detail/**",
@@ -56,14 +56,13 @@ public class SecurityConfig {
 
                         ).permitAll()// cho phép trang chua login
                         .requestMatchers("/cart/**").authenticated()
+                        .requestMatchers("/chat").authenticated()
                         .requestMatchers("/admin/**",
                                 "/trainers/create",
                                 "/trainers/edit/**",
                                 "/trainers/delete/**").hasRole("ADMIN")
                         .requestMatchers("/products/**").hasRole("MANAGER")
-                        .requestMatchers("/trainers/profile",
-                                          "/trainers/profile").hasRole("TRAINER")
-
+                        .requestMatchers("/ws/**","/admin/chat/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -72,7 +71,6 @@ public class SecurityConfig {
                         .usernameParameter("usernameOrEmail")
                         .passwordParameter("password")
                         .defaultSuccessUrl("/home", true)
-                        .failureUrl("/index?error=true")
                         .permitAll()
                 )
 

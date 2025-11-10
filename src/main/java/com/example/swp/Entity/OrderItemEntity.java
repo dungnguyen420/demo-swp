@@ -14,11 +14,15 @@ import java.math.BigDecimal;
 public class OrderItemEntity extends BaseEntity {
 
     private String productName;
+
     @Column(name = "product_price", nullable = false)
     private double productPrice;
+
     @Column(name = "product_id", nullable = true)
     private Long productId;
+
     private int quantity;
+
     @Column(name = "package_id", nullable = true)
     private Long packageId;
 

@@ -21,7 +21,6 @@ public class UserEntity extends BaseEntity {
     private String userName;
 
 
-
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private TrainerProfileEntity trainerProfile;
 

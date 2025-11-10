@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chat với Manager</title>
+    <style>
+        /* === CÀI ĐẶT CHUNG === */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5; /* Thêm nền xám nhạt cho trang */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* === KHUNG CHAT CHÍNH === */
+        .chat-container {
+            width: 90%;
+            max-width: 600px; /* Đặt chiều rộng tối đa */
+            height: 85vh;
+            max-height: 700px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            border-radius: 8px; /* Bo góc */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Thêm bóng đổ */
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* === HEADER (TIÊU ĐỀ) === */
+        .chat-header {
+            background: linear-gradient(90deg, #007bff, #0056b3); /* Thêm gradient */
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .chat-header h4 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        /* === KHU VỰC HIỂN THỊ CHAT === */
+        .chat-area {
+            flex-grow: 1; /* Tự động co giãn */
+            overflow-y: auto; /* Tự động cuộn */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            background-color: #f9f9f9;
+        }
+
+        /* === KHUNG NHẬP LIỆU === */
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #eee;
+            background-color: #ffffff;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
+        .chat-input input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        .chat-input input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0,123,255,0.2);
+        }
+        .chat-input button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s ease;
+        }
+        .chat-input button:hover {
+            background-color: #0056b3;
+        }
+
+        /* === CSS CHO BONG BÓNG CHAT === */
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 18px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        .message strong {
+            display: block;
+            font-size: 0.8em;
+            color: #555;
+            margin-bottom: 2px;
+        }
+
+        /* Tin nhắn gửi đi */
+        .message.sent {
+            background-color: #dcf8c6;
+            align-self: flex-end; /* Đẩy sang phải */
+        }
+
+        /* Tin nhắn nhận */
+        .message.received {
+            background-color: #e9e9eb;
+            align-self: flex-start; /* Đẩy sang trái */
+        }
+    </style>
+</head>
+<body>
+<div class="chat-container">
+    <div class="chat-header">
+        <h4 th:text="'Chat với ' + ${recipientName}">Chat với Manager</h4>
+    </div>
+
+    <div class="chat-area" id="chatArea">
+        <div th:each="msg : ${chatHistory}" class="message"
+             th:classappend="${msg.from == #authentication.name} ? 'sent' : 'received'">
+            <strong th:if="${msg.from != #authentication.name}" th:text="${msg.from}"></strong>
+            <span th:text="${msg.content}"></span>
+        </div>
+    </div>
+
+    <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Nhập tin nhắn...">
+        <button id="sendButton">Gửi</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script th:inline="javascript">
+    const recipientUsername = /*[[${recipientUsername}]]*/ 'manager_admin';
+    const currentUser = /*[[${#authentication.name}]]*/ 'user';
+
+    let stompClient = null;
+    const chatArea = document.getElementById("chatArea");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+
+    function connect() {
+        let socket = new SockJS('/ws');
+        stompClient = Stomp.over(socket);
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/user/queue/reply', function (messageOutput) {
+                showMessage(JSON.parse(messageOutput.body));
+            });
+        });
+    }
+
+    function sendMessage() {
+        let messageContent = messageInput.value.trim();
+        if (messageContent && stompClient) {
+            const chatMessageDTO = {
+                to: recipientUsername,
+                content: messageContent
+            };
+            stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessageDTO));
+            messageInput.value = '';
+        }
+    }
+
+    function showMessage(message) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
+        let innerHtml = '';
+
+        if (message.from === currentUser) {
+            messageElement.classList.add('sent');
+            innerHtml = `<span>${message.content}</span>`;
+        } else {
+            messageElement.classList.add('received');
+            innerHtml = `<strong>${message.from}</strong>
+                         <span>${message.content}</span>`;
+        }
+
+        messageElement.innerHTML = innerHtml;
+        chatArea.appendChild(messageElement);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+
+    connect();
+    sendButton.addEventListener('click', sendMessage);
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+</script>
+</body>
+</html>

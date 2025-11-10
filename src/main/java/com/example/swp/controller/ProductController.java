@@ -3,10 +3,12 @@ package com.example.swp.controller;
 import com.example.swp.DTO.ProductDTO;
 import com.example.swp.Entity.ProductEntity;
 import com.example.swp.Service.IProductService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -41,7 +43,13 @@ public class ProductController {
     }
 
     @PostMapping("/create")
-    public String createProduct(@ModelAttribute("product") ProductDTO dto, Model model){
+    public String createProduct(@Valid  @ModelAttribute("product") ProductDTO dto,
+                                BindingResult bindingResult,
+                                Model model){
+
+        if (bindingResult.hasErrors()){
+            return "products/product-create";
+        }
         try {
             ProductEntity product = productService.createProduct(dto);
             model.addAttribute("success", "Tạo sản phẩm thành công!");
@@ -75,7 +83,14 @@ public class ProductController {
     }
 
     @PostMapping("/update")
-    public String updateProduct(@ModelAttribute("product") ProductDTO dto, Model model){
+    public String updateProduct(@Valid @ModelAttribute("product") ProductDTO dto,
+                                BindingResult bindingResult,
+                                Model model){
+
+        if (bindingResult.hasErrors()) {
+            return "products/product-edit";
+        }
+
         try {
             ProductEntity updated = productService.updateProduct(dto);
             model.addAttribute("success", "Cập nhật sản phẩm thành công!");

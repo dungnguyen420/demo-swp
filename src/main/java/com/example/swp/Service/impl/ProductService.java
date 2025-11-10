@@ -125,28 +125,26 @@ public class ProductService implements IProductService {
         return productRepository.findByNameContainingIgnoreCase(keyword, pageable);
     }
     @Override
-    @Transactional(rollbackFor = Exception.class) // Quan trọng: Nếu lỗi, rollback lại
+    @Transactional(rollbackFor = Exception.class)
     public void decreaseStock(Long productId, int quantityToDecrease) throws Exception {
 
-        // 1. Kiểm tra số lượng hợp lệ
+
         if (quantityToDecrease <= 0) {
             throw new Exception("Số lượng cần giảm phải lớn hơn 0");
         }
 
-        // 2. Lấy sản phẩm từ CSDL
+
         ProductEntity product = productRepository.findById(productId)
                 .orElseThrow(() -> new Exception("Không tìm thấy sản phẩm với ID: " + productId));
 
-        // 3. Lấy số lượng tồn kho hiện tại
+
         int currentStock = product.getQuantity();
 
-        // 4. KIỂM TRA TỒN KHO
-        // Đây là bước kiểm tra an toàn cuối cùng
+
         if (currentStock < quantityToDecrease) {
             throw new Exception("Không đủ hàng tồn kho cho sản phẩm: '" + product.getName()
                     + "'. Chỉ còn " + currentStock + " sản phẩm.");
         }
-
 
         int newStock = currentStock - quantityToDecrease;
         product.setQuantity(newStock);

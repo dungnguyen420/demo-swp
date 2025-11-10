@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -74,34 +74,6 @@
 
 <body data-bs-theme="dark">
 
-<header class="navbar">
-    <a th:href="@{/home}" class="logo">GymCare</a>
-    <nav>
-        <ul>
-            <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}">Gói tập</a></li>
-            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
-            <li><a th:href="@{/classes}">Lớp học</a></li>
-            <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
-        </ul>
-    </nav>
-    <div class="auth-section">
-        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
-            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
-            <span sec:authentication="principal.username">Username</span>
-            <ul class="dropdown-menu">
-                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
-                <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                </li>
-                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
-                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
-            </ul>
-        </div>
-        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
-    </div>
-</header>
-
 <div class="container py-4">
     <h2 class="mb-4 fw-bold text-primary">Bảng điều khiển Quản trị</h2>
 
@@ -148,10 +120,10 @@
                         <td th:text="${user.lastName}"></td>
                         <td th:text="${user.email}"></td>
                         <td>
-                            <button class="btn btn-outline-warning btn-sm btn-action"
-                                    th:attr="data-id=${user.id}" onclick="editUser(this)" title="Sửa">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
+                                <a class="btn btn-outline-warning btn-sm btn-action"
+                                   th:href="@{/auth/update/{id}(id=${user.id})}" title="Sửa">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </a>
 
                             <button class="btn btn-outline-danger btn-sm btn-action"
                                     th:attr="data-id=${user.id}" onclick="deleteUser(this)" title="Xóa">
@@ -165,9 +137,9 @@
 
             <div th:if="${activeTab == 'packages'}">
                 <div class="d-flex justify-content-end mb-3">
-                    <button class="btn btn-primary text-dark" onclick="openCreatePackage()">
+                    <a th:href="@{/auth/create}" class="btn btn-primary text-dark">
                         <i class="fas fa-plus"></i> Tạo Gói Tập
-                    </button>
+                    </a>
                 </div>
 
                 <table class="table table-hover align-middle text-center">
@@ -188,11 +160,10 @@
                         <td th:text="${pkg.description}"></td>
                         <td th:text="${#numbers.formatDecimal(pkg.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                         <td th:text="${pkg.durationMonth}"></td>
-                        <td>
-                            <button class="btn btn-outline-warning btn-sm btn-action"
-                                    th:attr="data-id=${pkg.id}" onclick="editPackage(this)" title="Sửa">
-                                <i class="fas fa-pencil-alt"></i>
-                            </button>
+                        <td><a class="btn btn-outline-warning btn-sm btn-action"
+                               th:href="@{/auth/update-package/{id}(id=${pkg.id})}" title="Sửa">
+                            <i class="fas fa-pencil-alt"></i>
+                        </a>
 
                             <button class="btn btn-outline-danger btn-sm btn-action"
                                     th:attr="data-id=${pkg.id}" onclick="deletePackage(this)" title="Xóa">
@@ -281,95 +252,8 @@
         }
     });
 
-    // (Hàm editUser giữ nguyên logic)
-    function editUser(btn) {
-        const id = btn.getAttribute("data-id");
-        fetch(`/auth/api/users/${id}`)
-            .then(res => res.json())
-            .then(user => {
-                document.getElementById("userFirstName").value = user.firstName;
-                document.getElementById("userLastName").value = user.lastName;
-                document.getElementById("userEmail").value = user.email;
-                document.getElementById("updateUserForm").action = `/auth/update/${id}`;
-                new bootstrap.Modal(document.getElementById("editUserModal")).show();
-            });
-    }
 
-    // (Hàm openCreatePackage giữ nguyên logic)
-    function openCreatePackage() {
-        Swal.fire({
-            title: 'Tạo gói tập mới',
-            html: `
-                <input id="name" class="swal2-input" placeholder="Tên gói">
-                <input id="description" class="swal2-input" placeholder="Mô tả">
-                <input id="price" type="number" class="swal2-input" placeholder="Giá">
-                <input id="durationMonth" type="number" class="swal2-input" placeholder="Thời hạn (tháng)">
-            `,
-            showCancelButton: true,
-            confirmButtonText: 'Tạo',
-            preConfirm: () => {
-                const name = document.getElementById('name').value.trim();
-                const description = document.getElementById('description').value.trim();
-                const price = document.getElementById('price').value.trim();
-                const duration = document.getElementById('durationMonth').value.trim();
 
-                if (!name || !description || !price || !duration) {
-                    Swal.showValidationMessage('⚠️ Vui lòng nhập đầy đủ thông tin');
-                    return false;
-                }
-                return { name, description, price, durationMonth: duration };
-            }
-        }).then(result => {
-            if (result.isConfirmed) {
-                const formData = new FormData();
-                formData.append("name", result.value.name);
-                formData.append("description", result.value.description);
-                formData.append("price", result.value.price);
-                formData.append("durationMonth", result.value.durationMonth);
-
-                // [SỬA LỖI] Thêm CSRF token vào fetch POST
-                const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
-                const header = document.querySelector("meta[name='_csrf_header']").getAttribute("content");
-
-                const headers = new Headers();
-                headers.append(header, token);
-
-                fetch('/auth/create', {
-                    method: 'POST',
-                    headers: headers, // Thêm header bảo mật
-                    body: formData
-                })
-                    .then(res => {
-                        if (res.redirected) {
-                            window.location.href = res.url;
-                        } else if (res.ok) {
-                            Swal.fire('🎉 Thành công!', 'Tạo gói tập mới thành công', 'success')
-                                .then(() => location.reload());
-                        } else {
-                            Swal.fire('Lỗi', 'Không thể tạo gói tập', 'error');
-                        }
-                    })
-                    .catch(() => Swal.fire('Lỗi', 'Không thể kết nối máy chủ', 'error'));
-            }
-        });
-    }
-
-    // (Hàm editPackage giữ nguyên logic)
-    function editPackage(btn) {
-        const id = btn.getAttribute("data-id");
-        fetch(`/auth/api/package/${id}`)
-            .then(res => res.json())
-            .then(pkg => {
-                document.getElementById("pkgName").value = pkg.name;
-                document.getElementById("pkgDesc").value = pkg.description;
-                document.getElementById("pkgPrice").value = pkg.price;
-                document.getElementById("pkgDuration").value = pkg.durationMonth;
-                document.getElementById("updatePackageForm").action = `/auth/update-package/${id}`;
-                new bootstrap.Modal(document.getElementById("editPackageModal")).show();
-            });
-    }
-
-    // 9. [SỬA LỖI] HÀM XÓA MỚI (CÓ CSRF TOKEN)
 
     function deleteUser(btn) {
         const id = btn.getAttribute("data-id");

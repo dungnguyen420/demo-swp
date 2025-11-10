@@ -1,6 +1,7 @@
 package com.example.swp.Service;
 
 import com.example.swp.DTO.RegisterDTO;
+import com.example.swp.DTO.UserDTO;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
@@ -23,7 +24,7 @@ public interface IUserService {
     boolean authenticateUser(String usernameOrEmail, String password, HttpSession session);
     List<UserEntity> findByRole(UserRole member);
     void deleteUser(Long Id);
-    UserEntity updateUser(Long id, RegisterDTO dto);
+    UserEntity updateUser(Long id, UserDTO dto);
     UserEntity findById(Long Id);
     Page<UserEntity> findByRole(UserRole role, Pageable pageable);
     Page<UserEntity> searchUsers(String keyword, Pageable pageable);

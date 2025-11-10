@@ -1,26 +1,27 @@
 package com.example.swp.DTO;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
 public class PackageDTO {
-    @NotBlank
+    @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
+            message = "Tên không được có ký tự đặc biệt")
+    @Size(max = 20, message = "Tên không được vượt quá 20 ký tự")
     private String name;
 
-    @NotBlank
+
+    @NotBlank(message = "Mô tả không được để trống")
+    @Size(min = 10, max = 255, message = "Mô tả phải từ 10 đến 255 ký tự")
     private String description;
 
-    @NotNull
-    @PositiveOrZero
+    @NotNull(message = "Giá tiền không được để trống")
+    @Positive(message = "Giá tiền phải là số dương")
     private double price;
 
-    @NotNull
-    @Positive
+    @NotNull(message = "Thời hạn gói không được để trống")
+    @Positive(message = "Thời hạn (tháng) phải là số dương")
     private Integer durationMonth;
 }

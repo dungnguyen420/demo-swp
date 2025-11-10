@@ -21,13 +21,12 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long>, JpaSpe
     boolean existsByEmail (String email);
     List<UserEntity> findByRole(UserRole role);
     List<UserEntity> findAllByRole(UserRole role);
-
     Page<UserEntity> findByRole(UserRole role, Pageable pageable);
     @Query("SELECT u FROM Users u WHERE " +
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(u.firstName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<UserEntity> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
-
+    Optional<UserEntity> findFirstByRole(UserRole role);
 
 }

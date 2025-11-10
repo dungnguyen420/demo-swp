@@ -61,7 +61,7 @@ public class ShopController {
             try {
                 var summary = cartService.getCartSummary(principal.getUser().getId());
                 model.addAttribute("cartCount", summary.getTotalItems());
-            } catch (Exception e) { // <-- THÊM CATCH
+            } catch (Exception e) {
                 model.addAttribute("cartCount", 0);
             }
         } else {

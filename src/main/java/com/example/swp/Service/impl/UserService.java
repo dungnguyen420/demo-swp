@@ -1,6 +1,7 @@
 package com.example.swp.Service.impl;
 
 import com.example.swp.DTO.RegisterDTO;
+import com.example.swp.DTO.UserDTO;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.Status;
 import com.example.swp.Enums.UserRole;
@@ -49,7 +50,6 @@ public class UserService implements IUserService {
     public UserEntity findByUserName(String userName) {
         return userRepository.findByUserName(userName).orElse(null);
     }
-
     @Override
     public boolean existedByEmail(String email) {
         return userRepository.existsByEmail(email);
@@ -119,12 +119,27 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserEntity updateUser(Long id, RegisterDTO dto) {
+    public UserEntity updateUser(Long id, UserDTO dto) { // <-- 1. Nhận DTO Cập nhật
+
+
         UserEntity existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy người dùng với id: " + id));
+
+        Optional<UserEntity> userWithSameEmail = userRepository.findByEmail(dto.getEmail());
+
+        if(userWithSameEmail.isPresent() && !userWithSameEmail.get().getId().equals(id)) {
+
+            throw new RuntimeException("Email này đã được sử dụng bởi tài khoản khác.");
+        }Optional<UserEntity> userWithSameName = userRepository.findByUserName(dto.getUserName());
+        if(userWithSameName.isPresent() && !userWithSameName.get().getId().equals(id)) {
+            throw new RuntimeException("Tên đăng nhập này đã được sử dụng.");
+        }
+
+
         existingUser.setFirstName(dto.getFirstName());
         existingUser.setLastName(dto.getLastName());
         existingUser.setEmail(dto.getEmail());
+        existingUser.setUserName(dto.getUserName());
         return userRepository.save(existingUser);
     }
 
@@ -202,6 +217,10 @@ public class UserService implements IUserService {
         if (user.getBirthDate().isAfter(java.time.LocalDateTime.now())) {
             throw new RuntimeException("Ngày sinh phải là ngày trong quá khứ!");
         }
+    }
+    public UserEntity findUserByRole(UserRole role) {
+
+        return userRepository.findFirstByRole(role).orElse(null);
     }
 
 }
