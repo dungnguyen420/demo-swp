@@ -1,6 +1,7 @@
 package com.example.swp.Controller;
 
 //import com.example.swp.Entity.UserEntity;
+import com.example.swp.DTO.UserDTO;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.swp.DTO.PackageDTO;
@@ -65,6 +66,37 @@ public class DashBoardController {
         return "auth/dashBoard";
     }
 
+    @GetMapping("/create")
+    public String showCreatePackageForm(Model model) {
+        model.addAttribute("packageDTO", new PackageDTO());
+        return "auth/create-package-form";
+    }
+    @PostMapping("/create")
+    public String createPackage(
+            @Valid @ModelAttribute("packageDTO") PackageDTO packageDTO,
+            BindingResult result,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+
+        if (result.hasErrors()) {
+
+            return "auth/create-package-form";
+        }
+
+        try {
+            packageService.createPackage(packageDTO);
+            redirectAttributes.addFlashAttribute("successMessage", "Tạo gói mới thành công!");
+            return "redirect:/auth/dashBoard?tab=packages";
+
+        } catch (RuntimeException e) {
+
+            model.addAttribute("errorMessage", e.getMessage());
+
+
+            return "auth/create-package-form";
+        }
+    }
 
     @PostMapping("/delete")
     public String deleteUser(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
@@ -75,11 +107,28 @@ public class DashBoardController {
 
     @PostMapping("/update/{id}")
     public String updateUser(@PathVariable("id") Long id,
-                             @ModelAttribute RegisterDTO dto,
+                             @Valid @ModelAttribute("userUpdateDTO") UserDTO dto, // Dùng DTO mới
+                             BindingResult result, // Bắt lỗi DTO
+                             Model model,
                              RedirectAttributes redirectAttributes) {
-        userService.updateUser(id, dto);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thông tin người dùng thành công!");
-        return "redirect:/auth/dashBoard?tab=users";
+
+
+        if (result.hasErrors()) {
+            model.addAttribute("userId", id); // **QUAN TRỌNG:** Phải gửi lại ID
+            return "auth/update-user-form"; // Trả về trang form
+        }
+
+        try {
+
+            userService.updateUser(id,dto);
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thành công!");
+            return "redirect:/auth/dashBoard?tab=users";
+
+        } catch (RuntimeException e) {
+            model.addAttribute("userId", id);
+            model.addAttribute("userUpdateError", e.getMessage());
+            return "auth/update-user-form";
+        }
     }
 
     @GetMapping("/api/users/{id}")
@@ -89,18 +138,6 @@ public class DashBoardController {
     }
 
 
-    @PostMapping("/create")
-    public String createPackage(@Valid @ModelAttribute PackageDTO packageDTO,
-                                BindingResult result,
-                                RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại!");
-            return "redirect:/auth/dashBoard?tab=packages";
-        }
-        packageService.createPackage(packageDTO);
-        redirectAttributes.addFlashAttribute("successMessage", "Tạo gói tập mới thành công!");
-        return "redirect:/auth/dashBoard?tab=packages";
-    }
 
     @PostMapping("/delete-package")
     public String deletePackage(@RequestParam("id") Long id, RedirectAttributes redirectAttributes) {
@@ -114,13 +151,70 @@ public class DashBoardController {
     public PackageDTO getPackageById(@PathVariable Long id) {
         return packageService.findPackageById(id);
     }
+    @GetMapping("/update/{id}")
+    public String showUpdateUserForm(@PathVariable("id") Long id, Model model) {
+        try {
+            // 1. Lấy thông tin user cũ
+            UserEntity user = userService.findById(id);
+            if (user == null) {
+                return "redirect:/auth/dashBoard?tab=users&error=UserNotFound";
+            }
 
+
+            UserDTO dto = new UserDTO();
+            dto.setFirstName(user.getFirstName());
+            dto.setLastName(user.getLastName());
+            dto.setEmail(user.getEmail());
+
+
+            model.addAttribute("userUpdateDTO", dto);
+            model.addAttribute("userId", id); // Quan trọng cho action của form
+
+            return "auth/update-user-form"; // Trả về file HTML mới
+
+        } catch (Exception e) {
+            return "redirect:/auth/dashBoard?tab=users&error=" + e.getMessage();
+        }
+    }
+
+    @GetMapping("/update-package/{id}")
+    public String showUpdatePackageForm(@PathVariable("id") Long id, Model model) {
+        try {
+
+            PackageDTO dto = packageService.findPackageById(id);
+
+            model.addAttribute("packageDTO", dto);
+            model.addAttribute("packageId", id);
+
+            return "auth/update-package-form";
+
+        } catch (Exception e) {
+            return "redirect:/auth/dashBoard?tab=packages&error=" + e.getMessage();
+        }
+    }
     @PostMapping("/update-package/{id}")
     public String updatePackage(@PathVariable("id") Long id,
-                                @ModelAttribute PackageDTO dto,
+                                @Valid @ModelAttribute("packageDTO") PackageDTO dto, // 1. Dùng @Valid
+                                BindingResult result,
+                                Model model,
                                 RedirectAttributes redirectAttributes) {
-        packageService.updatePackage(dto, id);
-        redirectAttributes.addFlashAttribute("successMessage", "Cập nhật thành công!");
-        return "redirect:/auth/dashBoard?tab=packages";
+
+        if (result.hasErrors()) {
+            model.addAttribute("packageId", id);
+            return "auth/update-package-form";
+        }
+
+        try {
+            packageService.updatePackage(dto, id);
+
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật gói thành công!");
+            return "redirect:/auth/dashBoard?tab=packages";
+
+        } catch (RuntimeException e) {
+
+            model.addAttribute("packageId", id);
+            model.addAttribute("errorMessage", e.getMessage());
+            return "auth/update-package-form";
+        }
     }
 }

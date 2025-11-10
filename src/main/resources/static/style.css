@@ -1324,7 +1324,127 @@ body::before {
     .empty-cart p {
         margin-bottom: 2rem;
     }
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+    }
 
+    .page-container {
+        display: flex;
+        height: 100vh;
+    }
+
+    /* Cột 1: Sidebar (Danh bạ) */
+    .sidebar {
+        width: 30%;
+        border-right: 1px solid #ccc;
+        overflow-y: auto;
+        background: #fdfdfd;
+    }
+
+    .contact-item {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .contact-item a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .contact-item:hover {
+        background-color: #f0f0f0;
+    }
+
+    .contact-item.active {
+        background-color: #e0e0e0;
+        font-weight: bold;
+    }
+
+    /* Cột 2: Cửa sổ chat */
+    .chat-window {
+        width: 70%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .chat-header {
+        background: #007bff;
+        color: white;
+        padding: 15px;
+    }
+
+    .chat-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .chat-area {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        background-color: #f9f9f9;
+    }
+
+    .chat-input {
+        display: flex;
+        padding: 10px;
+        border-top: 1px solid #ccc;
+    }
+
+    .chat-input input {
+        flex-grow: 1;
+        padding: 10px;
+        border-radius: 20px;
+        border: 1px solid #ddd;
+        margin-right: 10px;
+    }
+
+    .chat-input button {
+        padding: 10px 15px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 20px;
+        cursor: pointer;
+    }
+
+    /* Khi chưa chọn ai */
+    .no-chat-selected {
+        text-align: center;
+        padding-top: 100px;
+        color: #888;
+        height: 100%;
+    }
+
+    /* Định dạng bong bóng chat */
+    .message {
+        margin-bottom: 10px;
+        padding: 8px 12px;
+        border-radius: 18px;
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+
+    .message strong {
+        display: block;
+        font-size: 0.8em;
+        color: #555;
+        margin-bottom: 2px;
+    }
+
+    .message.sent {
+        background-color: #dcf8c6;
+        align-self: flex-end; /* Đẩy sang phải */
+    }
+
+    .message.received {
+        background-color: #e9e9eb;
+        align-self: flex-start; /* Đẩy sang trái */
+    }
 }
 
 

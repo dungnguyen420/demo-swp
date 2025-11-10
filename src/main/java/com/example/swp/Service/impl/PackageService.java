@@ -74,7 +74,7 @@ public class PackageService implements IPackageService {
     @Override
     public Page<PackageEntity> searchAndSortPackage(String keyword, Pageable pageable) {
 
-        // 3. SỬA Ở ĐÂY
+
         Specification<PackageEntity> spec = (root, query, criteriaBuilder) -> {
 
             if (keyword == null || keyword.trim().isEmpty()) {
