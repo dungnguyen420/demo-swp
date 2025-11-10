@@ -1,6 +1,7 @@
 package com.example.swp.Service.impl;
 
 import com.example.swp.DTO.TrainerDTO;
+import com.example.swp.DTO.TrainerUpdateDTO;
 import com.example.swp.Entity.TrainerProfileEntity;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.Status;
@@ -17,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TrainerService implements ITrainerService {
@@ -41,7 +43,7 @@ public Page<UserEntity> search(String name, UserGender gender, String specializa
             throw new RuntimeException("Email đã được sử dụng");
         }
         if (trainerRepository.findByUserName(dto.getUserName()).isPresent()){
-            throw new RuntimeException("Email đã được sử dụng");
+            throw new RuntimeException("UserName đã được sử dụng");
         }
         UserEntity trainer = new UserEntity();
 
@@ -130,7 +132,5 @@ public Page<UserEntity> search(String name, UserGender gender, String specializa
 
         return dtoTrainer;
     }
-
-
 
 }

@@ -6,6 +6,7 @@ import com.example.swp.Enums.Shift;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,9 @@ public class ScheduleEntity extends BaseEntity {
     @JoinColumn(name = "slot_id", nullable = false)
     private TimeSlotEntity slot;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = true)
+    private UserEntity member;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

@@ -5,6 +5,7 @@ import com.example.swp.Enums.SlotNumber;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;

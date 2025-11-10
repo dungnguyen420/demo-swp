@@ -13,5 +13,7 @@ public interface ClassMemberRepository extends JpaRepository<ClassMember, ClassM
     long countByClassEntity_Id(Long classId);
     boolean existsById_UserIdAndClassEntity_Schedules_Slot_IdIn(Long userId, List<Long> slotIds);
 
+    boolean existsById_UserIdAndClassEntity_Schedules_Slot_Id(Long userId, Long slotId);
+
 
 }

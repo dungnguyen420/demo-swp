@@ -52,4 +52,5 @@ public interface ClassesRepository extends JpaRepository<ClassesEntity, Long> {
                                @Param("mode") String mode,
                                Pageable pageable);
 
+
 }

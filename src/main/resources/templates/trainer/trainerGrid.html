@@ -73,7 +73,7 @@
 
     <div class="trainer-grid">
         <div class="trainer-card" th:each="trainer : ${trainers}">
-            <a th:href="@{/trainers/detail/{id}(id=${trainer.id})}">
+            <a th:if="${trainer.id != null}" th:href="@{/trainers/detail/{id}(id=${trainer.id})}">
                 <div class="trainer-image">
                     <img th:src="${trainer.avatar != null ? trainer.avatar : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop'}"
                          th:alt="${trainer.firstName}">

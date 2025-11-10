@@ -1,20 +1,25 @@
 package com.example.swp.controller;
 
 import com.example.swp.DTO.TrainerDTO;
+import com.example.swp.DTO.TrainerUpdateDTO;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserGender;
 import com.example.swp.Enums.UserRole;
 import com.example.swp.Service.ITrainerService;
+import com.example.swp.Service.impl.CustomUserDetails;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -104,5 +109,7 @@ public class TrainerController {
         model.addAttribute("trainer", dto);
         return "trainer/trainerDetail";
     }
+
+
 }
 
