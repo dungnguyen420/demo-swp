@@ -14,7 +14,7 @@ public interface ITrainerService {
 
     List<UserEntity> getAllTrainer(UserRole TRAINER);
     UserEntity createTrainer(TrainerDTO dto);
-    UserEntity updateTrainer(TrainerDTO dto);
+    UserEntity updateTrainer(TrainerUpdateDTO dto);
     UserEntity deleteTrainer(Long id);
     TrainerDTO trainerDetail(Long id);
     Page<UserEntity> search(String name, UserGender gender, String specialization, Pageable pageable);

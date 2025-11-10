@@ -38,7 +38,6 @@ public class ClassesService implements IClassesService {
     private final IUserRepository userRepo;
     private final IScheduleService scheduleService;
     private final ClassMemberRepository memberRepo;
-    private final ScheduleRepository scheduleRepo;
 
 
     private static final int MAX_CAPACITY_DEFAULT = 8;
@@ -150,14 +149,12 @@ public class ClassesService implements IClassesService {
             throw new RuntimeException("Lớp không còn lịch học trong tương lai, không thể đăng ký");
         }
 
-        // Kiểm tra sức chứa
         int capacity = clazz.getCapacity() != null ? clazz.getCapacity() : MAX_CAPACITY_DEFAULT;
         long current = memberRepo.countByClassEntity_Id(classId);
         if (current >= capacity) {
             throw new RuntimeException("Lớp đã đủ chỗ (" + capacity + ")");
         }
 
-        // Kiểm tra trùng slot với các lớp khác của user
         List<Long> slotIds = clazz.getSchedules()
                 .stream().map(s -> s.getSlot().getId()).distinct().toList();
 
@@ -167,7 +164,6 @@ public class ClassesService implements IClassesService {
         }
 
 
-        // Lưu tham gia
         ClassMemberId id = new ClassMemberId(classId, userId);
         ClassMember cm = new ClassMember();
         cm.setId(id);
@@ -192,7 +188,6 @@ public class ClassesService implements IClassesService {
                 if (s != null && s.getDate() != null && s.getSlotNumber() != null)
                     map.putIfAbsent(s.getDate() + "#" + s.getSlotNumber(), s);
 
-        // bổ sung từ dates + slotNumbers nếu key chưa có
         if (dto.getDates() != null && dto.getSlotNumbers() != null)
             for (int i = 0, n = Math.min(dto.getDates().size(), dto.getSlotNumbers().size()); i < n; i++) {
                 var d = dto.getDates().get(i); var sn = dto.getSlotNumbers().get(i);

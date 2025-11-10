@@ -58,7 +58,7 @@ public class ClassesController {
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("classDTO") CreateClassBySlotDTO dto,
-                         BindingResult br, Model model) {
+                         BindingResult br, Model model, RedirectAttributes ra) {
 
         if (br.hasErrors()) {
             model.addAttribute("classDTO", dto);
@@ -67,6 +67,7 @@ public class ClassesController {
             return "classes/createClass";        }
         try {
             ClassesEntity created = classesService.createClassBySlots(dto);
+            ra.addFlashAttribute("message", "Tạo lớp học mới thành công!");
             return "redirect:/classes/" + created.getId();
         } catch (RuntimeException ex) {
             model.addAttribute("errorMessage", ex.getMessage());
@@ -80,7 +81,7 @@ public class ClassesController {
     public String list(@RequestParam(required=false) String className,
                        @RequestParam(required=false) String trainerLast,
                        @RequestParam(required=false) String gender,
-                       @RequestParam(required=false, defaultValue="all") String mode, // all/upcoming/finished
+                       @RequestParam(required=false, defaultValue="all") String mode,
                        @RequestParam(defaultValue="createdAt") String sortBy,
                        @RequestParam(defaultValue="desc") String dir,
                        @RequestParam(defaultValue="0") int page,
@@ -139,16 +140,12 @@ public class ClassesController {
             return "classes/edit";
         }
         try {
-            // 1) Cập nhật thông tin lớp
             ClassesEntity updated = classesService.updateBasicInfo(id, dto.getName(), dto.getDescription(), dto.getCapacity());
-
-            // 2) Thêm các slot mới
             if (dto.getNewSlots() != null && !dto.getNewSlots().isEmpty()) {
+
                 ClassesEntity clazz = classesRepo.findById(id)
                         .orElseThrow(() -> new RuntimeException("Class not found"));
                 UserEntity trainer = clazz.getTrainer();
-
-                // Lấy các slot hiện có trong lớp (để chặn trùng ngay trong lớp)
                 Set<String> existingPairs = clazz.getSchedules().stream()
                         .map(s -> s.getSlot().getSlotDate() + "#" + s.getSlot().getSlotNumber().name())
                         .collect(Collectors.toSet());
@@ -156,13 +153,11 @@ public class ClassesController {
                 for (SlotRequest r : dto.getNewSlots()) {
                     if (r.getDate() == null || r.getSlotNumber() == null) continue;
 
-                    // Chặn trùng slot ngay trong lớp
                     String pair = r.getDate() + "#SLOT_" + r.getSlotNumber();
                     if (existingPairs.contains(pair)) {
-                        continue; // đã có trong lớp, bỏ qua
+                        continue;
                     }
 
-                    // Tạo schedule: service này chặn trùng slot của trainer
                     ScheduleEntity s = scheduleService.createSchedule(trainer, r.getDate(), r.getSlotNumber());
                     clazz.getSchedules().add(s);
                     existingPairs.add(pair);
@@ -178,7 +173,6 @@ public class ClassesController {
         }
     }
 
-        // Delete (Manager)
         @PostMapping("/{id}/delete")
         public String delete (@PathVariable Long id, RedirectAttributes ra){
             classesService.deleteById(id);
@@ -222,13 +216,21 @@ public class ClassesController {
 
         if (principal == null) {
             ra.addFlashAttribute("errorMessage", "Vui lòng đăng nhập để đăng ký lớp");
-            return "redirect:/auth/login";
+            return "redirect:/index";
         }
 
+        try {
             Long userId = principal.getUser().getId();
             classesService.register(id, userId);
-            return "redirect:/classes/" + id + "?joined";
+
+            ra.addFlashAttribute("message", "Đăng ký lớp thành công!");
+            return "redirect:/classes/" + id;
+
+        } catch (RuntimeException ex) {
+            ra.addFlashAttribute("errorMessage", "Đăng ký thất bại: " + ex.getMessage());
+            return "redirect:/classes/" + id;
         }
+    }
 
         @PostMapping("/{id}/unregister")
         public String unregister (@PathVariable Long id,
@@ -240,8 +242,16 @@ public class ClassesController {
                 return "redirect:/auth/login";
             }
 
-            Long userId = principal.getUser().getId();
-            classesService.unregister(id, userId);
-            return "redirect:/classes/" + id + "?left";
+            try {
+                Long userId = principal.getUser().getId();
+                classesService.unregister(id, userId);
+
+                ra.addFlashAttribute("message", "Hủy đăng ký thành công.");
+                return "redirect:/classes/" + id;
+
+            } catch (RuntimeException ex) {
+                ra.addFlashAttribute("errorMessage", "Hủy đăng ký thất bại: " + ex.getMessage());
+                return "redirect:/classes/" + id;
+            }
         }
     }

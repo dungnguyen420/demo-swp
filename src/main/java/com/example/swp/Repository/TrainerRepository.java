@@ -33,7 +33,7 @@ public interface TrainerRepository extends JpaRepository<UserEntity, Long>, JpaS
     Optional<UserEntity> findById(Long id);
 
     @Query("SELECT u FROM Users u JOIN u.trainerProfile tp " +
-            "WHERE (:name IS NULL OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+            "WHERE (:name IS NULL OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :name, '%'))) " +
             "AND (:gender IS NULL OR u.gender = :gender) " +
             "AND (:specialization IS NULL OR LOWER(tp.specialization) LIKE LOWER(CONCAT('%', :specialization, '%')))")
     Page<UserEntity> searchTrainer(

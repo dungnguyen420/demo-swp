@@ -69,7 +69,7 @@ public Page<UserEntity> search(String name, UserGender gender, String specializa
     }
 
     @Override
-    public UserEntity updateTrainer(TrainerDTO dto) {
+    public UserEntity updateTrainer(TrainerUpdateDTO dto) {
         UserEntity existingTrainer = trainerRepository.findById(dto.getId())
                 .orElseThrow(()-> new RuntimeException("không tìm thấy trainer này"));
 

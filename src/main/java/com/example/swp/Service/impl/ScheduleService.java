@@ -30,7 +30,6 @@ public class ScheduleService implements IScheduleService {
     private final IUserRepository userRepo;
     private final ClassMemberRepository classMemberRepo;
 
-    // Một trainer chỉ 1 schedule trong cùng (date, slotNumber)
     public ScheduleEntity createSchedule(UserEntity trainer, LocalDate date, int slotNum) {
 
         SlotNumber slotNumber = SlotNumber.fromNumber(slotNum);
@@ -78,19 +77,18 @@ public class ScheduleService implements IScheduleService {
     }
 
     private ScheduleEntity bookSingleSession(UserEntity trainer, UserEntity member, LocalDate date, int slotNum) {
-        // ... (Logic của hàm này đã đúng, giữ nguyên) ...
 
-        // 1. Tìm hoặc tạo TimeSlot
+
         TimeSlotEntity slot = upsertTimeSlot(date, slotNum);
         Long slotId = slot.getId();
 
-        // 2. KIỂM TRA LỊCH TRÙNG CỦA TRAINER
+
         boolean trainerBusy = scheduleRepo.existsByTrainer_IdAndSlot_Id(trainer.getId(), slotId);
         if (trainerBusy) {
             throw new IllegalStateException("HLV bận vào Slot " + slotNum + " ngày " + date);
         }
 
-        // 3. KIỂM TRA LỊCH TRÙNG CỦA MEMBER
+
         boolean memberBusyPT = scheduleRepo.existsByMember_IdAndSlot_Id(member.getId(), slotId);
         if (memberBusyPT) {
             throw new IllegalStateException("Bạn đã có lịch PT vào Slot " + slotNum + " ngày " + date);
@@ -100,7 +98,7 @@ public class ScheduleService implements IScheduleService {
             throw new IllegalStateException("Bạn đã có lịch Lớp học vào Slot " + slotNum + " ngày " + date);
         }
 
-        // 4. Tạo và lưu Schedule
+
         ScheduleEntity sch = new ScheduleEntity();
         sch.setTrainer(trainer);
         sch.setSlot(slot);
@@ -110,23 +108,21 @@ public class ScheduleService implements IScheduleService {
     }
 
     @Override
-    @Transactional // Đảm bảo tất cả slot đều thành công, hoặc không slot nào
+    @Transactional
     public void bookPrivateSessions(Long trainerId, Long memberId, List<SlotRequest> slots) {
         UserEntity trainer = userRepo.findById(trainerId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Huấn luyện viên"));
         UserEntity member = userRepo.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Người dùng"));
 
-        // BƯỚC 1: GỘP CÁC SLOT BỊ TRÙNG
         List<SlotRequest> uniqueSlots = this.mergeSlots(slots);
 
-        if (uniqueSlots.isEmpty()) { // Kiểm tra danh sách đã gộp
+        if (uniqueSlots.isEmpty()) {
             throw new IllegalArgumentException("Vui lòng chọn ít nhất một slot hợp lệ.");
         }
 
-        // BƯỚC 2: LẶP QUA DANH SÁCH ĐÃ GỘP
-        for (SlotRequest slotRequest : uniqueSlots) { // Dùng uniqueSlots
-            // Gọi hàm private để xử lý từng slot
+        for (SlotRequest slotRequest : uniqueSlots) {
+
             bookSingleSession(trainer, member, slotRequest.getDate(), slotRequest.getSlotNumber());
         }
     }
@@ -135,11 +131,11 @@ public class ScheduleService implements IScheduleService {
         if (slots == null || slots.isEmpty()) {
             return new ArrayList<>();
         }
-        // Dùng LinkedHashMap để giữ thứ tự và khử trùng lặp
+
         var map = new java.util.LinkedHashMap<String, SlotRequest>();
         for (var s : slots) {
             if (s != null && s.getDate() != null && s.getSlotNumber() != null) {
-                // Tạo key duy nhất
+
                 String key = s.getDate() + "#" + s.getSlotNumber();
                 map.putIfAbsent(key, s);
             }

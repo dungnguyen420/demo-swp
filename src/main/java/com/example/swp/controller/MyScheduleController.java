@@ -21,7 +21,6 @@ public class MyScheduleController {
 
     private final IMyScheduleService myScheduleService;
 
-    /** Trang cho Lịch PT (Cá nhân) - Dành cho MEMBER */
     @GetMapping("/personal")
     @PreAuthorize("hasAuthority('MEMBER')")
     public String showMyPersonalSchedule(@AuthenticationPrincipal CustomUserDetails principal, Model model,
@@ -34,11 +33,10 @@ public class MyScheduleController {
         model.addAttribute("pageTitle", "Lịch PT của tôi");
         model.addAttribute("currentUser", principal.getUser());
         model.addAttribute("mode", mode);
-        model.addAttribute("baseURL", "/my-schedule/personal"); // <-- SỬA LỖI
+        model.addAttribute("baseURL", "/my-schedule/personal");
         return "schedule/my_schedule_list";
     }
 
-    /** Trang cho Lịch Lớp học - Dành cho MEMBER */
     @GetMapping("/classes")
     @PreAuthorize("hasAuthority('MEMBER')")
     public String showMyClassSchedule(@AuthenticationPrincipal CustomUserDetails principal, Model model,
@@ -51,11 +49,10 @@ public class MyScheduleController {
         model.addAttribute("pageTitle", "Lớp học của tôi");
         model.addAttribute("currentUser", principal.getUser());
         model.addAttribute("mode", mode);
-        model.addAttribute("baseURL", "/my-schedule/classes"); // <-- SỬA LỖI
+        model.addAttribute("baseURL", "/my-schedule/classes");
         return "schedule/my_schedule_list";
     }
 
-    /** Trang cho Lịch Dạy - Dành cho TRAINER */
     @GetMapping("/teaching")
     @PreAuthorize("hasAuthority('TRAINER')")
     public String showMyTeachingSchedule(@AuthenticationPrincipal CustomUserDetails principal, Model model,
@@ -68,7 +65,7 @@ public class MyScheduleController {
         model.addAttribute("pageTitle", "Lịch dạy của tôi");
         model.addAttribute("currentUser", principal.getUser());
         model.addAttribute("mode", mode);
-        model.addAttribute("baseURL", "/my-schedule/teaching"); // <-- SỬA LỖI
+        model.addAttribute("baseURL", "/my-schedule/teaching");
         return "schedule/my_schedule_list";
     }
 }

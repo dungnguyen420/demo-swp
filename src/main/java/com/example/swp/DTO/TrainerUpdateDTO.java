@@ -14,9 +14,8 @@ public class TrainerUpdateDTO {
     @Size(max = 150)
     private String email;
 
-    @Size(min = 8, max = 64, message = "Mật khẩu 8-64 ký tự")
     @Pattern(regexp = "^(|(?=.*[A-Za-z])(?=.*\\d)[^\\s]{8,64})$",
-            message = "Nếu nhập, mật khẩu phải có chữ, số và không có khoảng trắng")
+            message = "Nếu nhập, mật khẩu phải có chữ, số (8-64 ký tự), không khoảng trắng")
     private String passWord;
 
     @NotBlank @Size(min = 3, max = 50)

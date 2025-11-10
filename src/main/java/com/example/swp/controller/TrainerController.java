@@ -61,14 +61,16 @@ public class TrainerController {
     @PostMapping("/create")
     public String createTrainer(@Valid @ModelAttribute("trainerDTO") TrainerDTO trainerDTO,
                                 BindingResult br,
-                                Model model) {
+                                Model model,RedirectAttributes ra) {
         if (br.hasErrors()) {
+            model.addAttribute("error", "Dữ liệu nhập không hợp lệ, vui lòng kiểm tra lại.");
             return "trainer/createTrainer";
         }
         try {
             trainerService.createTrainer(trainerDTO);
+            ra.addFlashAttribute("message", "Tạo HLV mới thành công!");
             return "redirect:/trainers";
-        } catch (IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             model.addAttribute("error", ex.getMessage());
             return "trainer/createTrainer";
         }
@@ -82,25 +84,33 @@ public class TrainerController {
     }
 
     @PostMapping("/edit")
-    public String updateTrainer(@Valid @ModelAttribute("trainerDTO") TrainerDTO trainerDTO,
+    public String updateTrainer(@Valid @ModelAttribute("trainerDTO") TrainerUpdateDTO trainerDTO,
                                 BindingResult br,
-                                Model model) {
+                                Model model, RedirectAttributes ra) {
         if (br.hasErrors()) {
+            model.addAttribute("error", "Dữ liệu nhập không hợp lệ, vui lòng kiểm tra lại.");
             return "trainer/editTrainer";
         }
         try {
             trainerService.updateTrainer(trainerDTO);
+            ra.addFlashAttribute("message", "Cập nhật HLV thành công!");
             return "redirect:/trainers";
-        } catch (IllegalArgumentException ex) {
+        } catch (RuntimeException ex) {
             model.addAttribute("error", ex.getMessage());
             return "trainer/editTrainer";
         }
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteTrainer(@PathVariable Long id) {
-        trainerService.deleteTrainer(id);
+    public String deleteTrainer(@PathVariable Long id, RedirectAttributes ra) {
+        try {
+            trainerService.deleteTrainer(id);
+            ra.addFlashAttribute("message", "Đã xóa HLV thành công.");
+        } catch (RuntimeException ex) {
+            ra.addFlashAttribute("error", "Xóa thất bại: " + ex.getMessage());
+        }
         return "redirect:/trainers";
+
     }
 
     @GetMapping("/detail/{id}")

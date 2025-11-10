@@ -27,47 +27,36 @@ public class BookingController {
 
     private final IScheduleService scheduleService;
     private final IUserRepository userRepository;
-    private static final BigDecimal PRIVATE_SESSION_PRICE = new BigDecimal("250000");
 
-    /**
-     * HIỂN THỊ TRANG ĐẶT LỊCH (CẬP NHẬT)
-     */
+
     @GetMapping("/create")
     public String showBookingForm(@RequestParam("trainerId") Long trainerId, Model model) {
 
         UserEntity trainer = userRepository.findById(trainerId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy Trainer"));
 
-        // Tạo DTO mới và khởi tạo 1 slot rỗng (giống hệt createClass)
         BookingRequestDTO dto = new BookingRequestDTO();
         dto.setSlots(new ArrayList<>(List.of(new SlotRequest())));
 
         model.addAttribute("trainer", trainer);
-        model.addAttribute("bookingDTO", dto); // <- Đổi DTO
+        model.addAttribute("bookingDTO", dto);
         model.addAttribute("slotNumbers", List.of(1, 2, 3, 4, 5, 6));
 
         return "booking/create";
     }
 
-    /**
-     * XỬ LÝ VIỆC ĐẶT LỊCH (CẬP NHẬT)
-     */
+
     @PostMapping("/create")
     public String processBooking(@RequestParam("trainerId") Long trainerId,
-                                 @ModelAttribute("bookingDTO") BookingRequestDTO bookingDTO, // <- Đổi DTO
+                                 @ModelAttribute("bookingDTO") BookingRequestDTO bookingDTO,
                                  @AuthenticationPrincipal CustomUserDetails principal,
                                  RedirectAttributes ra) {
 
         if (principal == null) {
-            // ... (xử lý chưa đăng nhập)
         }
-
         Long memberId = principal.getUser().getId();
-
         try {
-            // Gọi service mới (số nhiều)
             scheduleService.bookPrivateSessions(trainerId, memberId, bookingDTO.getSlots());
-
             ra.addFlashAttribute("message", "Đặt lịch thành công " + bookingDTO.getSlots().size() + " buổi tập!");
             return "redirect:/trainers/detail/" + trainerId;
         } catch (Exception ex) {
