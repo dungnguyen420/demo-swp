@@ -9,59 +9,149 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
   <link rel="stylesheet" th:href="@{/style.css}">
   <style>
-    .page-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-    .page-title { text-align: center; margin-bottom: 1.5rem; }
-    .content-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 1.5rem; overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .data-table th, .data-table td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; vertical-align: middle; white-space: nowrap; }
-    .data-table th { background: #f9f9f9; }
-    .status-PENDING { color: #f0ad4e; font-weight: bold; }
-    .status-COMPLETED { color: #5cb85c; font-weight: bold; }
-    .status-CANCELLED { color: #d9534f; font-weight: bold; }
-    .no-orders { text-align: center; color: #777; padding: 20px; }
-    .action-link { text-decoration: none; color: #007bff; font-weight: bold; }
-    .alert-danger { color: #721c24; background-color: #f8d7da; padding: 1rem; border-radius: 5px; }
-    .navbar { /* (Style header của bạn) */ }
-    .profile-dropdown { /* (Style header của bạn) */ }
-    .site-footer { /* (Style footer của bạn) */ }
+      :root {
+          /* (Các biến màu của bạn từ style.css sẽ được tải) */
+          /* Chúng ta ghi đè font để đảm bảo an toàn */
+          --font-heading: 'Arial', sans-serif;
+          --font-body: 'Arial', sans-serif;
+      }
+      body, input, select, button {
+          font-family: var(--font-body, 'Arial', sans-serif);
+      }
+      h1, h2, h3, h4, h5, h6 {
+          font-family: var(--font-heading, 'Arial', sans-serif);
+      }
 
-    /* ===== THÊM CSS CHO PHÂN TRANG ===== */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      list-style: none;
-      padding: 0;
-      margin-top: 2rem;
-    }
-    .pagination li {
-      margin: 0 5px;
-    }
-    .pagination a {
-      display: block;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: #007bff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-    .pagination a:hover {
-      background-color: #f4f4f4;
-    }
-    .pagination li.active a {
-      background-color: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-    .pagination li.disabled a {
-      color: #aaa;
-      pointer-events: none;
-      border-color: #eee;
-      background-color: #f9f9f9;
-    }
-    /* ================================== */
+      /* --- 3. BỔ SUNG CSS CHO TRANG NÀY --- */
 
+      /* --- THÔNG BÁO (ALERTS) --- */
+      .alert {
+          padding: 1rem 1.5rem;
+          border-radius: 8px;
+          margin-bottom: 2rem;
+          font-weight: 700;
+          border: 1px solid;
+      }
+      .alert-success {
+          background-color: rgba(80, 255, 80, 0.1);
+          border-color: #50ff50;
+          color: #50ff50;
+      }
+      .alert-danger {
+          background-color: rgba(255, 77, 77, 0.1);
+          border-color: #ff4d4d;
+          color: #ff4d4d;
+      }
+
+      /* --- KHI KHÔNG CÓ ĐƠN HÀNG --- */
+      .no-orders {
+          text-align: center;
+          padding: 3rem 1rem;
+      }
+      .no-orders h3 {
+          font-size: 1.5rem;
+          color: var(--text-gray, #aaa);
+      }
+
+      /* --- BẢNG DỮ LIỆU --- */
+      .data-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 2rem;
+      }
+      .data-table th, .data-table td {
+          padding: 1rem 1.25rem;
+          text-align: left;
+          border-bottom: 1px solid var(--border-color, rgba(255,215,0,0.2));
+      }
+      .data-table thead th {
+          background-color: rgba(0, 246, 255, 0.1);
+          color: var(--primary-color, #00f6ff);
+          font-weight: 700;
+          font-size: 0.9rem;
+          text-transform: uppercase;
+      }
+      .data-table td {
+          color: var(--text-secondary, #ccc);
+      }
+      .data-table .action-link {
+          color: var(--primary-color, #FFD700);
+          text-decoration: none;
+          font-weight: 700;
+          transition: all 0.3s ease;
+      }
+      .data-table .action-link:hover {
+          text-decoration: underline;
+          color: #fff;
+      }
+
+      /* --- TRẠNG THÁI (STATUS BADGES) --- */
+      /* Định nghĩa các class .status-PENDING, .status-COMPLETED, v.v. */
+      [class*="status-"] {
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
+          font-weight: 700;
+          font-size: 0.8rem;
+          background-color: rgba(255, 255, 255, 0.1);
+          color: #fff;
+      }
+      .status-PENDING {
+          background-color: rgba(255, 165, 0, 0.15); /* Orange */
+          color: #ffa500;
+      }
+      .status-COMPLETED, .status-SUCCESS {
+          background-color: rgba(80, 255, 80, 0.15); /* Green */
+          color: #50ff50;
+      }
+      .status-CANCELLED, .status-FAILED, .status-REJECTED {
+          background-color: rgba(255, 77, 77, 0.15); /* Red */
+          color: #ff4d4d;
+      }
+
+      /* --- PHÂN TRANG (PAGINATION) --- */
+      .pagination {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 2rem;
+          list-style: none; /* Xóa chấm của <ul> */
+          padding: 0;
+      }
+      .pagination a {
+          display: block;
+          text-decoration: none;
+          padding: 0.5rem 1rem;
+          border: 1px solid var(--border-color, rgba(255,215,0,0.2));
+          color: var(--text-gray, #aaa);
+          border-radius: 8px;
+          transition: all 0.3s ease;
+      }
+      .pagination a:hover {
+          background: rgba(255, 215, 0, 0.1);
+          color: var(--primary-color, #FFD700);
+          border-color: var(--primary-color, #FFD700);
+      }
+      .pagination li.active a {
+          background: var(--primary-gradient, linear-gradient(90deg, #FFD700, #FBB03B));
+          color: var(--dark-bg, #121212);
+          font-weight: 700;
+          border-color: var(--primary-color, #FFD700);
+      }
+      .pagination li.disabled a {
+          opacity: 0.5;
+          pointer-events: none;
+      }
+
+      /* --- FOOTER (Đã có trong style.css nhưng thêm dự phòng) --- */
+      .site-footer {
+          text-align: center;
+          padding: 2rem 5%;
+          border-top: 1px solid var(--border-color, rgba(255,215,0,0.2));
+          background: var(--secondary-bg, #1A1A1A);
+          color: var(--text-gray, #aaa);
+          margin-top: 3rem;
+      }
   </style>
 </head>
 <body>

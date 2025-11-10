@@ -8,36 +8,113 @@
     <title>GymCare - Chi tiết Đơn hàng</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/style.css}"> <style>
-    /* CSS tương tự như trang Lịch sử của bạn */
-    .page-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-    .page-title { text-align: center; margin-bottom: 1.5rem; }
-    .content-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 1.5rem; overflow-x: auto; }
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <style>
+        :root {
+            --font-heading: 'Arial', sans-serif;
+            --font-body: 'Arial', sans-serif;
+        }
+        body, input, select, button {
+            font-family: var(--font-body, 'Arial', sans-serif);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading, 'Arial', sans-serif);
+        }
 
-    .alert-success, .alert-danger { padding: 1rem; margin-bottom: 1rem; border-radius: 5px; }
-    .alert-success { color: #155724; background-color: #d4edda; }
-    .alert-danger { color: #721c24; background-color: #f8d7da; }
+        /* 3. CSS CHO TRANG NÀY */
 
-    /* CSS cho bảng Tóm tắt */
-    .order-summary { list-style: none; padding: 0; margin-bottom: 20px; }
-    .order-summary li { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
-    .order-summary li:last-child { border-bottom: none; }
-    .order-summary li strong { color: #333; }
-    .order-summary li span { color: #555; }
-    .status-PENDING { color: #f0ad4e; font-weight: bold; }
-    .status-COMPLETED { color: #5cb85c; font-weight: bold; }
-    .status-CANCELLED { color: #d9534f; font-weight: bold; }
+        /* Thông báo */
+        .alert { padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem; font-weight: 700; border: 1px solid; }
+        .alert-success { background-color: rgba(80, 255, 80, 0.1); border-color: #50ff50; color: #50ff50; }
+        .alert-danger { background-color: rgba(255, 77, 77, 0.1); border-color: #ff4d4d; color: #ff4d4d; }
 
-    /* CSS cho bảng Chi tiết */
-    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .data-table th, .data-table td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; vertical-align: middle; }
-    .data-table th { background: #f9f9f9; }
-    .data-table th:nth-child(2), .data-table td:nth-child(2) { text-align: center; } /* Căn giữa SL */
-    .data-table th:nth-child(3), .data-table td:nth-child(3) { text-align: right; } /* Căn phải Giá */
-    .data-table th:nth-child(4), .data-table td:nth-child(4) { text-align: right; } /* Căn phải Tạm tính */
+        /* Thông tin chung */
+        .order-summary {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0 2rem 0;
+        }
+        .order-summary li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-color, rgba(255,215,0,0.2));
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1rem;
+            color: var(--text-secondary, #ccc);
+        }
+        .order-summary li strong {
+            color: var(--text-color, #fff);
+            font-weight: 700;
+        }
+        .order-summary li:last-child {
+            border-bottom: none;
+            font-size: 1.3rem; /* Làm to tổng tiền */
+        }
+        .order-summary li span[style*="font-weight:bold"] {
+            color: var(--primary-color, #FFD700);
+            font-size: 1.4rem;
+        }
 
-    .action-links { margin-top: 2rem; }
-    .cta-button.secondary { background-color: #6c757d; } /* Nút Quay lại */
+        /* Bảng chi tiết */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        .data-table th, .data-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color, rgba(255,215,0,0.2));
+        }
+        .data-table thead th {
+            background-color: rgba(0, 246, 255, 0.1);
+            color: var(--primary-color, #00f6ff);
+            font-weight: 700;
+        }
+        .data-table td {
+            color: var(--text-secondary, #ccc);
+        }
+
+        /* Trạng thái (Status Badges) */
+        [class*="status-"] {
+            padding: 0.25rem 0.75rem; border-radius: 20px;
+            font-weight: 700; font-size: 0.8rem;
+            background-color: rgba(255, 255, 255, 0.1); color: #fff;
+        }
+        .status-PENDING { background-color: rgba(255, 165, 0, 0.15); color: #ffa500; }
+        .status-COMPLETED, .status-SUCCESS { background-color: rgba(80, 255, 80, 0.15); color: #50ff50; }
+        .status-CANCELLED, .status-FAILED, .status-REJECTED { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; }
+
+        /* Nút quay lại */
+        .action-links {
+            text-align: right;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color, rgba(255,215,0,0.2));
+        }
+
+        /* (Ghi đè .cta-button.secondary nếu style.css không có) */
+        .cta-button.secondary {
+            background: transparent;
+            border: 2px solid var(--text-gray, #aaa);
+            color: var(--text-gray, #aaa);
+        }
+        .cta-button.secondary:hover {
+            background: var(--secondary-bg, #1A1A1A);
+            color: var(--text-color, #fff);
+            border-color: var(--text-color, #fff);
+            box-shadow: none;
+        }
+
+        /* Footer */
+        .site-footer {
+            text-align: center; padding: 2rem 5%;
+            border-top: 1px solid var(--border-color, rgba(255,215,0,0.2));
+            background: var(--secondary-bg, #1A1A1A);
+            color: var(--text-gray, #aaa);
+            margin-top: 3rem;
+        }
 </style>
 </head>
 <body>

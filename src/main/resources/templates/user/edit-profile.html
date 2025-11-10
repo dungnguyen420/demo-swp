@@ -1,29 +1,141 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa thông tin</title>
+
     <link rel="stylesheet" th:href="@{/style.css}">
 
-    <title>Chỉnh sửa thông tin</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* 3. SỬA LỖI VỠ FONT */
+        :root {
+            --font-heading: 'Arial', sans-serif;
+            --font-body: 'Arial', sans-serif;
+        }
+        body, input, select, textarea, button {
+            font-family: var(--font-body, 'Arial', sans-serif);
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading, 'Arial', sans-serif);
+        }
+
+        /* 4. CSS CHO FORM NÀY (THEO STYLE "GALAXY") */
+
+        /* Thông báo lỗi */
+        .alert-danger {
+            background-color: rgba(255, 77, 77, 0.1);
+            border: 1px solid #ff4d4d; color: #ff4d4d;
+            border-radius: 8px; padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Avatar */
+        .avatar-upload {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .avatar-upload .avatar {
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            border: 4px solid var(--primary-color, #FFD700);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            margin-bottom: 1rem;
+            object-fit: cover;
+        }
+        .avatar-upload .form-label {
+            display: block; font-weight: 700;
+            color: var(--text-gray, #aaa); margin-bottom: 0.5rem;
+        }
+        /* Style cho input file */
+        .avatar-upload input[type="file"] {
+            color: var(--text-gray, #aaa);
+            font-size: 0.9rem;
+        }
+        .avatar-upload input[type="file"]::file-selector-button {
+            background: var(--primary-gradient, linear-gradient(90deg, #FFD700, #FBB03B));
+            color: var(--dark-bg, #121212);
+            border: none; border-radius: 8px;
+            padding: 0.5rem 1rem; font-weight: 700;
+            cursor: pointer; transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+        .avatar-upload input[type="file"]::file-selector-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Layout 2 cột */
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Các dòng form */
+        .form-card .row {
+            margin-bottom: 1.5rem;
+        }
+        .form-card .form-label {
+            display: block; font-weight: 700;
+            color: var(--text-gray, #aaa);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        .form-card input[type="text"],
+        .form-card input[type="email"],
+        .form-card input[type="password"],
+        .form-card input[type="datetime-local"],
+        .form-card select,
+        .form-card textarea {
+            width: 100%;
+            font-size: 1rem;
+            padding: 0.7rem 1rem;
+            background-color: var(--dark-bg, #121212);
+            border: 1px solid var(--border-color, rgba(255,215,0,0.2));
+            color: var(--text-color, #fff);
+            border-radius: 8px;
+            box-sizing: border-box; /* Quan trọng */
+        }
+        .form-card input[readonly] {
+            background-color: #333; /* Màu nền cho ô readonly */
+            cursor: not-allowed;
+        }
+        .form-card textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-card input:focus, .form-card textarea:focus, .form-card select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Responsive 2 cột */
+        @media (max-width: 768px) {
+            .form-grid-2 {
+                grid-template-columns: 1fr; /* Xếp chồng */
+                gap: 0; /* Xóa gap, để .row tự xử lý margin */
+            }
+        }
+
+        /* Footer */
+        .site-footer {
+            text-align: center; padding: 2rem 5%;
+            border-top: 1px solid var(--border-color, rgba(255,215,0,0.2));
+            background: var(--secondary-bg, #1A1A1A);
+            color: var(--text-gray, #aaa);
+            margin-top: 3rem;
+        }
+    </style>
 </head>
-<style>
-    .edit-card {
-        max-width: 700px;
-        margin: auto;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        border-radius: 12px;
-    }
-    .avatar {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid #007bff;
-        margin-bottom: 10px;
-    }
-</style>
-<body class="container mt-4">
+
+<body>
+
 <header class="navbar">
     <a th:href="@{/home}" class="logo">GymCare</a>
     <nav>
@@ -43,6 +155,7 @@
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                </li>
                 <li >
                     <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
                 </li>
@@ -63,107 +176,103 @@
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
     </div>
 </header>
-<h2>Chỉnh sửa thông tin cá nhân</h2>
+<main class="page-container" style="max-width: 900px;">
 
-<header class="navbar">
-    <a th:href="@{/home}" class="logo">GymCare</a>
-    <nav>
-        <ul>
-            <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}">Gói tập</a></li>
-            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
-            <li><a th:href="@{/classes}">Lớp học</a></li>
-            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+    <h1 class="page-title">Chỉnh sửa thông tin cá nhân</h1>
 
-            <li sec:authorize="hasRole('MANAGER')">
-                <a th:href="@{/products/list}">Danh sách sản phẩm</a>
-            </li>
-        </ul>
-    </nav>
-    <div class="auth-section">
-        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
-            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
-            <span sec:authentication="principal.username">Username</span>
-            <ul class="dropdown-menu">
-                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
-                <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
-                </li>
-                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
-            </ul>
-        </div>
-        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
+    <div class="form-card">
+        <form th:action="@{/user/edit}" th:object="${user}" method="post" enctype="multipart/form-data">
+
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <span th:text="${error}"></span>
+            </div>
+
+            <div class="avatar-upload">
+                <img th:src="${user.avatar != null ? user.avatar : '/images/default-avatar.png'}" alt="Avatar" class="avatar">
+                <div>
+                    <label class="form-label">Cập nhật ảnh đại diện:</label>
+                    <input type="file" name="avatarFile">
+                </div>
+            </div>
+
+            <div class="form-grid-2">
+                <div class="row">
+                    <label class="form-label">Họ</label>
+                    <input type="text" th:field="*{firstName}"/>
+                </div>
+                <div class="row">
+                    <label class="form-label">Tên</label>
+                    <input type="text" th:field="*{lastName}"/>
+                </div>
+            </div>
+
+            <div class="row">
+                <label class="form-label">Tên đăng nhập</label>
+                <input type="text" th:field="*{userName}" readonly/>
+            </div>
+
+            <div class="row">
+                <label class="form-label">Email</label>
+                <input type="email" th:field="*{email}"/>
+            </div>
+
+            <div class="row">
+                <label class="form-label">Số điện thoại</label>
+                <input type="text" th:field="*{phone}" placeholder="Nhập số điện thoại của bạn"/>
+            </div>
+
+            <div class="row">
+                <label>Ngày sinh</label>
+                <input type="date" th:field="*{birthDate}" />
+            </div>
+
+            <div class="row">
+                <label class="form-label">Giới tính</label>
+                <select th:field="*{gender}">
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="MALE">Nam</option>
+                    <option value="FEMALE">Nữ</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <label class="form-label">Tiểu sử</label>
+                <textarea th:field="*{bio}" rows="3" placeholder="Giới thiệu ngắn gọn về bản thân"></textarea>
+            </div>
+
+            <div class="row">
+                <label class="form-label">Mật khẩu mới (nếu muốn đổi)</label>
+                <input type="password" th:field="*{password}" placeholder="Để trống nếu không đổi">
+            </div>
+
+            <div class="form-actions" style="border-top: 1px solid var(--border-color); padding-top: 2rem; margin-top: 2rem;">
+                <button type="submit" class="cta-button">Lưu thay đổi</button>
+                <a href="/user/profile" class="btn-secondary" style="margin-left: 1rem;">Hủy</a>
+            </div>
+        </form>
+    </div> </main> <footer class="site-footer">
+    <div class="container"> <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
     </div>
-</header>
+</footer>
 
-<form th:action="@{/user/edit}" th:object="${user}" method="post" enctype="multipart/form-data" class="card p-4 edit-card">
-    <div th:if="${error}" class="alert alert-danger" role="alert">
-        <span th:text="${error}"></span>
-    </div>
-
-
-    <div class="text-center mb-3">
-        <img th:src="${user.avatar != null ? user.avatar : '/images/default-avatar.png'}" alt="Avatar" class="avatar">
-        <div class="mt-2">
-            <label class="form-label">Cập nhật ảnh đại diện:</label>
-            <input type="file" name="avatarFile" class="form-control">
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Họ</label>
-            <input type="text" th:field="*{firstName}" class="form-control"/>
-        </div>
-        <div class="col-md-6 mb-3">
-            <label class="form-label">Tên</label>
-            <input type="text" th:field="*{lastName}" class="form-control"/>
-        </div>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Tên đăng nhập</label>
-        <input type="text" th:field="*{userName}" class="form-control" readonly/>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="email" th:field="*{email}" class="form-control"/>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Số điện thoại</label>
-        <input type="text" th:field="*{phone}" class="form-control" placeholder="Nhập số điện thoại của bạn"/>
-    </div>
-
-    <div class="mb-3">
-        <label>Ngày sinh</label>
-        <input type="datetime-local" th:field="*{birthDate}" class="form-control"/>
-
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Giới tính</label>
-        <select th:field="*{gender}" class="form-select">
-            <option value="">-- Chọn giới tính --</option>
-            <option value="MALE">Nam</option>
-            <option value="FEMALE">Nữ</option>
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Tiểu sử</label>
-        <textarea th:field="*{bio}" class="form-control" rows="3" placeholder="Giới thiệu ngắn gọn về bản thân"></textarea>
-    </div>
-
-    <div class="mb-3">
-        <label class="form-label">Mật khẩu mới (nếu muốn đổi)</label>
-        <input type="password" th:field="*{password}" class="form-control" placeholder="Để trống nếu không đổi">
-    </div>
-
-    <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-    <a href="/user/profile" class="btn btn-secondary">Hủy</a>
-</form>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileDropdown) {
+            profileDropdown.addEventListener('click', (e) => {
+                if (!e.target.closest('a')) {
+                    e.preventDefault();
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>
