@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,34 +73,6 @@
 </head>
 
 <body data-bs-theme="dark">
-
-<header class="navbar">
-    <a th:href="@{/home}" class="logo">GymCare</a>
-    <nav>
-        <ul>
-            <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}">Gói tập</a></li>
-            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
-            <li><a th:href="@{/classes}">Lớp học</a></li>
-            <li><a th:href="@{/shop}" class="nav-button active">Cửa hàng</a></li>
-        </ul>
-    </nav>
-    <div class="auth-section">
-        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
-            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
-            <span sec:authentication="principal.username">Username</span>
-            <ul class="dropdown-menu">
-                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
-                <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                </li>
-                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
-                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
-            </ul>
-        </div>
-        <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="cta-button">Đăng nhập</a>
-    </div>
-</header>
 
 <div class="container py-4">
     <h2 class="mb-4 fw-bold text-primary">Bảng điều khiển Quản trị</h2>

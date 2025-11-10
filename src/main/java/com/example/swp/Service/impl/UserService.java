@@ -49,7 +49,6 @@ public class UserService implements IUserService {
     public UserEntity findByUserName(String userName) {
         return userRepository.findByUserName(userName).orElse(null);
     }
-
     @Override
     public boolean existedByEmail(String email) {
         return userRepository.existsByEmail(email);
@@ -209,6 +208,10 @@ public class UserService implements IUserService {
         if (user.getBirthDate().isAfter(java.time.LocalDateTime.now())) {
             throw new RuntimeException("Ngày sinh phải là ngày trong quá khứ!");
         }
+    }
+    public UserEntity findUserByRole(UserRole role) {
+
+        return userRepository.findFirstByRole(role).orElse(null);
     }
 
 }

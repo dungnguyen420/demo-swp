@@ -1,5 +1,7 @@
 package com.example.swp.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
@@ -10,5 +12,4 @@ public class RegisterDTO {
     private String firstName;
     private String lastName;
     private String role;
-
 }
