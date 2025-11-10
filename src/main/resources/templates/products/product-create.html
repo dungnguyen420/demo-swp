@@ -212,18 +212,27 @@
         <div class="mb-3">
             <label class="form-label">Tên sản phẩm</label>
             <input type="text" th:field="*{name}" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Mô tả</label>
             <textarea th:field="*{description}" class="form-control"></textarea>
+            <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Giá</label>
             <input type="number" th:field="*{price}" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">Số lượng</label>
             <input type="number" th:field="*{quantity}" class="form-control" required>
+            <div class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Hình ảnh (URL)</label>
+            <input type="text" th:field="*{image}" class="form-control">
+            <div class="text-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></div>
         </div>
         <div>
             <button type="submit" class="btn btn-primary">Lưu</button>
