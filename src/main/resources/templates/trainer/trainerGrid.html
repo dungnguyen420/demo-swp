@@ -44,6 +44,13 @@
             cursor: pointer; line-height: 1; transition: color 0.3s ease;
         }
         .popup-close:hover { color: var(--text-color, #fff); }
+
+        .btn-chip.active {
+            background: var(--primary-gradient); /* Sáng lên bằng màu vàng */
+            color: var(--dark-bg); /* Chữ đen */
+            font-weight: 700;
+            border-color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -129,10 +136,17 @@
         </form>
 
         <div class="quick-filters">
-            <a th:href="@{/trainers(gender='MALE')}" class="btn-chip">Chỉ Nam</a>
-            <a th:href="@{/trainers(gender='FEMALE')}" class="btn-chip">Chỉ Nữ</a>
-            <a th:href="@{/trainers(specialization='Yoga')}" class="btn-chip">Yoga</a>
-            <a th:href="@{/trainers(specialization='Bodybuilding')}" class="btn-chip">Bodybuilding</a>
+            <a th:href="@{/trainers(gender='MALE')}" class="btn-chip"
+               th:classappend="${gender == T(com.example.swp.Enums.UserGender).MALE ? 'active' : ''}">Chỉ Nam</a>
+
+            <a th:href="@{/trainers(gender='FEMALE')}" class="btn-chip"
+               th:classappend="${gender == T(com.example.swp.Enums.UserGender).FEMALE ? 'active' : ''}">Chỉ Nữ</a>
+
+            <a th:href="@{/trainers(specialization='Yoga')}" class="btn-chip"
+               th:classappend="${specialization == 'Yoga' ? 'active' : ''}">Yoga</a>
+
+            <a th:href="@{/trainers(specialization='Bodybuilding')}" class="btn-chip"
+               th:classappend="${specialization == 'Bodybuilding' ? 'active' : ''}">Bodybuilding</a>
         </div>
     </div>
 

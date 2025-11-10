@@ -46,6 +46,7 @@ public class TrainerController {
         model.addAttribute("trainers", trainerPage.getContent());
         model.addAttribute("name", name);
         model.addAttribute("gender", gender);
+        model.addAttribute("specialization", specialization);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", trainerPage.getTotalPages());
         return "trainer/trainerGrid";
