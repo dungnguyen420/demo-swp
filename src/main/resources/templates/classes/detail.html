@@ -1,100 +1,279 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Chi tiết lớp</title>
-    <link rel="stylesheet" th:href="@{/style.css}">
+    <title th:text="'Chi tiết lớp: ' + ${clazz.name}">Chi tiết lớp</title>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" th:href="@{/style.css}">
 
+    <style>
+        /* --- CSS CHO POPUP --- */
+        .popup-backdrop {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px); display: flex;
+            justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .popup-backdrop.show { opacity: 1; visibility: visible; }
+        .popup-content {
+            background: var(--secondary-bg, #1A1A1A);
+            padding: 2.5rem; border-radius: 12px;
+            border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+            width: 90%; max-width: 450px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .popup-backdrop.show .popup-content { transform: translateY(0); }
+        .popup-content h4 {
+            font-family: var(--font-heading, 'Teko', sans-serif);
+            font-size: 2rem; margin-bottom: 1rem;
+        }
+        .popup-content.error h4 { color: #ff4d4d; }
+        .popup-content.success h4 { color: #50ff50; }
+        .popup-content p { color: var(--text-gray, #ccc); font-size: 1.1rem; margin-bottom: 2rem; }
+        .popup-close {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 2.5rem; color: var(--text-gray, #aaa);
+            cursor: pointer; line-height: 1; transition: color 0.3s ease;
+        }
+        .popup-close:hover { color: var(--text-color, #fff); }
+
+        .detail-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr; /* 2/3 cho thông tin, 1/3 cho nút bấm */
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Card thông tin (style.css đã có .form-card, ta chỉ cần thêm chi tiết) */
+        .class-info p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        .class-info strong {
+            color: var(--text-light);
+            font-weight: 700;
+        }
+        .class-info .description {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color, rgba(255,255,255,0.1));
+        }
+
+        /* Nút hành động */
+        .class-actions .cta-button,
+        .class-actions .btn-secondary,
+        .class-actions button[disabled] {
+            width: 100%;
+            margin-bottom: 1rem;
+            box-sizing: border-box; /* Đảm bảo padding không làm vỡ layout */
+        }
+
+        .full-error {
+            color: #ff4d4d;
+            font-weight: 700;
+        }
+
+        /* CSS CHO BẢNG LỊCH HỌC */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--secondary-bg, #1A1A1A);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+        }
+        .schedule-table th, .schedule-table td {
+            padding: 1rem 1.25rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color, rgba(255,255,255,0.1));
+        }
+        .schedule-table th {
+            background-color: rgba(0, 246, 255, 0.1);
+            color: var(--primary-color, #00f6ff);
+            font-weight: 700;
+        }
+        .schedule-table td {
+            color: var(--text-secondary, #ccc);
+        }
+        .schedule-table tr:last-child td {
+            border-bottom: none;
+        }
+        .status-confirmed {
+            color: #50ff50;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .detail-layout {
+                grid-template-columns: 1fr; /* Xếp chồng lên nhau */
+            }
+        }
+    </style>
 </head>
 <body>
-<h2 th:text="${clazz.name}">Tên lớp</h2>
+<header class="navbar">
+    <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                <li >
+                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
+                </li>
+                <li >
+                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
+                </li>
 
-<!-- Thông báo (flash hoặc query params) -->
-<div th:if="${message}" style="color:green" th:text="${message}"></div>
-<div th:if="${errorMessage}" style="color:red" th:text="${errorMessage}"></div>
-
-<div>
-    <p><strong>HLV:</strong>
-        <span th:text="${trainer != null ? trainer.firstName + ' ' + trainer.lastName : 'N/A'}">Trainer</span>
-    </p>
-    <p>
-        <strong>Sức chứa:</strong>
-        <span th:text="${clazz.capacity}">0</span>
-        (<span th:text="${currentMembers}">0</span> đã đăng ký)
-        <span th:if="${isFull}" style="color:red"> - Đã đủ chỗ</span>
-    </p>
-    <p><strong>Mô tả:</strong></p>
-    <p th:text="${clazz.description}">Không có mô tả</p>
+                <li sec:authorize="hasAuthority('TRAINER')">
+                    <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
+                </li>
+                <li sec:authorize="hasRole('TRAINER')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+<div id="alert-popup" class="popup-backdrop"
+     th:classappend="${errorMessage != null || message != null ? 'show' : ''}">
+    <div class="popup-content error" th:if="${errorMessage}">
+        <span class="popup-close">&times;</span>
+        <h4>Thất bại!</h4>
+        <p th:text="${errorMessage}"></p>
+        <button type="button" class="cta-button popup-close-btn">Đã hiểu</button>
+    </div>
+    <div class="popup-content success" th:if="${message}">
+        <span class="popup-close">&times;</span>
+        <h4>Thành công!</h4>
+        <p th:text="${message}"></p>
+        <button type="button" class="cta-button popup-close-btn">Tuyệt vời</button>
+    </div>
 </div>
 
-<!-- Nút đăng ký / hủy đăng ký (frontend control) -->
-<div>
-    <form th:if="${!isJoined and !isFull and !noFutureSchedules}"
-          th:action="@{|/classes/${clazz.id}/register|}" method="post">
-        <button type="submit">Đăng ký</button>
-    </form>
+<main class="page-container" style="max-width: 1000px;">
 
-    <button th:if="${noFutureSchedules}" type="button" disabled
-            title="Lớp không còn lịch học trong tương lai">Không thể đăng ký</button>
+    <h1 class="page-title" th:text="${clazz.name}">Tên lớp</h1>
 
-    <button th:if="${isFull}" type="button" disabled
-            title="Lớp đã đủ chỗ">Đã đầy</button>
+    <div class="detail-layout">
 
-    <form th:if="${isJoined}" th:action="@{|/classes/${clazz.id}/unregister|}" method="post">
-        <button type="submit">Hủy đăng ký</button>
-    </form>
-</div>
+        <div class="class-info form-card">
+            <p><strong>HLV:</strong>
+                <span th:text="${trainer != null ? trainer.firstName + ' ' + trainer.lastName : 'N/A'}"></span>
+            </p>
+            <p>
+                <strong>Sức chứa:</strong>
+                <span th:text="${clazz.capacity}">0</span>
+                (<span th:text="${currentMembers}">0</span> đã đăng ký)
+                <span th:if="${isFull}" class="full-error"> - Đã đủ chỗ</span>
+            </p>
+            <div class="description">
+                <p><strong>Mô tả:</strong></p>
+                <p th:text="${clazz.description}">Không có mô tả</p>
+            </div>
+        </div>
 
+        <div class="class-actions form-card">
+            <form th:if="${!isJoined and !isFull and !noFutureSchedules}"
+                  th:action="@{|/classes/${clazz.id}/register|}" method="post">
+                <button type="submit" class="cta-button">Đăng ký</button>
+            </form>
 
-<h3>Lịch (slot 2 giờ)</h3>
-<table border="1" cellspacing="0" cellpadding="6">
-    <thead>
-    <tr>
-        <th>Ngày</th>
-        <th>Slot</th>
-        <th>Giờ</th>
-        <th>Trạng thái</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="s : ${schedules}">
-        <td th:text="${s.slot.slotDate}">2025-10-14</td>
-        <td th:text="${s.slot.slotNumber}">SLOT_1</td>
-        <td>
-            <span th:text="${s.slot.startTime}">06:00</span>
-            -
-            <span th:text="${s.slot.endTime}">08:00</span>
-        </td>
-        <td th:text="${s.status}">CONFIRMED</td>
-    </tr>
-    <tr th:if="${#lists.isEmpty(schedules)}">
-        <td colspan="4">Chưa có lịch</td>
-    </tr>
-    </tbody>
-</table>
+            <button th:if="${noFutureSchedules}" type="button" class="cta-button" disabled
+                    title="Lớp không còn lịch học trong tương lai">Không thể đăng ký</button>
 
-<p><a th:href="@{/classes}">&larr; Quay lại danh sách</a></p>
+            <button th:if="${isFull && !isJoined}" type="button" class="cta-button" disabled
+                    title="Lớp đã đủ chỗ">Đã đầy</button>
 
-<!-- Chặn click từ frontend (phòng user sửa DOM) -->
+            <form th:if="${isJoined}" th:action="@{|/classes/${clazz.id}/unregister|}" method="post">
+                <button type="submit" class="btn-secondary">Hủy đăng ký</button>
+            </form>
+        </div>
+    </div>
+
+    <h3 class="page-title" style="font-size: 1.8rem; text-align: left; border-bottom: none; margin-bottom: 1.5rem;">Lịch học</h3>
+    <table class="schedule-table">
+        <thead>
+        <tr>
+            <th>Ngày</th>
+            <th>Slot</th>
+            <th>Giờ</th>
+            <th>Trạng thái</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="s : ${schedules}">
+            <td th:text="${#temporals.format(s.slot.slotDate, 'dd-MM-yyyy')}">14-10-2025</td>
+            <td th:text="${s.slot.slotNumber}">SLOT_1</td>
+            <td>
+                <span th:text="${s.slot.startTime}">06:00</span>
+                -
+                <span th:text="${s.slot.endTime}">08:00</span>
+            </td>
+            <td class="status-confirmed" th:text="${s.status}">CONFIRMED</td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(schedules)}">
+            <td colspan="4" style="text-align: center;">Chưa có lịch</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div style="text-align: center; margin-top: 2rem;">
+        <a th:href="@{/classes}" class="btn-secondary">&larr; Quay lại danh sách</a>
+    </div>
+
+</main>
+
 <script th:inline="javascript">
     /*<![CDATA[*/
-    const isFull = /*[[${isFull}]]*/ false;
-    const isJoined = /*[[${isJoined}]]*/ false;
+    // JS Cũ của bạn (Đã bị vô hiệu hóa vì logic Thymeleaf đã xử lý)
+    // const isFull = /*[[${isFull}]]*/ false;
+    // const isJoined = /*[[${isJoined}]]*/ false;
+    // document.addEventListener('click', function(e) { ... });
 
-    document.addEventListener('click', function(e) {
-        const btn = e.target.closest('button');
-        if (!btn) return;
+    // JS Cho Popup
+    const popup = document.getElementById('alert-popup');
+    if (popup) {
+        const closePopup = () => {
+            popup.classList.remove('show');
+        };
 
-        if (btn.type === 'submit' && btn.textContent.includes('Đăng ký') && isFull) {
-            e.preventDefault();
-            alert('Lớp đã đủ chỗ');
-        }
-        if (btn.type === 'submit' && btn.textContent.includes('Hủy đăng ký') && !isJoined) {
-            e.preventDefault();
-            alert('Bạn chưa tham gia lớp này');
-        }
-    });
+        popup.querySelectorAll('.popup-close, .popup-close-btn').forEach(btn => {
+            btn.addEventListener('click', closePopup);
+        });
+
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+    }
     /*]]>*/
 </script>
 </body>

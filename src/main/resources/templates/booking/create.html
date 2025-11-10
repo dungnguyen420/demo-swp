@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <title>Đặt lịch HLV</title>
     <link rel="stylesheet" th:href="@{/style.css}">
@@ -8,13 +8,138 @@
         .slot-row { display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem; }
         .slot-row .form-group { flex-grow: 1; margin-bottom: 0; }
         .slot-row label { display: none; }
+        /* --- CSS CHO POPUP --- */
+        .popup-backdrop {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        /* Lớp 'show' để bật popup */
+        .popup-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .popup-content {
+            background: var(--secondary-bg, #1A1A1A);
+            padding: 2.5rem;
+            border-radius: var(--border-radius, 12px);
+            border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            /* Hiệu ứng trượt vào */
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .popup-backdrop.show .popup-content {
+            transform: translateY(0);
+        }
+
+        .popup-content h4 {
+            font-family: var(--font-heading, 'Teko', sans-serif);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Màu cho Lỗi */
+        .popup-content.error h4 {
+            color: #ff4d4d;
+        }
+        /* Màu cho Thành công */
+        .popup-content.success h4 {
+            color: #50ff50;
+        }
+
+        .popup-content p {
+            color: var(--text-gray, #ccc);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+        .popup-close {
+            position: absolute;
+            top: 10px; right: 15px;
+            font-size: 2.5rem;
+            color: var(--text-gray, #aaa);
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+        .popup-close:hover {
+            color: var(--text-color, #fff);
+        }
     </style>
 </head>
 <body>
 <header class="navbar">
-    <a th:href="@{/}" class="logo">GymCare</a>
-</header>
+    <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                <li >
+                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
+                </li>
+                <li >
+                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
+                </li>
 
+                <li sec:authorize="hasAuthority('TRAINER')">
+                    <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
+                </li>
+                <li sec:authorize="hasRole('TRAINER')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+<div id="alert-popup" class="popup-backdrop"
+     th:classappend="${errorMessage != null || message != null ? 'show' : ''}">
+
+    <div class="popup-content error" th:if="${errorMessage}">
+        <span class="popup-close">&times;</span>
+        <h4>Đặt lịch thất bại!</h4>
+        <p th:text="${errorMessage}"></p>
+        <button type="button" class="cta-button popup-close-btn">Đã hiểu</button>
+    </div>
+
+    <div class="popup-content success" th:if="${message}">
+        <span class="popup-close">&times;</span>
+        <h4>Thành công!</h4>
+        <p th:text="${message}"></p>
+        <button type="button" class="cta-button popup-close-btn">Tuyệt vời</button>
+    </div>
+</div>
 <main class="page-container" style="max-width: 800px;">
 
     <h1 class="page-title">
@@ -52,12 +177,8 @@
         const addButton = document.getElementById('add-slot-btn');
         let slotIndex = 0;
 
-        /*<![CDATA[*/
         const slotNumbers = /*[[${slotNumbers}]]*/ [];
-        // Lấy đơn giá từ controller
-        /*]]>*/
 
-        // Lấy span hiển thị tổng giá
 
 
 
@@ -65,7 +186,6 @@
             const row = document.createElement('div');
             row.className = 'slot-row';
 
-            // Input cho Ngày
             const dateGroup = document.createElement('div');
             dateGroup.className = 'form-group';
             const dateInput = document.createElement('input');
@@ -75,7 +195,6 @@
             dateInput.min = new Date().toISOString().split("T")[0];
             dateGroup.appendChild(dateInput);
 
-            // Select cho Slot
             const slotGroup = document.createElement('div');
             slotGroup.className = 'form-group';
             const slotSelect = document.createElement('select');
@@ -93,7 +212,6 @@
             });
             slotGroup.appendChild(slotSelect);
 
-            // Nút xóa
             const removeButton = document.createElement('button');
             removeButton.type = 'button';
             removeButton.className = 'btn-remove-schedule';
@@ -110,12 +228,29 @@
             slotIndex++;
         };
 
-        // Thêm một dòng mặc định khi tải trang
         createSlotRow();
 
-        // Gắn sự kiện cho nút Thêm
         addButton.addEventListener('click', createSlotRow);
     });
+    const popup = document.getElementById('alert-popup');
+    if (popup) {
+        const closePopup = () => {
+            popup.classList.remove('show');
+        };
+
+        // Tìm tất cả các nút đóng (dấu X và nút bấm)
+        popup.querySelectorAll('.popup-close, .popup-close-btn').forEach(btn => {
+            btn.addEventListener('click', closePopup);
+        });
+
+        // Tắt khi bấm vào nền mờ
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+    }
+    // --- HẾT CODE POPUP ---
 </script>
 
 </body>

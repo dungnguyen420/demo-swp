@@ -13,16 +13,52 @@
         }
         .slot-row .form-group {
             flex-grow: 1;
-            margin-bottom: 0; /* Bỏ margin-bottom mặc định của form-group */
+            margin-bottom: 0;
         }
         .slot-row label {
-            display: none; /* Ẩn label trong các dòng slot */
+            display: none;
         }
     </style>
 </head>
 <body>
 <header class="navbar">
     <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                <li >
+                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
+                </li>
+                <li >
+                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
+                </li>
+
+                <li sec:authorize="hasAuthority('TRAINER')">
+                    <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
+                </li>
+                <li sec:authorize="hasRole('TRAINER')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
+    </div>
 </header>
 
 <main class="page-container" style="max-width: 800px;">
@@ -83,30 +119,28 @@
         const addButton = document.getElementById('add-slot-btn');
         let slotIndex = 0;
 
-        /*<![CDATA[*/
         const slotNumbers = /*[[${slotNumbers}]]*/ [];
-        /*]]>*/
 
         const createSlotRow = () => {
             const row = document.createElement('div');
             row.className = 'slot-row';
 
-            // Input cho Ngày
+
             const dateGroup = document.createElement('div');
             dateGroup.className = 'form-group';
             const dateInput = document.createElement('input');
             dateInput.type = 'date';
-            dateInput.className = 'form-control'; // Áp dụng style chung
+            dateInput.className = 'form-control';
             dateInput.name = `slots[${slotIndex}].date`;
             dateInput.required = true;
-            dateInput.min = new Date().toISOString().split("T")[0]; // Ngăn chọn ngày quá khứ
+            dateInput.min = new Date().toISOString().split("T")[0];
             dateGroup.appendChild(dateInput);
 
-            // Select cho Slot
+
             const slotGroup = document.createElement('div');
             slotGroup.className = 'form-group';
             const slotSelect = document.createElement('select');
-            slotSelect.className = 'form-control'; // Áp dụng style chung
+            slotSelect.className = 'form-control';
             slotSelect.name = `slots[${slotIndex}].slotNumber`;
             slotSelect.required = true;
             const placeholder = document.createElement('option');
@@ -121,7 +155,7 @@
             });
             slotGroup.appendChild(slotSelect);
 
-            // Nút xóa
+
             const removeButton = document.createElement('button');
             removeButton.type = 'button';
             removeButton.className = 'btn-remove-schedule';
@@ -136,10 +170,10 @@
             slotIndex++;
         };
 
-        // Thêm một dòng mặc định khi tải trang
+
         createSlotRow();
 
-        // Gắn sự kiện cho nút Thêm
+
         addButton.addEventListener('click', createSlotRow);
     });
 </script>
