@@ -222,5 +222,9 @@ public class UserService implements IUserService {
 
         return userRepository.findFirstByRole(role).orElse(null);
     }
+    @Override
+    public Optional<UserEntity> findByUserNameOptional(String userName) {
 
+        return userRepository.findByUserNameOptional(userName);
+    }
 }

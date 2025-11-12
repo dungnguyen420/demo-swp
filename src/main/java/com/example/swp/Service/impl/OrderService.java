@@ -237,6 +237,47 @@ public class OrderService implements IOrderService {
         return convertToDto(order);
     }
 
+    @Override
+    public Page<OrderEntity> findMyOrders(UserEntity user, String orderCode, LocalDate searchDate, String status, Pageable pageable) {
+
+        Specification<OrderEntity> spec = (root, query, cb) -> {
+
+            List<Predicate> predicates = new ArrayList<>();
+
+            predicates.add(cb.equal(root.get("userEntity"), user));
+
+            if (orderCode != null && !orderCode.trim().isEmpty()) {
+                predicates.add(cb.like(root.get("orderCode"), "%" + orderCode.trim() + "%"));
+
+            }
+
+            if (searchDate != null) {
+
+                LocalDateTime startOfDay = searchDate.atStartOfDay();
+                LocalDateTime endOfDay = searchDate.atTime(LocalTime.MAX);
+
+                predicates.add(cb.between(root.get("createdAt"), startOfDay, endOfDay));
+            }
+
+            if (status != null && !status.trim().isEmpty()) {
+                try {
+
+                    OrderStatus statusEnum = OrderStatus.valueOf(status.toUpperCase());
+
+                    predicates.add(cb.equal(root.get("status"), statusEnum));
+
+                } catch (IllegalArgumentException e) {
+
+                    System.err.println("Trạng thái tìm kiếm không hợp lệ: " + status);
+                }
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        return orderRepository.findAll(spec, pageable);
+    }
+
 
     private OrderDTO convertToDto(OrderEntity orderEntity) {
         if (orderEntity == null) return null;

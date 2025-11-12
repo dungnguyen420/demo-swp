@@ -28,5 +28,6 @@ public interface IUserRepository extends JpaRepository<UserEntity, Long>, JpaSpe
             "LOWER(u.lastName) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     Page<UserEntity> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
     Optional<UserEntity> findFirstByRole(UserRole role);
-
+    @Query("SELECT u FROM Users u WHERE u.userName = :userName")
+    Optional<UserEntity> findByUserNameOptional(String userName);
 }

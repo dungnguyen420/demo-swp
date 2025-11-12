@@ -3,66 +3,109 @@
       xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GymCare - Lịch sử giao dịch</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-  <link rel="stylesheet" th:href="@{/style.css}">
-  <style>
-    .page-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-    .page-title { text-align: center; margin-bottom: 1.5rem; }
-    .content-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 1.5rem; overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    .data-table th, .data-table td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; vertical-align: middle; white-space: nowrap; }
-    .data-table th { background: #f9f9f9; }
-    .status-PENDING { color: #f0ad4e; font-weight: bold; }
-    .status-COMPLETED { color: #5cb85c; font-weight: bold; }
-    .status-CANCELLED { color: #d9534f; font-weight: bold; }
-    .no-orders { text-align: center; color: #777; padding: 20px; }
-    .action-link { text-decoration: none; color: #007bff; font-weight: bold; }
-    .alert-danger { color: #721c24; background-color: #f8d7da; padding: 1rem; border-radius: 5px; }
-    .navbar { /* (Style header của bạn) */ }
-    .profile-dropdown { /* (Style header của bạn) */ }
-    .site-footer { /* (Style footer của bạn) */ }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GymCare - Lịch sử giao dịch</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}">
 
-    /* ===== THÊM CSS CHO PHÂN TRANG ===== */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      list-style: none;
-      padding: 0;
-      margin-top: 2rem;
-    }
-    .pagination li {
-      margin: 0 5px;
-    }
-    .pagination a {
-      display: block;
-      padding: 8px 12px;
-      text-decoration: none;
-      color: #007bff;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-    .pagination a:hover {
-      background-color: #f4f4f4;
-    }
-    .pagination li.active a {
-      background-color: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
-    .pagination li.disabled a {
-      color: #aaa;
-      pointer-events: none;
-      border-color: #eee;
-      background-color: #f9f9f9;
-    }
-    /* ================================== */
+    <style>
+        /* (CSS chung cho trang) */
+        .page-container { max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+        .page-title { text-align: center; margin-bottom: 1.5rem; }
+        .content-card { background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); padding: 1.5rem; overflow-x: auto; }
+        .data-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .data-table th, .data-table td { border-bottom: 1px solid #eee; padding: 12px; text-align: left; vertical-align: middle; white-space: nowrap; }
+        .data-table th { background: #f9f9f9; }
+        .status-PENDING { color: #f0ad4e; font-weight: bold; }
+        .status-COMPLETED { color: #5cb85c; font-weight: bold; }
+        .status-CANCELLED { color: #d9534f; font-weight: bold; }
+        .no-orders { text-align: center; color: #777; padding: 20px; }
+        .action-link { text-decoration: none; color: #007bff; font-weight: bold; }
+        .alert-danger { color: #721c24; background-color: #f8d7da; padding: 1rem; border-radius: 5px; }
 
-  </style>
+        /* (CSS giả lập cho header/footer/button của bạn) */
+        .navbar { /* (Style header của bạn) */ }
+        .profile-dropdown { /* (Style header của bạn) */ }
+        .site-footer { /* (Style footer của bạn) */ }
+        .cta-button {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        /* ===== CSS CHO FORM LỌC ===== */
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1.5rem;
+        }
+        .filter-form .form-group {
+            flex: 1 1 200px; /* Co giãn linh hoạt */
+        }
+        .filter-form label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            font-size: 0.9em;
+        }
+        .filter-form input,
+        .filter-form select {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .filter-form .form-actions {
+            flex-basis: 100%; /* Nút bấm chiếm 1 hàng */
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* ===== CSS CHO PHÂN TRANG ===== */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            list-style: none;
+            padding: 0;
+            margin-top: 2rem;
+        }
+        .pagination li {
+            margin: 0 5px;
+        }
+        .pagination a {
+            display: block;
+            padding: 8px 12px;
+            text-decoration: none;
+            color: #007bff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .pagination a:hover {
+            background-color: #f4f4f4;
+        }
+        .pagination li.active a {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .pagination li.disabled a {
+            color: #aaa;
+            pointer-events: none;
+            border-color: #eee;
+            background-color: #f9f9f9;
+        }
+
+    </style>
 </head>
 <body>
 
@@ -107,110 +150,128 @@
 </header>
 
 <main>
-  <div class="page-container">
-    <h2 class="page-title">Lịch sử giao dịch</h2>
+    <div class="page-container">
+        <h2 class="page-title">Lịch sử giao dịch</h2>
 
-    <div class="content-card">
+        <div class="content-card">
 
-      <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+            <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 
-      <div th:if="${#lists.isEmpty(orders)}" class="no-orders">
-        <h3>Bạn chưa có đơn hàng nào.</h3>
-        <a th:href="@{/shop}" class="cta-button" style="margin-top: 1rem;">Bắt đầu mua sắm</a>
-      </div>
+            <form th:action="@{/orders/history}" method="get" class="filter-form">
+                <div class="form-group">
+                    <label for="code">Mã đơn hàng</label>
+                    <input type="text" id="code" name="code" th:value="${orderCode}" placeholder="ORD-123...">
+                </div>
+                <div class="form-group">
+                    <label for="date">Ngày tạo</label>
+                    <input type="date" id="date" name="date" th:value="${searchDate}">
+                </div>
+                <div class="form-group">
+                    <label for="status">Trạng thái</label>
+                    <select id="status" name="status" th:value="${status}">
+                        <option value="">Tất cả</option>
+                        <option value="PENDING" th:selected="${status == 'PENDING'}">Chờ thanh toán</option>
+                        <option value="COMPLETED" th:selected="${status == 'COMPLETED'}">Hoàn thành</option>
+                        <option value="CANCELLED" th:selected="${status == 'CANCELLED'}">Đã hủy</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="cta-button">Tìm kiếm</button>
+                    <a th:href="@{/orders/history}" class="cta-button" style="background-color: #6c757d;">Reset</a>
+                </div>
+            </form>
+            <div th:if="${!ordersPage.isEmpty()}" class="no-orders">
+                <h3>Không tìm thấy đơn hàng nào khớp.</h3>
+            </div>
 
-      <table class="data-table" th:if="${!#lists.isEmpty(orders)}">
-        <thead>
-        <tr>
-          <th>Mã đơn hàng</th>
-          <th>Ngày tạo</th>
-          <th style="text-align: right;">Tổng tiền</th>
-          <th>Trạng thái</th>
-          <th>Chi tiết</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="order : ${orders}">
-          <td data-label="Mã ĐH" th:text="${order.orderCode}">ORD-123</td>
-          <td data-label="Ngày tạo" th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">29/10/2025</td>
-          <td data-label="Tổng tiền" style="text-align: right;" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">100,000 VND</td>
-          <td data-label="Trạng thái">
-            <span th:text="${order.status}" th:classappend="'status-' + ${order.status}">PENDING</span>
-          </td>
-          <td data-label="Chi tiết" style="text-align: center;">
-            <a th:href="@{/orders/detail/{code}(code=${order.orderCode})}" class="action-link">Xem</a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+            <table class="data-table" th:if="${!ordersPage.isEmpty()}">
+                <thead>
+                <tr>
+                    <th>Mã đơn hàng</th>
+                    <th>Ngày tạo</th>
+                    <th style="text-align: right;">Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Chi tiết</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${ordersPage.content}">
+                    <td data-label="Mã ĐH" th:text="${order.orderCode}">ORD-123</td>
+                    <td data-label="Ngày tạo" th:text="${#temporals.format(order.createdAt, 'dd/MM/yyyy HH:mm')}">29/10/2025</td>
+                    <td data-label="Tổng tiền" style="text-align: right;" th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">100,000 VND</td>
+                    <td data-label="Trạng thái">
+                        <span th:text="${order.status}" th:classappend="'status-' + ${order.status}">PENDING</span>
+                    </td>
+                    <td data-label="Chi tiết" style="text-align: center;">
+                        <a th:href="@{/orders/detail/{code}(code=${order.orderCode})}" class="action-link">Xem</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
 
-      <nav th:if="${totalPages > 1}">
-        <ul class="pagination">
+            <nav th:if="${totalPages > 1}">
+                <ul class="pagination">
 
-          <li th:classappend="${currentPage == 1} ? 'disabled' : ''">
-            <a th:href="@{/orders/history(page=${currentPage - 1})}">&laquo; Trước</a>
-          </li>
+                    <li th:classappend="${currentPage == 1} ? 'disabled' : ''">
+                        <a th:href="@{/orders/history(page=${currentPage - 1}, code=${orderCode}, date=${searchDate}, status=${status})}">&laquo; Trước</a>
+                    </li>
 
-          <th:block th:with="
-                start=${T(java.lang.Math).max(1, currentPage - 2)},
-                end=${T(java.lang.Math).min(totalPages, currentPage + 2)}">
+                    <th:block th:with="
+                        start=${T(java.lang.Math).max(1, currentPage - 2)},
+                        end=${T(java.lang.Math).min(totalPages, currentPage + 2)}">
 
-            <li th:if="${start > 1}">
-              <a th:href="@{/orders/history(page=1)}">1</a>
-            </li>
-            <li th:if="${start > 2}" class="disabled"><a>...</a></li>
+                        <li th:if="${start > 1}">
+                            <a th:href="@{/orders/history(page=1, code=${orderCode}, date=${searchDate}, status=${status})}">1</a>
+                        </li>
+                        <li th:if="${start > 2}" class="disabled"><a>...</a></li>
 
-            <li th:each="i : ${#numbers.sequence(start, end)}"
-                th:classappend="${i == currentPage} ? 'active' : ''">
-              <a th:href="@{/orders/history(page=${i})}" th:text="${i}"></a>
-            </li>
+                        <li th:each="i : ${#numbers.sequence(start, end)}"
+                            th:classappend="${i == currentPage} ? 'active' : ''">
+                            <a th:href="@{/orders/history(page=${i}, code=${orderCode}, date=${searchDate}, status=${status})}" th:text="${i}"></a>
+                        </li>
 
-            <li th:if="${end < totalPages - 1}" class="disabled"><a>...</a></li>
-            <li th:if="${end < totalPages}">
-              <a th:href="@{/orders/history(page=${totalPages})}" th:text="${totalPages}"></a>
-            </li>
-          </th:block>
+                        <li th:if="${end < totalPages - 1}" class="disabled"><a>...</a></li>
+                        <li th:if="${end < totalPages}">
+                            <a th:href="@{/orders/history(page=${totalPages}, code=${orderCode}, date=${searchDate}, status=${status})}" th:text="${totalPages}"></a>
+                        </li>
+                    </th:block>
 
-          <li th:classappend="${currentPage == totalPages} ? 'disabled' : ''">
-            <a th:href="@{/orders/history(page=${currentPage + 1})}">Sau &raquo;</a>
-          </li>
-        </ul>
-      </nav>
+                    <li th:classappend="${currentPage == totalPages} ? 'disabled' : ''">
+                        <a th:href="@{/orders/history(page=${currentPage + 1}, code=${orderCode}, date=${searchDate}, status=${status})}">Sau &raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
-  </div>
 </main>
 
-<footer class="site-footer">
-  <div class="container"> <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
-  </div>
-</footer>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-          navbar.classList.add('scrolled');
-        } else {
-          navbar.classList.remove('scrolled');
+    document.addEventListener('DOMContentLoaded', () => {
+        const navbar = document.querySelector('.navbar');
+        if (navbar) {
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
         }
-      });
-    }
-    const profileDropdown = document.querySelector('.profile-dropdown');
-    if (profileDropdown) {
-      profileDropdown.addEventListener('click', (e) => {
-        if (!e.target.closest('a')) {
-          profileDropdown.classList.toggle('active');
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileDropdown) {
+            profileDropdown.addEventListener('click', (e) => {
+                if (!e.target.closest('a')) {
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+            document.addEventListener('click', (e) => {
+                if (profileDropdown && !profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
         }
-      });
-      document.addEventListener('click', (e) => {
-        if (profileDropdown && !profileDropdown.contains(e.target)) {
-          profileDropdown.classList.remove('active');
-        }
-      });
-    }
-  });
+    });
 </script>
 
 </body>
