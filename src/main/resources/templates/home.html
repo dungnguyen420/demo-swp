@@ -34,6 +34,9 @@
                     <li sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
                     <li >
+                    <li sec:authorize="hasRole('ADMIN')">
+                        <a th:href="@{/managers}"><i class="fas fa-user-shield"></i> Quản lí </a>
+                    <li >
                         <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
                     </li>
                     <li >

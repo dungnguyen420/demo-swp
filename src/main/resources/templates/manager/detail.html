@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Hồ sơ: ' + ${manager.firstName} + ' ' + ${manager.lastName}">Hồ sơ Quản lý - GymCare</title>
+
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        .edit-card {
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #007bff;
+            margin-bottom: 10px;
+        }
+
+        /* Đảm bảo grid 2 cột */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 cột bằng nhau */
+            gap: 1rem; /* Khoảng cách giữa các item */
+        }
+
+        /* --- CSS CHO POPUP --- */
+        .popup-backdrop {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px); display: flex;
+            justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .popup-backdrop.show { opacity: 1; visibility: visible; }
+        .popup-content {
+            background: var(--secondary-bg, #1A1A1A);
+            padding: 2.5rem; border-radius: 12px;
+            border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+            width: 90%; max-width: 450px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .popup-backdrop.show .popup-content { transform: translateY(0); }
+        .popup-content h4 {
+            font-family: var(--font-heading, 'Teko', sans-serif);
+            font-size: 2rem; margin-bottom: 1rem;
+        }
+        .popup-content.error h4 { color: #ff4d4d; }
+        .popup-content.success h4 { color: #50ff50; }
+        .popup-content p { color: var(--text-gray, #ccc); font-size: 1.1rem; margin-bottom: 2rem; }
+        .popup-close {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 2.5rem; color: var(--text-gray, #aaa);
+            cursor: pointer; line-height: 1; transition: color 0.3s ease;
+        }
+        .popup-close:hover { color: var(--text-color, #fff); }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                <li >
+                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
+                </li>
+                <li >
+                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
+                </li>
+
+                <li sec:authorize="hasAuthority('TRAINER')">
+                    <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
+                </li>
+                <li sec:authorize="hasRole('TRAINER')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+
+<div id="alert-popup" class="popup-backdrop"
+     th:classappend="${errorMessage != null || message != null ? 'show' : ''}">
+</div>
+
+
+<main class="page-container" th:object="${manager}">
+    <div class="profile-layout"
+         th:with="imgUrl=*{avatar != null ? avatar : '/images/default-avatar.png'},
+                fullName=*{firstName} + ' ' + *{lastName}">
+
+        <aside class="profile-sidebar">
+            <img class="profile-image" th:src="${imgUrl}" th:alt="${fullName}">
+            <h1 th:text="${fullName}">Tên Manager</h1>
+        </aside>
+
+        <div class="profile-content">
+
+            <div class="content-card">
+                <h2>Thông số</h2>
+                <div class="stats-grid">
+
+                    <div class="stat-item">
+                        <i class="fas fa-venus-mars"></i>
+                        <div class="stat-value" th:text="*{gender} != null ? *{gender} : 'N/A'">Gender</div>
+                        <div class="stat-label">Giới tính</div>
+                    </div>
+
+                    <div class="stat-item">
+                        <i class="fas fa-envelope"></i>
+                        <div class="stat-value">
+                            <a th:href="'mailto:' + *{email}" th:text="*{email} != null ? *{email} : 'N/A'">email@example.com</a>
+                        </div>
+                        <div class="stat-label">Email</div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="content-card bio-section">
+                <h2>Giới Thiệu</h2>
+                <p th:text="*{bio} != null and !*{bio.isEmpty()} ? *{bio}
+                     : 'Chưa có thông tin giới thiệu.'">
+                    Chưa có thông tin giới thiệu.
+                </p>
+            </div>
+
+        </div> </div> </main>
+
+<script>
+    // --- CODE CHO POPUP ---
+    const popup = document.getElementById('alert-popup');
+    if (popup) {
+        const closePopup = () => {
+            popup.classList.remove('show');
+        };
+
+        popup.querySelectorAll('.popup-close, .popup-close-btn').forEach(btn => {
+            btn.addEventListener('click', closePopup);
+        });
+
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

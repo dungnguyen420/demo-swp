@@ -122,7 +122,6 @@ public Page<UserEntity> search(String name, UserGender gender, String specializa
         dtoTrainer.setUserName(trainer.getUserName());
         dtoTrainer.setAvatar(trainer.getAvatar());
         dtoTrainer.setBio(trainer.getBio());
-
         dtoTrainer.setGender(trainer.getGender());
 
         if (profile != null) {
