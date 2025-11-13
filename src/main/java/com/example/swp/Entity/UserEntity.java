@@ -53,4 +53,5 @@ public class UserEntity extends BaseEntity {
     private Status status;
     private String bio;
 
+
 }

@@ -1,23 +1,31 @@
 package com.example.swp.Controller;
 
 import com.example.swp.DTO.OrderDTO;
+import com.example.swp.Entity.OrderEntity;
+import com.example.swp.Entity.UserEntity;
 import com.example.swp.Service.IOrderService;
 import com.example.swp.Service.impl.CustomUserDetails;
+import com.example.swp.Service.impl.UserService;
 import com.example.swp.base.BaseAPIController;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import vn.payos.type.CheckoutResponseData;
-
+ // <-- Có thể cần
+import org.springframework.data.domain.Pageable;
+import java.util.Collections;
 import java.io.IOException;
 import java.time.LocalDate;
 
@@ -29,6 +37,8 @@ public class OrderController extends BaseAPIController {
     @Autowired
     private IOrderService orderService;
 
+    @Autowired
+    private UserService userService;
 
     @PostMapping("/create")
     public String createOrderAndRedirect(
@@ -92,46 +102,46 @@ public class OrderController extends BaseAPIController {
         }
     }
     @GetMapping("/history")
-    public String viewOrderHistory(
-            @AuthenticationPrincipal CustomUserDetails principal,
+    public String showHistory(
+            @AuthenticationPrincipal UserDetails userDetails,
             Model model,
-            RedirectAttributes redirectAttributes,
+            @RequestParam(name = "code", required = false) String orderCode,
+            @RequestParam(name = "date", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate searchDate,
+            @RequestParam(name = "status", required = false) String status,
+            @RequestParam(name = "page", defaultValue = "1") int pageNo) {
 
-            @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "date", required = false)
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
-    ) {
-
-        if (principal == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Vui lòng đăng nhập.");
-            return "redirect:/auth/login";
-        }
+        int pageSize = 5;
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("createdAt").descending());
 
         try {
-            Long userId = principal.getUser().getId();
-            int pageSize = 10;
-            int pageIndex = page - 1;
+            UserEntity currentUser = userService.findByUserNameOptional(userDetails.getUsername())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-            Page<OrderDTO> orderPage = orderService.findOrdersByUserId(
-                    userId, keyword, date, pageIndex, pageSize
-            );
+            Page<OrderEntity> ordersPage = orderService.findMyOrders(
+                    currentUser, orderCode, searchDate, status, pageable);
 
-            model.addAttribute("orders", orderPage.getContent());
-            model.addAttribute("totalPages", orderPage.getTotalPages());
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalItems", orderPage.getTotalElements());
+            model.addAttribute("ordersPage", ordersPage);
+            model.addAttribute("orders", ordersPage.getContent());
 
-
-            model.addAttribute("keyword", keyword);
-            model.addAttribute("date", (date != null) ? date.toString() : "");
-
-            return "orders/order-history";
+            model.addAttribute("totalPages", ordersPage.getTotalPages());
 
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi khi tải lịch sử: " + e.getMessage());
-            return "redirect:/home";
+            model.addAttribute("errorMessage", "Không thể tải lịch sử đơn hàng: " + e.getMessage());
+
+            model.addAttribute("ordersPage", Page.empty(pageable));
+            model.addAttribute("orders", Collections.emptyList());
+
+            model.addAttribute("totalPages", 0);
+
         }
+
+
+        model.addAttribute("currentPage", pageNo);
+        model.addAttribute("orderCode", orderCode);
+        model.addAttribute("searchDate", searchDate);
+        model.addAttribute("status", status);
+
+        return "orders/order-history";
     }
     @GetMapping("/detail/{orderCode}")
     public String viewOrderDetail(@PathVariable String orderCode, Model model,

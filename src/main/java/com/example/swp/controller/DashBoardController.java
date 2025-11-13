@@ -107,15 +107,15 @@ public class DashBoardController {
 
     @PostMapping("/update/{id}")
     public String updateUser(@PathVariable("id") Long id,
-                             @Valid @ModelAttribute("userUpdateDTO") UserDTO dto, // Dùng DTO mới
-                             BindingResult result, // Bắt lỗi DTO
+                             @Valid @ModelAttribute("userUpdateDTO") UserDTO dto,
+                             BindingResult result,
                              Model model,
                              RedirectAttributes redirectAttributes) {
 
 
         if (result.hasErrors()) {
-            model.addAttribute("userId", id); // **QUAN TRỌNG:** Phải gửi lại ID
-            return "auth/update-user-form"; // Trả về trang form
+            model.addAttribute("userId", id);
+            return "auth/update-user-form";
         }
 
         try {
@@ -154,7 +154,7 @@ public class DashBoardController {
     @GetMapping("/update/{id}")
     public String showUpdateUserForm(@PathVariable("id") Long id, Model model) {
         try {
-            // 1. Lấy thông tin user cũ
+
             UserEntity user = userService.findById(id);
             if (user == null) {
                 return "redirect:/auth/dashBoard?tab=users&error=UserNotFound";
@@ -162,15 +162,16 @@ public class DashBoardController {
 
 
             UserDTO dto = new UserDTO();
+            dto.setUserName(user.getUserName());
             dto.setFirstName(user.getFirstName());
             dto.setLastName(user.getLastName());
             dto.setEmail(user.getEmail());
 
 
             model.addAttribute("userUpdateDTO", dto);
-            model.addAttribute("userId", id); // Quan trọng cho action của form
+            model.addAttribute("userId", id);
 
-            return "auth/update-user-form"; // Trả về file HTML mới
+            return "auth/update-user-form";
 
         } catch (Exception e) {
             return "redirect:/auth/dashBoard?tab=users&error=" + e.getMessage();
@@ -194,7 +195,7 @@ public class DashBoardController {
     }
     @PostMapping("/update-package/{id}")
     public String updatePackage(@PathVariable("id") Long id,
-                                @Valid @ModelAttribute("packageDTO") PackageDTO dto, // 1. Dùng @Valid
+                                @Valid @ModelAttribute("packageDTO") PackageDTO dto,
                                 BindingResult result,
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
