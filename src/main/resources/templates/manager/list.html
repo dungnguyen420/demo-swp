@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đội ngũ Huấn luyện viên - GymCare</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        /* --- CSS CHO POPUP --- */
+        .popup-backdrop {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px); display: flex;
+            justify-content: center; align-items: center;
+            z-index: 2000; opacity: 0; visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .popup-backdrop.show { opacity: 1; visibility: visible; }
+        .popup-content {
+            background: var(--secondary-bg, #1A1A1A);
+            padding: 2.5rem; border-radius: 12px;
+            border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+            width: 90%; max-width: 450px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .popup-backdrop.show .popup-content { transform: translateY(0); }
+        .popup-content h4 {
+            font-family: var(--font-heading, 'Teko', sans-serif);
+            font-size: 2rem; margin-bottom: 1rem;
+        }
+        .popup-content.error h4 { color: #ff4d4d; }
+        .popup-content.success h4 { color: #50ff50; }
+        .popup-content p { color: var(--text-gray, #ccc); font-size: 1.1rem; margin-bottom: 2rem; }
+        .popup-close {
+            position: absolute; top: 10px; right: 15px;
+            font-size: 2.5rem; color: var(--text-gray, #aaa);
+            cursor: pointer; line-height: 1; transition: color 0.3s ease;
+        }
+        .popup-close:hover { color: var(--text-color, #fff); }
+
+        .btn-chip.active {
+            background: var(--primary-gradient); /* Sáng lên bằng màu vàng */
+            color: var(--dark-bg); /* Chữ đen */
+            font-weight: 700;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                <li >
+                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
+                </li>
+                <li >
+                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
+                </li>
+
+                <li sec:authorize="hasAuthority('TRAINER')">
+                    <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
+                </li>
+                <li sec:authorize="hasRole('TRAINER')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+<!--<div id="alert-popup" class="popup-backdrop"-->
+<!--     th:classappend="${errorMessage != null || message != null ? 'show' : ''}">-->
+<!--</div>-->
+
+<main class="page-container">
+
+    <div class="page-header">
+        <h1 class="page-title">Quản Lý</h1>
+        <a sec:authorize="hasAuthority('ROLE_ADMIN')" th:href="@{/managers/create}" class="cta-button">
+            <i class="fas fa-plus"></i> Tạo mới
+        </a>
+    </div>
+
+    <div class="filter-container">
+        <form th:action="@{/managers}" method="get" class="filter-form">
+            <input type="text" name="name" placeholder="Tìm theo tên Quản lý..." th:value="${name}">
+            <select name="gender">
+                <option value="">Tất cả giới tính</option>
+                <option value="MALE" th:selected="${gender == T(com.example.swp.Enums.UserGender).MALE}">Nam</option>
+                <option value="FEMALE" th:selected="${gender == T(com.example.swp.Enums.UserGender).FEMALE}">Nữ</option>
+            </select>
+            <button type="submit">
+                <i class="fas fa-search"></i> Lọc
+            </button>
+            <a th:href="@{/managers}" class="btn-reset">Xóa bộ lọc</a>
+        </form>
+
+        <div class="quick-filters">
+            <a th:href="@{/managers(gender='MALE')}" class="btn-chip"
+               th:classappend="${gender == T(com.example.swp.Enums.UserGender).MALE ? 'active' : ''}">Chỉ Nam</a>
+
+            <a th:href="@{/managers(gender='FEMALE')}" class="btn-chip"
+               th:classappend="${gender == T(com.example.swp.Enums.UserGender).FEMALE ? 'active' : ''}">Chỉ Nữ</a>
+
+        </div>
+    </div>
+
+    <div class="trainer-grid">
+        <div class="trainer-card" th:each="manager : ${managers}">
+            <a th:if="${manager.id != null}" th:href="@{/managers/detail/{id}(id=${manager.id})}">
+                <div class="trainer-image">
+                    <img th:src="${manager.avatar != null ? manager.avatar : 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?q=80&w=2070&auto=format&fit=crop'}"
+                         th:alt="${manager.firstName}">
+                </div>
+                <div class="trainer-info">
+                    <h3 th:text="${manager.firstName + ' ' + manager.lastName}">Tên Quản lý</h3>
+                    <p class="bio" th:text="${#strings.abbreviate(manager.bio, 70)} ?: 'Chưa có thông tin giới thiệu.'"></p>
+                </div>
+            </a>
+            <div class="card-actions" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                <a th:href="@{/managers/edit/{id}(id=${manager.id})}" class="action-btn edit">
+                    <i class="fas fa-pencil-alt"></i> Sửa
+                </a>
+                <a th:href="@{/managers/delete/{id}(id=${manager.id})}" class="action-btn delete-trigger">
+                    <i class="fas fa-trash-alt"></i> Xóa
+                </a>
+            </div>
+        </div>
+
+        <div th:if="${managers == null or managers.isEmpty()}">
+            <h3>Không tìm thấy quản lý nào phù hợp.</h3>
+        </div>
+    </div>
+
+    <div class="pagination" th:if="${totalPages > 1}">
+        <a th:if="${currentPage > 0}" th:href="@{/managers(name=${name}, gender=${gender}, page=${currentPage - 1})}" class="btn-chip">
+            <i class="fas fa-chevron-left"></i> Trước
+        </a>
+        <span>Trang <span th:text="${currentPage + 1}"></span>/<span th:text="${totalPages}"></span></span>
+        <a th:if="${currentPage + 1 < totalPages}" th:href="@{/managers(name=${name}, gender=${gender}, page=${currentPage + 1})}" class="btn-chip">
+            Sau <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+</main>
+
+<div id="custom-popup" class="popup-overlay" style="display: none;">
+    <div class="popup-content">
+        <p>Bạn có chắc chắn muốn xóa quản lý này không?</p>
+        <div class="popup-actions">
+            <button id="confirm-delete-btn" class="action-btn confirm-delete">Xác nhận</button>
+            <button id="cancel-delete-btn" class="action-btn cancel-delete">Hủy bỏ</button>
+        </div>
+    </div>
+</div>
+
+<div id="alert-popup" class="popup-backdrop"
+     th:classappend="${errorMessage != null || message != null ? 'show' : ''}">
+
+    <div class="popup-content error" th:if="${errorMessage}">
+        <span class="popup-close">&times;</span>
+        <h4>Thất bại!</h4>
+        <p th:text="${errorMessage}"></p>
+        <button type="button" class="cta-button popup-close-btn">Đã hiểu</button>
+    </div>
+
+    <div class="popup-content success" th:if="${message}">
+        <span class="popup-close">&times;</span>
+        <h4>Thành công!</h4>
+        <p th:text="${message}"></p>
+        <button type="button" class="cta-button popup-close-btn">Tuyệt vời</button>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const popup = document.getElementById('custom-popup');
+        if (!popup) return; // Dừng nếu không có popup trên trang
+
+        const confirmBtn = document.getElementById('confirm-delete-btn');
+        const cancelBtn = document.getElementById('cancel-delete-btn');
+        const deleteLinks = document.querySelectorAll('.delete-trigger');
+        let deleteUrl = '';
+
+        deleteLinks.forEach(link => {
+            link.addEventListener('click', function (event) {
+                event.preventDefault();
+                deleteUrl = this.href;
+                popup.style.display = 'flex';
+            });
+        });
+
+        confirmBtn.addEventListener('click', function () {
+            if (deleteUrl) {
+                window.location.href = deleteUrl;
+            }
+        });
+
+        function closePopup() {
+            popup.style.display = 'none';
+        }
+
+        cancelBtn.addEventListener('click', closePopup);
+        popup.addEventListener('click', function(event) {
+            if (event.target === popup) {
+                closePopup();
+            }
+        });
+    });
+    // --- CODE CHO POPUP ---
+    const popup = document.getElementById('alert-popup');
+    if (popup) {
+        const closePopup = () => {
+            popup.classList.remove('show');
+        };
+
+        popup.querySelectorAll('.popup-close, .popup-close-btn').forEach(btn => {
+            btn.addEventListener('click', closePopup);
+        });
+
+        popup.addEventListener('click', function(e) {
+            if (e.target === popup) {
+                closePopup();
+            }
+        });
+    }
+</script>
+
+</body>
+</html>

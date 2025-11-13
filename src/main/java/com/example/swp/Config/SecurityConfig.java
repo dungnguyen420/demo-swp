@@ -52,7 +52,9 @@ public class SecurityConfig {
                                 "/cart/update",
                                 "/cart/clear",
                                 "/orders/create",
-                                "/orders/**"
+                                "/orders/**",
+                                "/managers/**"
+
 
                         ).permitAll()// cho phép trang chua login
                         .requestMatchers("/cart/**").authenticated()

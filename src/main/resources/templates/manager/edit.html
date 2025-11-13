@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa Huấn luyện viên - GymCare</title>
+
+    <link rel="stylesheet" th:href="@{/style.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<header class="navbar">
+    <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+        </ul>
+    </nav>
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                <li >
+                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
+                </li>
+                <li >
+                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
+                </li>
+
+                <li sec:authorize="hasAuthority('TRAINER')">
+                    <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
+                </li>
+                <li sec:authorize="hasRole('TRAINER')">
+                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                </li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
+            </ul>
+        </div>
+        <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+
+<main class="page-container">
+    <h1 class="page-title">Chỉnh sửa Huấn luyện viên</h1>
+
+    <div class="form-card">
+        <form th:action="@{/managers/edit}" th:object="${managerDTO}" method="post">
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${#fields.hasGlobalErrors() or #fields.hasAnyErrors()}">
+                <ul class="text-danger" style="margin-left:16px;">
+                    <li th:each="e : ${#fields.allErrors()}" th:text="${e}"></li>
+                </ul>
+            </div>
+
+
+
+            <input type="hidden" th:field="*{id}" />
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="firstName">Tên</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Họ</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="userName">Tên đăng nhập</label>
+                    <input type="text" id="userName" th:field="*{userName}" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" th:field="*{email}" required>
+                </div>
+                <div class="form-group">
+                    <label for="passWord">Mật khẩu mới</label>
+                    <input type="password" id="passWord" th:field="*{passWord}" placeholder="Để trống nếu không đổi">
+                </div>
+                <div class="form-group">
+                    <label for="gender">Giới tính</label>
+                    <select id="gender" th:field="*{gender}">
+                        <option th:value="MALE" th:text="Nam"></option>
+                        <option th:value="FEMALE" th:text="Nữ"></option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="bio">Tiểu sử</label>
+                    <textarea id="bio" th:field="*{bio}" rows="3" maxlength="50"></textarea>
+                </div>
+
+<!--                <div class="form-group full-width">-->
+<!--                    <label for="specialization">Chuyên môn</label>-->
+<!--                    <input type="text" id="specialization" th:field="*{specialization}">-->
+<!--                </div>-->
+<!--                <div class="form-group full-width">-->
+<!--                    <label for="certificationInfo">Thông tin chứng chỉ</label>-->
+<!--                    <textarea id="certificationInfo" th:field="*{certificationInfo}" rows="3"></textarea>-->
+<!--                </div>-->
+
+                <div class="form-actions">
+                    <a th:href="@{/managers}" class="btn-secondary">Hủy</a>
+                    <button type="submit" class="cta-button">Cập nhật</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</main>
+</body>
+</html>
