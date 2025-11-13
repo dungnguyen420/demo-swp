@@ -2,14 +2,13 @@ package com.example.swp.Controller;
 
 //import com.example.swp.Entity.UserEntity;
 
-import com.example.swp.DTO.UserDTO;
+import com.example.swp.DTO.*;
 import com.example.swp.Enums.OrderStatus;
 import com.example.swp.Enums.PaymentStatus;
 import com.example.swp.Repository.OrderRepository;
+import com.example.swp.Service.impl.DashBoardService;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.example.swp.DTO.PackageDTO;
-import com.example.swp.DTO.RegisterDTO;
 import com.example.swp.Entity.PackageEntity;
 import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.UserRole;
@@ -25,6 +24,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,18 +40,24 @@ public class DashBoardController {
     private IPackageService packageService;
 
     @Autowired
+    private DashBoardService dashboardService;
+    @Autowired
     private OrderRepository orderRepository;
+
+
     @GetMapping("/dashBoard")
     public String showDashBoard(Model model,
                                 @RequestParam(name = "userPage", defaultValue = "0") int userPage,
                                 @RequestParam(name = "packagePage", defaultValue = "0") int packagePage,
-                                @RequestParam(name = "tab", defaultValue = "packages") String activeTab,
-                                @RequestParam(name = "keyword", required = false) String keyword) {
-
+                                @RequestParam(name = "tab", defaultValue = "packages") String tab,
+                                @RequestParam(name = "keyword", required = false) String keyword,
+                                @RequestParam(name = "filter", required = false) String filter,
+                                @RequestParam(name = "from", required = false) String from,
+                                @RequestParam(name = "to", required = false) String to,
+                                @RequestParam(name = "username", required = false) String username) {
 
         int userSize = 2;
         Page<UserEntity> usersPage;
-
         if (keyword != null && !keyword.trim().isEmpty()) {
             usersPage = userService.searchUsers(keyword.trim(), PageRequest.of(userPage, userSize));
             model.addAttribute("keyword", keyword);
@@ -64,24 +71,33 @@ public class DashBoardController {
         Page<PackageEntity> packagesPage = packageService.findAll(PageRequest.of(packagePage, packageSize));
         model.addAttribute("packagesPage", packagesPage);
 
-
-        System.out.println("📦 Số lượng gói tập trong trang này: " + packagesPage.getContent().size());
+        System.out.println(" Số lượng gói tập trong trang này: " + packagesPage.getContent().size());
         packagesPage.getContent().forEach(p -> System.out.println("   - " + p.getName()));
 
-        Double totalRevenue = orderRepository.sumTotalPriceByStatus(OrderStatus.PAID);
-        long completedOrders = orderRepository.countByStatus(OrderStatus.PAID);
-        long pendingOrders = orderRepository.countByStatus(OrderStatus.PENDING);
-
-        model.addAttribute("totalRevenue", totalRevenue);
-        model.addAttribute("completedOrders", completedOrders);
-        model.addAttribute("pendingOrders", pendingOrders);
+        if ("revenue".equals(tab)) {
 
 
+            RevenueSummaryDTO summary = dashboardService.getRevenueSummary();
+            model.addAttribute("revenueSummary", summary);
 
 
-        model.addAttribute("activeTab", activeTab);
+            List<DailyRevenueDTO> last7Days = dashboardService.getRevenueLast7Days();
+            model.addAttribute("revenueLast7Days", last7Days);
+
+            Long filteredRevenue = dashboardService.getRevenueWithFilters(filter, from, to, username);
+            model.addAttribute("filteredRevenue", filteredRevenue);
+
+            model.addAttribute("filter", filter);
+            model.addAttribute("from", from);
+            model.addAttribute("to", to);
+            model.addAttribute("username", username);
+        }
+
+
+        model.addAttribute("activeTab", tab);
         return "auth/dashBoard";
     }
+
 
     @GetMapping("/create")
     public String showCreatePackageForm(Model model) {

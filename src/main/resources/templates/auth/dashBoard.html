@@ -79,7 +79,7 @@
     <nav>
         <ul>
             <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/package}">Gói tập</a></li>
             <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
             <li><a th:href="@{/classes}">Lớp học</a></li>
             <li><a th:href="@{/shop}">Cửa hàng</a></li>
@@ -93,13 +93,13 @@
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                <li >
+                </li>
+                <li>
                     <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
                 </li>
-                <li >
+                <li>
                     <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
                 </li>
-
                 <li sec:authorize="hasAuthority('TRAINER')">
                     <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
                 </li>
@@ -113,6 +113,7 @@
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
     </div>
 </header>
+
 <div class="container py-4">
     <h2 class="mb-4 fw-bold text-primary">Bảng điều khiển Quản trị</h2>
 
@@ -120,24 +121,41 @@
         <div class="card-header bg-transparent p-0 pt-3">
             <ul class="nav nav-tabs mb-3 px-3" id="myTab">
                 <li class="nav-item">
-                    <a class="nav-link" th:classappend="${activeTab == 'userPage'} ? 'active'" href="?tab=userPage">
+                    <a class="nav-link"
+                       th:classappend="${activeTab == 'userPage'} ? 'active'"
+                       href="?tab=userPage">
                         <i class="fas fa-users me-1"></i> Người Dùng
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" th:classappend="${activeTab == 'packages'} ? 'active'" href="?tab=packages">
+                    <a class="nav-link"
+                       th:classappend="${activeTab == 'packages'} ? 'active'"
+                       href="?tab=packages">
                         <i class="fas fa-dumbbell me-1"></i> Gói Tập
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"
+                       th:classappend="${activeTab == 'revenue'} ? 'active'"
+                       href="?tab=revenue">
+                        <i class="fas fa-chart-line me-1"></i> Doanh thu
                     </a>
                 </li>
             </ul>
         </div>
 
         <div class="card-body p-4">
+
+            <!-- TAB USER -->
             <div th:if="${activeTab == 'userPage'}">
                 <form th:action="@{/auth/dashBoard}" method="get" class="d-flex gap-2 mb-3">
                     <input type="hidden" name="tab" value="userPage">
-                    <input type="text" name="keyword" th:value="${keyword}" class="form-control" placeholder="Tìm kiếm theo email, tên...">
-                    <button type="submit" class="btn btn-primary text-dark"><i class="fas fa-search"></i> Tìm</button> <a th:href="@{/auth/dashBoard(tab='userPage')}" class="btn btn-outline-secondary">Reset</a>
+                    <input type="text" name="keyword" th:value="${keyword}"
+                           class="form-control" placeholder="Tìm kiếm theo email, tên...">
+                    <button type="submit" class="btn btn-primary text-dark">
+                        <i class="fas fa-search"></i> Tìm
+                    </button>
+                    <a th:href="@{/auth/dashBoard(tab='userPage')}" class="btn btn-outline-secondary">Reset</a>
                 </form>
 
                 <table class="table table-hover align-middle text-center">
@@ -159,10 +177,10 @@
                         <td th:text="${user.lastName}"></td>
                         <td th:text="${user.email}"></td>
                         <td>
-                                <a class="btn btn-outline-warning btn-sm btn-action"
-                                   th:href="@{/auth/update/{id}(id=${user.id})}" title="Sửa">
-                                    <i class="fas fa-pencil-alt"></i>
-                                </a>
+                            <a class="btn btn-outline-warning btn-sm btn-action"
+                               th:href="@{/auth/update/{id}(id=${user.id})}" title="Sửa">
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
 
                             <button class="btn btn-outline-danger btn-sm btn-action"
                                     th:attr="data-id=${user.id}" onclick="deleteUser(this)" title="Xóa">
@@ -174,6 +192,7 @@
                 </table>
             </div>
 
+            <!-- TAB PACKAGES -->
             <div th:if="${activeTab == 'packages'}">
                 <div class="d-flex justify-content-end mb-3">
                     <a th:href="@{/auth/create}" class="btn btn-primary text-dark">
@@ -199,10 +218,11 @@
                         <td th:text="${pkg.description}"></td>
                         <td th:text="${#numbers.formatDecimal(pkg.price, 0, 'COMMA', 0, 'POINT')} + ' VND'"></td>
                         <td th:text="${pkg.durationMonth}"></td>
-                        <td><a class="btn btn-outline-warning btn-sm btn-action"
+                        <td>
+                            <a class="btn btn-outline-warning btn-sm btn-action"
                                th:href="@{/auth/update-package/{id}(id=${pkg.id})}" title="Sửa">
-                            <i class="fas fa-pencil-alt"></i>
-                        </a>
+                                <i class="fas fa-pencil-alt"></i>
+                            </a>
 
                             <button class="btn btn-outline-danger btn-sm btn-action"
                                     th:attr="data-id=${pkg.id}" onclick="deletePackage(this)" title="Xóa">
@@ -213,10 +233,128 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- TAB REVENUE -->
+            <div th:if="${activeTab == 'revenue'}">
+
+                <h4 class="mb-3 text-warning">
+                    <i class="fas fa-chart-line me-2"></i> Báo cáo doanh thu
+                </h4>
+
+                <!-- FILTER -->
+                <div class="card p-3 mb-4">
+                    <form th:action="@{/auth/dashBoard}" method="get">
+                        <input type="hidden" name="tab" value="revenue"/>
+
+                        <div class="row align-items-end">
+
+                            <!-- Lọc nhanh -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-light">Lọc nhanh:</label>
+                                <select class="form-select" name="filter">
+                                    <option value="">-- Chọn lọc --</option>
+                                    <option value="today"
+                                            th:selected="${filter} == 'today'">Theo ngày (hôm nay)</option>
+                                    <option value="week"
+                                            th:selected="${filter} == 'week'">Theo tuần (7 ngày gần nhất)</option>
+                                    <option value="month"
+                                            th:selected="${filter} == 'month'">Theo tháng hiện tại</option>
+                                </select>
+                            </div>
+
+                            <!-- Từ ngày -->
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label text-light">Từ ngày:</label>
+                                <input type="date" class="form-control" name="from"
+                                       th:value="${from}">
+                            </div>
+
+                            <!-- Đến ngày -->
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label text-light">Đến ngày:</label>
+                                <input type="date" class="form-control" name="to"
+                                       th:value="${to}">
+                            </div>
+
+                            <!-- Username -->
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label text-light">Theo tên đăng nhập:</label>
+                                <input type="text" class="form-control" name="username"
+                                       placeholder="Nhập username..." th:value="${username}">
+                            </div>
+
+
+                            <div class="col-md-12 text-end">
+                                <button type="submit" class="btn btn-warning px-4">
+                                    <i class="fas fa-search me-1"></i> Tìm kiếm
+                                </button>
+
+
+                                <a th:href="@{/auth/dashBoard(tab='revenue')}"
+                                   class="btn btn-outline-light ms-2">
+                                    <i class="fas fa-undo me-1"></i> Xóa lọc
+                                </a>
+                            </div>
+
+
+                        </div>
+                    </form>
+                </div>
+
+                <!-- SUMMARY CHUNG -->
+                <div class="row mb-4">
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card p-3 h-100">
+                            <h6 class="text-muted">Tổng doanh thu</h6>
+                            <h3 class="text-warning"
+                                th:text="${#numbers.formatDecimal(revenueSummary.totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                0 đ
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card p-3 h-100">
+                            <h6 class="text-muted">Doanh thu hôm nay</h6>
+                            <h3 class="text-success"
+                                th:text="${#numbers.formatDecimal(revenueSummary.todayRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                0 đ
+                            </h3>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <div class="card p-3 h-100">
+                            <h6 class="text-muted">Doanh thu tháng này</h6>
+                            <h3 class="text-info"
+                                th:text="${#numbers.formatDecimal(revenueSummary.monthRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                0 đ
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KẾT QUẢ LỌC (DÙNG CHUNG 1 BIẾN filteredRevenue) -->
+                <div class="row mb-4" th:if="${filteredRevenue != null}">
+                    <div class="col-md-6 mb-3">
+                        <div class="card p-3 h-100">
+                            <h6 class="text-muted">Doanh thu theo bộ lọc hiện tại</h6>
+                            <h3 class="text-warning"
+                                th:text="${#numbers.formatDecimal(filteredRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">
+                                0 đ
+                            </h3>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- end tab revenue -->
+
         </div>
     </div>
 </div>
 
+<!-- MODALS -->
 <div class="modal fade" id="editPackageModal" tabindex="-1">
     <div class="modal-dialog">
         <form method="post" id="updatePackageForm">
@@ -271,9 +409,7 @@
     </div>
 </div>
 
-
 <script>
-    // Hiển thị thông báo thành công (nếu có) bằng Toast
     document.addEventListener('DOMContentLoaded', (event) => {
         const successMessage = /*[[${successMessage}]]*/ null;
         if (successMessage) {
@@ -290,9 +426,6 @@
             });
         }
     });
-
-
-
 
     function deleteUser(btn) {
         const id = btn.getAttribute("data-id");
@@ -314,13 +447,13 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        [header]: token  // Thêm token vào header
+                        [header]: token
                     },
                     body: `id=${id}`
                 })
                     .then(res => {
                         if (res.redirected) {
-                            window.location.href = res.url; // Tải lại trang với thông báo
+                            window.location.href = res.url;
                         } else {
                             Swal.fire('Lỗi', 'Không thể xóa người dùng.', 'error');
                         }
@@ -349,13 +482,13 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
-                        [header]: token // Thêm token vào header
+                        [header]: token
                     },
                     body: `id=${id}`
                 })
                     .then(res => {
                         if (res.redirected) {
-                            window.location.href = res.url; // Tải lại trang
+                            window.location.href = res.url;
                         }
                     });
             }

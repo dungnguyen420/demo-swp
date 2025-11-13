@@ -48,10 +48,10 @@
 
     <div class="sidebar">
         <div th:each="contact : ${contacts}" class="contact-item"
-             th:classappend="${selectedUser != null && contact.username == selectedUser.userName} ? 'active'">
-            <a th:href="@{/admin/chat/{username}(username=${contact.username})}">
-                <h5 th:text="${contact.fullName}">Tên User</h5>
-                <span th:text="${contact.username}"></span>
+             th:classappend="${selectedUser != null && contact.userName == selectedUser.userName} ? 'active'">
+            <a th:href="@{/admin/chat/{username}(username=${contact.userName})}">
+                <h5 th:text="${contact.userName}">Tên User</h5>
+                <span th:text="${contact.userName}"></span>
             </a>
         </div>
     </div>
