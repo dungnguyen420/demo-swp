@@ -21,8 +21,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
-import vn.payos.type.CheckoutResponseData;
-import vn.payos.type.PaymentData;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
+import vn.payos.model.v2.paymentRequests.PaymentLinkStatus;
 
 import java.time.LocalDate; // <-- THÊM
 import java.time.LocalDateTime; // <-- THÊM
@@ -59,7 +60,7 @@ public class OrderService implements IOrderService {
 
     @Override
     @Transactional
-    public CheckoutResponseData createOrder(OrderDTO dto) throws Exception {
+    public CreatePaymentLinkResponse createOrder(OrderDTO dto) throws Exception {
 
         Long userId = dto.getUserId() != null ? dto.getUserId() : getCurrentUserId();
 
@@ -69,33 +70,36 @@ public class OrderService implements IOrderService {
         }
 
 
-        double totalPrice = cartItems.stream()
-                .mapToDouble(item -> item.getDisplayPrice() * item.getQuantity())
-                .sum();
-        int amount = (int) totalPrice;
+        long totalPrice = Math.round(
+                cartItems.stream()
+                        .mapToDouble(item -> item.getDisplayPrice() * item.getQuantity())
+                        .sum()
+        );
 
-
+        long amount = totalPrice;
         String returnUrl = "http://localhost:8080/orders/payment-success";
         String cancelUrl = "http://localhost:8080/cart/view";
         Long orderCode = System.currentTimeMillis() / 1000;
 
-        PaymentData paymentData = PaymentData.builder()
+
+
+        CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
                 .orderCode(orderCode)
                 .amount(amount)
-                .description("Thanh toan DH " + orderCode)
+                .description("Thanh toán DH"+orderCode)
                 .returnUrl(returnUrl)
                 .cancelUrl(cancelUrl)
                 .build();
-        CheckoutResponseData result = payos.createPaymentLink(paymentData);
 
+        CreatePaymentLinkResponse response = payos.paymentRequests().create(paymentData);
 
         PaymentEntity payment = new PaymentEntity();
-        payment.setAmount(result.getAmount());
-        payment.setDescription(result.getDescription());
-        payment.setOrderCode(String.valueOf(result.getOrderCode()));
-        payment.setStatus(result.getStatus());
-        payment.setCheckoutUrl(result.getCheckoutUrl());
-        payment.setQrCode(result.getQrCode());
+        payment.setAmount(response.getAmount());
+        payment.setDescription(response.getDescription());
+        payment.setOrderCode(String.valueOf(response.getOrderCode()));
+        payment.setStatus(OrderStatus.PENDING);
+        payment.setCheckoutUrl(response.getCheckoutUrl());
+        payment.setQrCode(response.getQrCode());
         payment.setUser(cartItems.get(0).getCart().getUser());
         paymentRepository.save(payment);
 
@@ -104,7 +108,7 @@ public class OrderService implements IOrderService {
         orderEntity.setTotalPrice(totalPrice);
         orderEntity.setPaymentEntity(payment);
         orderEntity.setUserEntity(cartItems.get(0).getCart().getUser());
-        orderEntity.setOrderCode(String.valueOf(result.getOrderCode()));
+        orderEntity.setOrderCode(String.valueOf(response.getOrderCode()));
         orderEntity.setStatus(OrderStatus.PENDING);
 
         OrderEntity savedOrder = orderRepository.save(orderEntity);
@@ -128,7 +132,7 @@ public class OrderService implements IOrderService {
             }
             orderItemRepository.save(orderItemEntity);
         }
-        return result;
+        return response;
     }
 
     @Override
@@ -138,7 +142,7 @@ public class OrderService implements IOrderService {
                 .orElseThrow(() -> new Exception("Không tìm thấy đơn hàng với mã: " + orderCode));
 
         if (order.getStatus() == OrderStatus.PENDING) {
-            order.setStatus(OrderStatus.COMPLETED);
+            order.setStatus(OrderStatus.PAID);
             orderRepository.save(order);
         }
         List<OrderItemEntity> orderItems = order.getOrderItems();
@@ -153,7 +157,7 @@ public class OrderService implements IOrderService {
         orderRepository.save(order);
         PaymentEntity payment = order.getPaymentEntity();
         if (payment != null) {
-            payment.setStatus("PAID");
+            payment.setStatus(OrderStatus.PAID);
             paymentRepository.save(payment);
         }
 
@@ -188,7 +192,7 @@ public class OrderService implements IOrderService {
 
             PaymentEntity payment = order.getPaymentEntity();
             if (payment != null) {
-                payment.setStatus("CANCELLED");
+                payment.setStatus(OrderStatus.CANCELLED);
                 paymentRepository.save(payment);
             }
         }

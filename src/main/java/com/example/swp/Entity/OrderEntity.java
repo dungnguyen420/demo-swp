@@ -28,7 +28,7 @@ public class OrderEntity {
     private String title;
 
     @Column(nullable = false)
-    private Double totalPrice;
+    private Long totalPrice;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)

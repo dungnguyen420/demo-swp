@@ -3,10 +3,12 @@ package com.example.swp.Controller;
 import com.example.swp.DTO.OrderDTO;
 import com.example.swp.Entity.OrderEntity;
 import com.example.swp.Entity.UserEntity;
+import com.example.swp.Enums.OrderStatus;
 import com.example.swp.Service.IOrderService;
 import com.example.swp.Service.impl.CustomUserDetails;
 import com.example.swp.Service.impl.UserService;
 import com.example.swp.base.BaseAPIController;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,9 +25,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import vn.payos.type.CheckoutResponseData;
- // <-- Có thể cần
+import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
+
 import org.springframework.data.domain.Pageable;
+
+
 import java.util.Collections;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -56,7 +61,7 @@ public class OrderController extends BaseAPIController {
             orderRequest.setUserId(principal.getUser().getId());
 
 
-            CheckoutResponseData paymentInfo = orderService.createOrder(orderRequest);
+            CreatePaymentLinkResponse paymentInfo = orderService.createOrder(orderRequest);
 
 
             return "redirect:" + paymentInfo.getCheckoutUrl();
@@ -69,7 +74,19 @@ public class OrderController extends BaseAPIController {
             return "redirect:/cart/view";
         }
     }
-
+//    @PostMapping("/webhook-payos")
+//    public String handleWebhook(@RequestBody String rawJson){
+//        try{
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            Webhook webhook = objectMapper.readValue(rawJson, Webhook.class);
+//            WebhookData data = payOS.verifyPaymentWebhookData(webhook);
+//            WebhookData data = webhook.getData();
+//            return success(data.getCode());
+//        }
+//        catch (Exception e){
+//            return badRequest(e.getMessage());
+//        }
+//    }
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
 
@@ -97,6 +114,7 @@ public class OrderController extends BaseAPIController {
                 return "redirect:/cart/view";
             }
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi xử lý thanh toán: " + e.getMessage());
             return "redirect:/cart/view";
         }
@@ -134,7 +152,6 @@ public class OrderController extends BaseAPIController {
             model.addAttribute("totalPages", 0);
 
         }
-
 
         model.addAttribute("currentPage", pageNo);
         model.addAttribute("orderCode", orderCode);

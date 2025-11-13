@@ -1,13 +1,11 @@
 package com.example.swp.Entity;
 
-import com.example.swp.Enums.PaymentMethod;
-import com.example.swp.Enums.PaymentStatus;
+import com.example.swp.Enums.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "payments")
@@ -21,10 +19,13 @@ public class PaymentEntity extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
     private String orderCode;
-    private Integer amount;
+    private Timestamp expiredAt;
+    private Long amount;
     private String description;
     private String checkoutUrl;
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private OrderStatus status;
     private String qrCode;
 
     @OneToOne(mappedBy = "paymentEntity",

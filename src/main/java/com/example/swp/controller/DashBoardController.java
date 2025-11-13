@@ -1,7 +1,11 @@
 package com.example.swp.Controller;
 
 //import com.example.swp.Entity.UserEntity;
+
 import com.example.swp.DTO.UserDTO;
+import com.example.swp.Enums.OrderStatus;
+import com.example.swp.Enums.PaymentStatus;
+import com.example.swp.Repository.OrderRepository;
 import org.springframework.ui.Model;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.swp.DTO.PackageDTO;
@@ -22,6 +26,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("auth")
@@ -33,7 +38,8 @@ public class DashBoardController {
     @Autowired
     private IPackageService packageService;
 
-
+    @Autowired
+    private OrderRepository orderRepository;
     @GetMapping("/dashBoard")
     public String showDashBoard(Model model,
                                 @RequestParam(name = "userPage", defaultValue = "0") int userPage,
@@ -61,6 +67,17 @@ public class DashBoardController {
 
         System.out.println("📦 Số lượng gói tập trong trang này: " + packagesPage.getContent().size());
         packagesPage.getContent().forEach(p -> System.out.println("   - " + p.getName()));
+
+        Double totalRevenue = orderRepository.sumTotalPriceByStatus(OrderStatus.PAID);
+        long completedOrders = orderRepository.countByStatus(OrderStatus.PAID);
+        long pendingOrders = orderRepository.countByStatus(OrderStatus.PENDING);
+
+        model.addAttribute("totalRevenue", totalRevenue);
+        model.addAttribute("completedOrders", completedOrders);
+        model.addAttribute("pendingOrders", pendingOrders);
+
+
+
 
         model.addAttribute("activeTab", activeTab);
         return "auth/dashBoard";

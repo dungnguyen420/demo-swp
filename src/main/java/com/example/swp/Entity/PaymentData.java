@@ -1,7 +1,7 @@
 package com.example.swp.Entity;
 
 import lombok.Data;
-import vn.payos.type.ItemData;
+
 
 import java.util.List;
 
@@ -12,5 +12,5 @@ public class PaymentData {
     private String description;
     private String returnUrl;
     private String cancelUrl;
-    private List<ItemData> items;
+
 }

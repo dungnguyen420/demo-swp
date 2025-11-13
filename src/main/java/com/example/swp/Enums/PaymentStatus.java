@@ -2,6 +2,7 @@ package com.example.swp.Enums;
 
 public enum PaymentStatus {
     PENDING,
-    SUCCESS,
-    FAILED
+    PAID,
+    CANCELLED,
+    EXPIRED
 }
