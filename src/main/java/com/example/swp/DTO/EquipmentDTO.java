@@ -1,0 +1,28 @@
+package com.example.swp.DTO;
+
+import com.example.swp.Entity.EquipmentEntity;
+import jakarta.validation.constraints.*;
+import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDate;
+
+@Data
+public class EquipmentDTO {
+    @NotBlank(message = "Tên thiết bị không được để trống")
+    @Pattern(
+            regexp = "^[\\p{L}\\p{N}\\s]+$",
+            message = "Tên chỉ được chứa chữ cái, số và khoảng trắng (không có ký tự đặc biệt)"
+    )
+    private String name;
+    @NotNull(message = "Số lượng thiết bị không được để trống")
+    @PositiveOrZero(message = "Price must be equal or greater than 0")
+    private Integer quantity;
+    @PastOrPresent(message = "Ngày nhập phải là trong quá khứ hoặc hiện tại")
+    private LocalDate purchaseDate;
+    @NotNull(message = "Trạng thái không được để trống")
+    private EquipmentEntity.Status status;
+    @NotBlank(message = "Image cannot be blank")
+    private String image;
+
+}

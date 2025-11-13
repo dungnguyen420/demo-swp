@@ -16,22 +16,25 @@ public class EquipmentEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(length = 100)
-    private String location;
+    private Integer quantity;
 
     @Column(name = "purchase_date")
     private LocalDate purchaseDate;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.AVAILABLE;
+    private Status status;
 
+    public EquipmentEntity() {
+        this.status = Status.AVAILABLE;
+    }
+
+    private String image;
 
     public enum Status {
         AVAILABLE,
         BROKEN,
         MAINTENANCE
     }
-
 
 }

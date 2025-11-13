@@ -33,7 +33,7 @@ public class UserEntity extends BaseEntity {
 
     private String lastName;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime birthDate;
 
     private String avatar;
