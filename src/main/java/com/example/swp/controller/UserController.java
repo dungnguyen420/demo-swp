@@ -9,10 +9,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
+import java.beans.PropertyEditorSupport;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Controller
 @RequestMapping("/user")
@@ -53,5 +56,20 @@ public class UserController {
             model.addAttribute("error" , e.getMessage());
             return "user/edit-profile";
         }
+    }
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        binder.registerCustomEditor(LocalDateTime.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if (text != null && !text.isEmpty()) {
+                    LocalDate localDate = LocalDate.parse(text, dateFormatter);
+                    setValue(localDate.atStartOfDay()); // thêm giờ mặc định 00:00
+                } else {
+                    setValue(null);
+                }
+            }
+        });
     }
 }
