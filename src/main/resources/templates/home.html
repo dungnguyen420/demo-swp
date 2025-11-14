@@ -29,6 +29,9 @@
                 <li sec:authorize="hasRole('MANAGER')">
                     <a th:href="@{/products/list}">Danh sách sản phẩm</a>
                 </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a th:href="@{/chat/manager}">Chat với Manager</a>
+                </li>
             </ul>
         </nav>
         <div class="auth-section">
