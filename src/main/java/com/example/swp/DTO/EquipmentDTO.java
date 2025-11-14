@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Data
 public class EquipmentDTO {
+    private Long id;
     @NotBlank(message = "Tên thiết bị không được để trống")
     @Pattern(
             regexp = "^[\\p{L}\\p{N}\\s]+$",
@@ -18,11 +19,12 @@ public class EquipmentDTO {
     @NotNull(message = "Số lượng thiết bị không được để trống")
     @PositiveOrZero(message = "Price must be equal or greater than 0")
     private Integer quantity;
+    @NotNull(message = "Ngày nhập không được để trống")
     @PastOrPresent(message = "Ngày nhập phải là trong quá khứ hoặc hiện tại")
     private LocalDate purchaseDate;
     @NotNull(message = "Trạng thái không được để trống")
     private EquipmentEntity.Status status;
-    @NotBlank(message = "Image cannot be blank")
+    @NotBlank(message = "Ảnh không được để trống")
     private String image;
 
 }

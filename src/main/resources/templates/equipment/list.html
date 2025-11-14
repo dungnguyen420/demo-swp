@@ -221,6 +221,10 @@
             .navbar { flex-direction: column; gap: 1rem; }
             form.filters { padding: 0.5rem 0.3rem; }
         }
+        .form-control::placeholder {
+            color: #ffffff !important;
+            opacity: 1;
+        }
 
     </style>
 </head>
@@ -243,15 +247,21 @@
     <h2>Danh sách thiết bị</h2>
     <a class="btn btn-primary mb-2" th:href="@{/equipment/add}">Thêm thiết bị</a>
 
-    <form action="/equipment/search" method="get" class="row g-3 mb-4">
+    <form action="/equipment/search" method="get" class="filters row g-3 mb-4">
         <div class="col-md-3">
             <input type="text" class="form-control" name="name" placeholder="Tên thiết bị">
         </div>
         <div class="col-md-2">
-            <input type="number" class="form-control" name="quantity" placeholder="Số lượng">
+            <input type="number" class="form-control" name="quantityMin" placeholder="Số lượng từ">
         </div>
-        <div class="col-md-3">
-            <input type="date" class="form-control" name="purchaseDate" placeholder="Ngày nhập">
+        <div class="col-md-2">
+            <input type="number" class="form-control" name="quantityMax" placeholder="Số lượng đến">
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" name="startDate" placeholder="Ngày nhập từ">
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" name="endDate" placeholder="Ngày nhập đến">
         </div>
         <div class="col-md-2">
             <select name="status" class="form-select">
@@ -264,7 +274,11 @@
         <div class="col-md-2">
             <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
         </div>
+        <div class="col-md-2">
+            <a href="/equipment/list" class="btn btn-reset w-100">Đặt lại</a>
+        </div>
     </form>
+
 
     <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
 

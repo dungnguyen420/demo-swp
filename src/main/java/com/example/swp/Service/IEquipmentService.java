@@ -23,6 +23,13 @@ public interface IEquipmentService {
 
     EquipmentDTO getEquipmentDTOById(Long id);
 
-    List<EquipmentEntity> searchAdvanced(String name, Integer quantity, LocalDate purchaseDate, EquipmentEntity.Status status);
+    List<EquipmentEntity> searchAdvanced(
+            String name,
+            Integer quantityMin,
+            Integer quantityMax,
+            LocalDate startDate,
+            LocalDate endDate,
+            EquipmentEntity.Status status
+    );
 }
 

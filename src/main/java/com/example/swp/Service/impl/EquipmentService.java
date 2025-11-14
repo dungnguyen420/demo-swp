@@ -2,22 +2,14 @@ package com.example.swp.Service.impl;
 
 import com.example.swp.DTO.EquipmentDTO;
 import com.example.swp.Entity.EquipmentEntity;
-
 import com.example.swp.Repository.EquipmentRepository;
 import com.example.swp.Service.IEquipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class EquipmentService implements IEquipmentService {
@@ -34,7 +26,7 @@ public class EquipmentService implements IEquipmentService {
         } else {
             equipment = new EquipmentEntity();
         }
-
+        equipment.setId(dto.getId());
         equipment.setName(dto.getName());
         equipment.setQuantity(dto.getQuantity());
         equipment.setPurchaseDate(dto.getPurchaseDate());
@@ -47,8 +39,8 @@ public class EquipmentService implements IEquipmentService {
     @Override
     public void deleteEquipmemt(Long id) {
         EquipmentEntity equipment = equipmentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Thiết bị không tồn tại"));
-        if (equipment.getStatus() == EquipmentEntity.Status.MAINTENANCE){
-            throw new IllegalArgumentException("Không thể xóa thiết bị đang bảo trì");
+        if (equipment.getStatus() == EquipmentEntity.Status.MAINTENANCE || equipment.getStatus() == EquipmentEntity.Status.AVAILABLE){
+            throw new IllegalArgumentException("Chỉ được xóa thiết bị đã hỏng");
         }
         equipmentRepository.deleteById(id);
     }
@@ -92,17 +84,9 @@ public class EquipmentService implements IEquipmentService {
     }
 
     @Override
-    public List<EquipmentEntity> searchAdvanced(String name, Integer quantity, LocalDate purchaseDate, EquipmentEntity.Status status) {
-        List<EquipmentEntity> all = equipmentRepository.findAll();
+    public List<EquipmentEntity> searchAdvanced(String name, Integer quantityMin, Integer quantityMax, LocalDate startDate, LocalDate endDate, EquipmentEntity.Status status) {
+        return equipmentRepository.searchAdvanced(name, quantityMin, quantityMax, startDate, endDate, status);
 
-        return all.stream()
-                .filter(e -> name == null || name.trim().isEmpty() ||
-                        e.getName().toLowerCase().contains(name.toLowerCase()))
-                .filter(e -> quantity == null || e.getQuantity() == quantity)
-                .filter(e -> purchaseDate == null || e.getPurchaseDate() != null &&
-                        e.getPurchaseDate().equals(purchaseDate))
-                .filter(e -> status == null || e.getStatus() == status)
-                .toList();
     }
 
 }

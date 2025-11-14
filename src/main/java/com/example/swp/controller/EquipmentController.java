@@ -46,14 +46,13 @@ public class EquipmentController {
     @PostMapping("/save")
     public String saveEquipment(@Valid @ModelAttribute("equipment") EquipmentDTO dto,
                                 BindingResult result,
-                                @RequestParam(value = "id", required = false) Long id,
                                 Model model){
         if (result.hasErrors()){
             model.addAttribute("statuses", EquipmentEntity.Status.values());
             return  "equipment/form";
 
         }
-        EquipmentEntity equipment = equipmentService.saveOrUpdateEquipmentEntity(dto, id);
+        EquipmentEntity equipment = equipmentService.saveOrUpdateEquipmentEntity(dto, dto.getId());
         return "redirect:/equipment/list";
     }
 
@@ -71,19 +70,15 @@ public class EquipmentController {
     @GetMapping("/search")
     public String searchEquipment(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) Integer quantity,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate purchaseDate,
+            @RequestParam(required = false) Integer quantityMin,
+            @RequestParam(required = false) Integer quantityMax,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @RequestParam(required = false) EquipmentEntity.Status status,
-            Model model) {
-
-        List<EquipmentEntity> results = equipmentService.searchAdvanced(name, quantity, purchaseDate, status);
-        model.addAttribute("equipments", results);
-        model.addAttribute("name", name);
-        model.addAttribute("quantity", quantity);
-        model.addAttribute("purchaseDate", purchaseDate);
-        model.addAttribute("status", status);
-        model.addAttribute("statuses", EquipmentEntity.Status.values());
-
+            Model model
+    ) {
+        List<EquipmentEntity> result = equipmentService.searchAdvanced(name, quantityMin, quantityMax, startDate, endDate, status);
+        model.addAttribute("equipmentList", result);
         return "equipment/list";
     }
 }
