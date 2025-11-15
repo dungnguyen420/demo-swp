@@ -12,12 +12,12 @@ public class EquipmentDTO {
     private Long id;
     @NotBlank(message = "Tên thiết bị không được để trống")
     @Pattern(
-            regexp = "^(?!\\s)(?!.*\\s$)(?!\\d+$)[\\p{L}\\p{N}\\-._]+$",
+            regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
             message = "Tên chỉ được chứa chữ cái, số và khoảng trắng (không có ký tự đặc biệt)"
     )
     private String name;
     @NotNull(message = "Số lượng thiết bị không được để trống")
-    @Positive(message = "Price must be equal or greater than 0")
+    @Positive(message = "Số lượng phải lớn hơn 0")
     private Integer quantity;
     @NotNull(message = "Ngày nhập không được để trống")
     @PastOrPresent(message = "Ngày nhập phải là trong quá khứ hoặc hiện tại")

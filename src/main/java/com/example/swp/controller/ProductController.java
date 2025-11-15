@@ -45,6 +45,7 @@ public class ProductController {
     @PostMapping("/create")
     public String createProduct(@Valid  @ModelAttribute("product") ProductDTO dto,
                                 BindingResult bindingResult,
+                                RedirectAttributes redirectAttributes,
                                 Model model){
 
         if (bindingResult.hasErrors()){
@@ -52,7 +53,7 @@ public class ProductController {
         }
         try {
             ProductEntity product = productService.createProduct(dto);
-            model.addAttribute("success", "Tạo sản phẩm thành công!");
+            redirectAttributes.addFlashAttribute("success", "Tạo sản phẩm thành công!");
             return "redirect:/products/list";
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", e.getMessage());
