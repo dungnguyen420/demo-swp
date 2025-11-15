@@ -20,13 +20,13 @@ public class UserDTO {
     private String userName;
 
     @NotEmpty(message = "Họ không được để trống")
-    @Size(max = 50, message = "Họ không được vượt quá 50 ký tự")
+    @Size(max = 20, message = "Họ không được vượt quá 20 ký tự")
     @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
             message = "Tên không được có ký tự đặc biệt")
     private String firstName;
 
     @NotEmpty(message = "Tên không được để trống")
-    @Size(max = 50, message = "Tên không được vượt quá 50 ký tự")
+    @Size(max = 20, message = "Tên không được vượt quá 20 ký tự")
     @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
             message = "Tên không được có ký tự đặc biệt")
     private String lastName;

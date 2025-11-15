@@ -116,7 +116,8 @@
 
 <div class="container py-4">
     <h2 class="mb-4 fw-bold text-primary">Bảng điều khiển Quản trị</h2>
-
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
     <div class="card">
         <div class="card-header bg-transparent p-0 pt-3">
             <ul class="nav nav-tabs mb-3 px-3" id="myTab">
@@ -190,6 +191,40 @@
                     </tr>
                     </tbody>
                 </table>
+
+                <!-- PHÂN TRANG USER -->
+                <nav th:if="${usersPage.totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+
+                        <!-- Nút Previous -->
+                        <li class="page-item" th:classappend="${usersPage.first} ? ' disabled'">
+                            <a class="page-link"
+                               th:href="@{/auth/dashBoard(tab='userPage', userPage=${usersPage.number - 1}, keyword=${keyword})}">
+                                Trước
+                            </a>
+                        </li>
+
+                        <!-- Các trang -->
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(0, usersPage.totalPages - 1)}"
+                            th:classappend="${i} == ${usersPage.number} ? ' active'">
+                            <a class="page-link"
+                               th:text="${i + 1}"
+                               th:href="@{/auth/dashBoard(tab='userPage', userPage=${i}, keyword=${keyword})}">
+                                1
+                            </a>
+                        </li>
+
+                        <!-- Nút Next -->
+                        <li class="page-item" th:classappend="${usersPage.last} ? ' disabled'">
+                            <a class="page-link"
+                               th:href="@{/auth/dashBoard(tab='userPage', userPage=${usersPage.number + 1}, keyword=${keyword})}">
+                                Sau
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
             </div>
 
             <!-- TAB PACKAGES -->
@@ -232,6 +267,38 @@
                     </tr>
                     </tbody>
                 </table>
+                <nav th:if="${packagesPage.totalPages > 1}">
+                    <ul class="pagination justify-content-center">
+
+                        <!-- Nút Previous -->
+                        <li class="page-item" th:classappend="${packagesPage.first} ? ' disabled'">
+                            <a class="page-link"
+                               th:href="@{/auth/dashBoard(tab='packages', packagePage=${packagesPage.number - 1})}">
+                                Trước
+                            </a>
+                        </li>
+
+                        <!-- Các trang -->
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(0, packagesPage.totalPages - 1)}"
+                            th:classappend="${i} == ${packagesPage.number} ? ' active'">
+                            <a class="page-link"
+                               th:text="${i + 1}"
+                               th:href="@{/auth/dashBoard(tab='packages', packagePage=${i})}">
+                                1
+                            </a>
+                        </li>
+
+                        <!-- Nút Next -->
+                        <li class="page-item" th:classappend="${packagesPage.last} ? ' disabled'">
+                            <a class="page-link"
+                               th:href="@{/auth/dashBoard(tab='packages', packagePage=${packagesPage.number + 1})}">
+                                Sau
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
             </div>
 
             <!-- TAB REVENUE -->
@@ -409,24 +476,7 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        const successMessage = /*[[${successMessage}]]*/ null;
-        if (successMessage) {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true,
-            });
-            Toast.fire({
-                icon: 'success',
-                title: successMessage
-            });
-        }
-    });
-
+<script th:inline="javascript">
     function deleteUser(btn) {
         const id = btn.getAttribute("data-id");
         const token = document.querySelector("meta[name='_csrf']").getAttribute("content");
@@ -450,14 +500,13 @@
                         [header]: token
                     },
                     body: `id=${id}`
-                })
-                    .then(res => {
-                        if (res.redirected) {
-                            window.location.href = res.url;
-                        } else {
-                            Swal.fire('Lỗi', 'Không thể xóa người dùng.', 'error');
-                        }
-                    });
+                }).then(res => {
+                    if (res.redirected) {
+                        window.location.href = res.url;
+                    } else {
+                        Swal.fire('Lỗi', 'Không thể xóa người dùng.', 'error');
+                    }
+                });
             }
         });
     }
@@ -485,16 +534,16 @@
                         [header]: token
                     },
                     body: `id=${id}`
-                })
-                    .then(res => {
-                        if (res.redirected) {
-                            window.location.href = res.url;
-                        }
-                    });
+                }).then(res => {
+                    if (res.redirected) {
+                        window.location.href = res.url;
+                    }
+                });
             }
         });
     }
 </script>
+
 
 </body>
 </html>

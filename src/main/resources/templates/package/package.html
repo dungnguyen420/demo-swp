@@ -11,8 +11,6 @@
 
     <style>
         :root {
-            /* (Các biến màu của bạn từ style.css sẽ được tải) */
-            /* Chúng ta ghi đè font để đảm bảo an toàn */
             --font-heading: 'Arial', sans-serif;
             --font-body: 'Arial', sans-serif;
         }
@@ -59,6 +57,22 @@
         .filter-form button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(251, 176, 59, 0.3);
+        }
+
+        .btn-reset {
+            padding: 0.7rem 1.2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            border: 1px solid var(--border-color, rgba(255,215,0,0.2));
+            color: var(--text-gray, #aaa);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .btn-reset:hover {
+            background: rgba(255, 215, 0, 0.08);
+            color: var(--primary-color, #FFD700);
         }
 
         /* --- NÚT GIỎ HÀNG --- */
@@ -126,7 +140,7 @@
         }
         .product-info {
             padding: 1.5rem;
-            flex-grow: 1; /* Đẩy 'card-actions' xuống dưới */
+            flex-grow: 1;
         }
         .product-info h3 {
             font-family: var(--font-heading, 'Arial', sans-serif);
@@ -167,7 +181,7 @@
             text-align: center;
         }
         .card-actions .cta-button {
-            flex-grow: 1; /* Nút bấm chiếm hết phần còn lại */
+            flex-grow: 1;
             padding: 0.7rem;
             justify-content: center;
         }
@@ -180,7 +194,7 @@
             gap: 0.5rem;
             margin-top: 3rem;
             padding-bottom: 2rem;
-            flex-wrap: wrap; /* Cho responsive */
+            flex-wrap: wrap;
         }
         .pagination a, .pagination span {
             text-decoration: none;
@@ -220,7 +234,7 @@
     <nav>
         <ul>
             <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/package}">Gói tập</a></li>
             <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
             <li><a th:href="@{/classes}">Lớp học</a></li>
             <li><a th:href="@{/shop}">Cửa hàng</a></li>
@@ -234,13 +248,13 @@
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                <li >
+                </li>
+                <li>
                     <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
                 </li>
-                <li >
+                <li>
                     <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
                 </li>
-
                 <li sec:authorize="hasAuthority('TRAINER')">
                     <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
                 </li>
@@ -254,6 +268,7 @@
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
     </div>
 </header>
+
 <main>
     <div class="page-container">
 
@@ -270,8 +285,8 @@
             </select>
 
             <select name="dir">
-                <option value="asc" th:selected="${dir=='desc'}">Tăng dần</option>
-                <option value="desc" th:selected="${dir=='asc'}">Giảm dần</option>
+                <option value="asc" th:selected="${dir=='asc'}">Tăng dần</option>
+                <option value="desc" th:selected="${dir=='desc'}">Giảm dần</option>
             </select>
 
             <input type="hidden" name="size" th:value="${size}">
@@ -286,11 +301,15 @@
         <div class="cart-link-wrapper">
             <a th:href="@{/cart/view}" class="cta-button cart-nav-button">
                 <i class="fas fa-shopping-cart"></i> Giỏ hàng
-                <span th:if="${cartCount != null and cartCount > 0}" th:text="${cartCount}" class="cart-count-badge">0</span>
+                <span th:if="${cartCount != null and cartCount > 0}"
+                      th:text="${cartCount}"
+                      class="cart-count-badge">0</span>
             </a>
         </div>
+
         <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
         <div class="product-grid">
             <div class="product-card" th:each="pkg : ${packages}">
 
@@ -298,9 +317,11 @@
                     <h3 th:text="${pkg.name}">Tên gói tập</h3>
                     <div class="product-bio" th:text="${pkg.description}">Mô tả ngắn</div>
                     <div class="product-details">
-                        <span class="price" th:text="${#numbers.formatDecimal(pkg.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span>
+                        <span class="price"
+                              th:text="${#numbers.formatDecimal(pkg.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0 VND</span>
                     </div>
                 </div>
+
                 <div class="card-actions">
                     <form th:action="@{/cart/add/package}" method="post" style="width: 100%;">
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
@@ -312,15 +333,61 @@
             </div>
         </div>
 
+        <!-- PHÂN TRANG -->
         <div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
-            <a th:if="${page > 0}" th:href="@{/package(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>
-            <a th:if="${page > 0}" th:href="@{/package(page=${page -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trước</a>
-            <span th:each="i : ${#numbers.sequence(0, totalPages -1)}">
-                <a th:if="${i != page}" th:text="${i+1}" th:href="@{/package(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">1</a>
-                <span th:if="${i == page}" class="current" th:text="${i+1}">1</span>
+            <!-- Trang đầu + Trước -->
+            <a th:if="${page > 0}"
+               th:href="@{/package(page=${0},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Trang đầu
+            </a>
+
+            <a th:if="${page > 0}"
+               th:href="@{/package(page=${page - 1},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Trước
+            </a>
+
+            <!-- Các số trang -->
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:if="${i != page}"
+                   th:text="${i + 1}"
+                   th:href="@{/package(page=${i},
+                                       size=${size},
+                                       sortBy=${sortBy},
+                                       dir=${dir},
+                                       keyword=${keyword})}">
+                    1
+                </a>
+                <span th:if="${i == page}"
+                      class="current"
+                      th:text="${i + 1}">1</span>
             </span>
-            <a th:if="${page < totalPages -1}" th:href="@{/package-shop(page=${page+1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Sau</a>
-            <a th:if="${page < totalPages -1}" th:href="@{/package-shop(page=${totalPages -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang cuối</a>
+
+            <!-- Sau + Trang cuối -->
+            <a th:if="${page < totalPages - 1}"
+               th:href="@{/package(page=${page + 1},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Sau
+            </a>
+
+            <a th:if="${page < totalPages - 1}"
+               th:href="@{/package(page=${totalPages - 1},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Trang cuối
+            </a>
         </div>
 
     </div>
@@ -335,7 +402,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const navbar = document.querySelector('.navbar');
-        if(navbar) {
+        if (navbar) {
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
                     navbar.classList.add('scrolled');

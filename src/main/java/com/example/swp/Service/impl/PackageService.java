@@ -3,6 +3,7 @@ package com.example.swp.Service.impl;
 import com.example.swp.DTO.PackageDTO;
 import com.example.swp.Entity.PackageEntity;
 import com.example.swp.Repository.IPackageRepository;
+import com.example.swp.Repository.OrderItemRepository;
 import com.example.swp.Service.IPackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +19,8 @@ public class PackageService implements IPackageService {
     @Autowired
     private IPackageRepository packageRepository;
 
+    @Autowired
+    private OrderItemRepository orderItemRepository;
     @Override
     public Page<PackageEntity> findAll(Pageable pageable) {
         return packageRepository.findAll(pageable);
@@ -68,6 +71,9 @@ public class PackageService implements IPackageService {
 
     @Override
     public void deletePackage(Long Id) {
+        if(orderItemRepository.existsByPackageId(Id)) {
+            throw new IllegalStateException("Gói tập này đã được mua, không thể xóa.");
+        }
         packageRepository.deleteById(Id);
     }
 
@@ -89,7 +95,7 @@ public class PackageService implements IPackageService {
             );
         };
 
-        // Dòng này bây giờ sẽ hoạt động
+
         return packageRepository.findAll(spec, pageable);
     }
 }
