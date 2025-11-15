@@ -18,7 +18,7 @@ public class PackageDTO {
     private String description;
 
     @NotNull(message = "Giá tiền không được để trống")
-    @Positive(message = "Giá tiền phải là số dương")
+    @Positive(message = "Giá tiền phải lớn hơn 0")
     private double price;
 
     @NotNull(message = "Thời hạn gói không được để trống")
