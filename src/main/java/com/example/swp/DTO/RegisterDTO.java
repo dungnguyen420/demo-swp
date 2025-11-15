@@ -19,15 +19,15 @@ public class RegisterDTO {
     @Email(message = "Email không hợp lệ")
     @Size(max = 150, message = "Email tối đa 150 ký tự")
     private String email;
-    @NotBlank(message = "Họ không được để trống")
-    @Size(max = 50, message = "Họ tối đa 50 ký tự")
-    @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
-            message = "Họ chỉ gồm chữ, không cách đầu/cuối")
-    private String firstName;
     @NotBlank(message = "Tên không được để trống")
     @Size(max = 50, message = "Tên tối đa 50 ký tự")
     @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
             message = "Tên chỉ gồm chữ, không cách đầu/cuối")
+    private String firstName;
+    @NotBlank(message = "Họ không được để trống")
+    @Size(max = 50, message = "Họ tối đa 50 ký tự")
+    @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
+            message = "Họ chỉ gồm chữ, không cách đầu/cuối")
     private String lastName;
 
     private String role;

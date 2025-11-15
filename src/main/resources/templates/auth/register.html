@@ -136,26 +136,26 @@
 
         <div class="input-group">
             <i class="fas fa-envelope"></i>
-            <input type="email" th:field="*{email}" placeholder="Email" >
+            <input type="text" th:field="*{email}" placeholder="Email" >
         </div>
         <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-message"></p>
 
 
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" th:field="*{firstName}" placeholder="Tên" required>
+                <input type="text" th:field="*{firstName}" placeholder="Tên" >
             </div>
             <p th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" class="error-message"></p>
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                <input type="text" th:field="*{lastName}" placeholder="Họ" required>
+                <input type="text" th:field="*{lastName}" placeholder="Họ" >
             </div>
             <p th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" class="error-message"></p>
 
 
         <div class="input-group">
             <i class="fas fa-lock"></i>
-            <input type="password" th:field="*{passWord}" placeholder="Mật khẩu" required>
+            <input type="password" th:field="*{passWord}" placeholder="Mật khẩu" >
         </div>
         <p th:if="${#fields.hasErrors('passWord')}" th:errors="*{passWord}" class="error-message"></p>
 
