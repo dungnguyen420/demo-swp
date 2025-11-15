@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,23 +47,32 @@ public class EquipmentController {
     @PostMapping("/save")
     public String saveEquipment(@Valid @ModelAttribute("equipment") EquipmentDTO dto,
                                 BindingResult result,
+                                RedirectAttributes redirectAttributes,
                                 Model model){
         if (result.hasErrors()){
             model.addAttribute("statuses", EquipmentEntity.Status.values());
             return  "equipment/form";
 
         }
+        boolean isUpdate = dto.getId() != null;
         EquipmentEntity equipment = equipmentService.saveOrUpdateEquipmentEntity(dto, dto.getId());
+        if (isUpdate) {
+            redirectAttributes.addFlashAttribute("success", "Cập nhật thiết bị thành công!");
+        } else {
+            redirectAttributes.addFlashAttribute("success", "Tạo thiết bị thành công!");
+        }
         return "redirect:/equipment/list";
     }
 
     @GetMapping("/delete/{id}")
-    public String deletEquipment(@PathVariable("id") Long id, Model model){
+    public String deletEquipment(@PathVariable("id") Long id, RedirectAttributes redirectAttributes){
         try{
             equipmentService.deleteEquipmemt(id);
+            redirectAttributes.addFlashAttribute("success", "Xóa thiết bị thành công!");
+
         }catch (RuntimeException e){
-            model.addAttribute("errorMessage", e.getMessage());
-            return listEquipment(model);
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+
         }
         return "redirect:/equipment/list";
     }
@@ -78,7 +88,7 @@ public class EquipmentController {
             Model model
     ) {
         List<EquipmentEntity> result = equipmentService.searchAdvanced(name, quantityMin, quantityMax, startDate, endDate, status);
-        model.addAttribute("equipmentList", result);
+        model.addAttribute("equipments", result);
         return "equipment/list";
     }
 }

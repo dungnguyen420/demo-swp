@@ -295,7 +295,13 @@
         <button type="submit" class="btn btn-primary">Tìm kiếm</button>
         <a th:href="@{/products}" class="btn-reset">Xóa</a>
     </form>
+    <div th:if="${success}" class="alert alert-success">
+        <span th:text="${success}"></span>
+    </div>
 
+    <div th:if="${error}" class="alert alert-danger">
+        <span th:text="${error}"></span>
+    </div>
     <a th:href="@{/products/create}" class="btn btn-success mb-3">+ Thêm sản phẩm</a>
 
     <table class="table table-bordered">
