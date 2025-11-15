@@ -68,7 +68,6 @@ public class CartService implements ICartService {
         itemToSave.setQuantity(newTotalQuantityInCart);
         cartItemRepository.save(itemToSave);
 
-
         updateCartTotalPrice(cart);
     }
 

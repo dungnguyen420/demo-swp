@@ -261,6 +261,7 @@
                     </form>
                 </li>
                 <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
@@ -298,7 +299,9 @@
         <div class="cart-link-wrapper">
             <a th:href="@{/cart/view}" class="cta-button cart-nav-button">
                 <i class="fas fa-shopping-cart"></i> Giỏ hàng
-                <span th:if="${cartCount != null and cartCount > 0}" th:text="${cartCount}" class="cart-count-badge">0</span>
+                <span th:if="${cartCount != null and cartCount > 0}"
+                      th:text="${cartCount}"
+                      class="cart-count-badge">0</span>
             </a>
         </div>
         <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
@@ -325,14 +328,59 @@
         </div>
 
         <div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
-            <a th:if="${page > 0}" th:href="@{/package(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>
-            <a th:if="${page > 0}" th:href="@{/package(page=${page -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trước</a>
-            <span th:each="i : ${#numbers.sequence(0, totalPages -1)}">
-                <a th:if="${i != page}" th:text="${i+1}" th:href="@{/package(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">1</a>
-                <span th:if="${i == page}" class="current" th:text="${i+1}">1</span>
+            <!-- Trang đầu + Trước -->
+            <a th:if="${page > 0}"
+               th:href="@{/package(page=${0},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Trang đầu
+            </a>
+
+            <a th:if="${page > 0}"
+               th:href="@{/package(page=${page - 1},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Trước
+            </a>
+
+            <!-- Các số trang -->
+            <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                <a th:if="${i != page}"
+                   th:text="${i + 1}"
+                   th:href="@{/package(page=${i},
+                                       size=${size},
+                                       sortBy=${sortBy},
+                                       dir=${dir},
+                                       keyword=${keyword})}">
+                    1
+                </a>
+                <span th:if="${i == page}"
+                      class="current"
+                      th:text="${i + 1}">1</span>
             </span>
-            <a th:if="${page < totalPages -1}" th:href="@{/package-shop(page=${page+1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Sau</a>
-            <a th:if="${page < totalPages -1}" th:href="@{/package-shop(page=${totalPages -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang cuối</a>
+
+            <!-- Sau + Trang cuối -->
+            <a th:if="${page < totalPages - 1}"
+               th:href="@{/package(page=${page + 1},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Sau
+            </a>
+
+            <a th:if="${page < totalPages - 1}"
+               th:href="@{/package(page=${totalPages - 1},
+                                   size=${size},
+                                   sortBy=${sortBy},
+                                   dir=${dir},
+                                   keyword=${keyword})}">
+                Trang cuối
+            </a>
         </div>
 
     </div>
