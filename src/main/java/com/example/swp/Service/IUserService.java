@@ -22,7 +22,7 @@ public interface IUserService {
     UserEntity findByUserNameOrEmail (String input);
     UserEntity loginUser(String usernameOrEmail, String rawPassword);
     boolean authenticateUser(String usernameOrEmail, String password, HttpSession session);
-    List<UserEntity> findByRole(UserRole member);
+
     void deleteUser(Long Id);
     UserEntity updateUser(Long id, UserDTO dto);
     UserEntity findById(Long Id);

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Data
 public class PackageDTO {
-    @Pattern(regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
+    @Pattern( regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}\\p{N}]+(?:\\s[\\p{L}\\p{N}]+)*$",
             message = "Tên không được có ký tự đặc biệt")
     @Size(max = 20, message = "Tên không được vượt quá 20 ký tự")
     private String name;

@@ -18,6 +18,7 @@ public class CartEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
+    @Column(name="total_price")
     private double totalPrice;
 
     private long paymentId;

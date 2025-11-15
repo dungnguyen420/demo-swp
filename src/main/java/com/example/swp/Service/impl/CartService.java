@@ -29,7 +29,7 @@ public class CartService implements ICartService {
     @Override
     @Transactional
     public void addProductToCart(Long userId, Long productId, int quantity) throws Exception {
-        if (quantity <= 0) throw new Exception("Số lượng phải lớn hơn 0");
+        if (quantity <= 0) throw new IllegalArgumentException("Số lượng phải lớn hơn 0");
 
         CartEntity cart = findOrCreateCart(userId);
         ProductEntity product = productRepo.findById(productId)

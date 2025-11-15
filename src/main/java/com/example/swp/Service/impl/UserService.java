@@ -28,6 +28,7 @@ public class UserService implements IUserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     @Override
     public UserEntity registerUser(RegisterDTO dto) {
         UserEntity checkUserName = userRepository.findByUserName(dto.getUserName()).orElse(null);
@@ -108,18 +109,12 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public List<UserEntity> findByRole(UserRole member) {
-        List<UserEntity> users = userRepository.findByRole(UserRole.MEMBER);
-        return users;
-    }
-
-    @Override
     public void deleteUser(Long Id) {
         userRepository.deleteById(Id);
     }
 
     @Override
-    public UserEntity updateUser(Long id, UserDTO dto) { // <-- 1. Nhận DTO Cập nhật
+    public UserEntity updateUser(Long id, UserDTO dto) {
 
 
         UserEntity existingUser = userRepository.findById(id)

@@ -263,7 +263,7 @@ public class OrderService implements IOrderService {
                 predicates.add(cb.between(root.get("createdAt"), startOfDay, endOfDay));
             }
 
-            if (status != null && !status.trim().isEmpty()) {
+            if (status != null && !status.trim().isBlank()) {
                 try {
 
                     OrderStatus statusEnum = OrderStatus.valueOf(status.toUpperCase());

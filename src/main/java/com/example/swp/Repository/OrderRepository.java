@@ -20,7 +20,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     Optional<OrderEntity> findByOrderCode(String orderCode);
     Page<OrderEntity> findByUserEntityIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
     long countByStatus(OrderStatus status);
-    @Query("SELECT SUM(o.totalPrice) FROM OrderEntity o WHERE o.status = :status")
     Page<OrderEntity> findAll(Specification<OrderEntity> spec, Pageable pageable);
     //doanh thu tong
     @Query("""
