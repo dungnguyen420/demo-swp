@@ -8,7 +8,7 @@ public class RegisterDTO {
     @NotBlank(message = "Username không được để trống")
     @Size(min = 3, max = 50, message = "Username 3-50 ký tự")
     @Pattern(regexp = "^(?!\\s)(?!.*\\s$)(?!\\d+$)[\\p{L}\\p{N}\\-._]+$",
-            message = "Username chỉ gồm chữ và số * không toàn số, không cách")
+            message = "Username chỉ gồm chữ và số, không toàn số")
     private String userName;
     @NotBlank(message = "Mật khẩu không được để trống")
     @Size(min = 8, max = 64, message = "Mật khẩu 8-64 ký tự")
