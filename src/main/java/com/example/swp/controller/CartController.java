@@ -37,9 +37,9 @@ public class CartController {
         try {
             Long userId = getUserId(principal);
             cartService.addProductToCart(userId, productId, quantity);
-            redirectAttributes.addFlashAttribute("successMessage", "Đã thêm sản phẩm vào giỏ hàng!");
+            redirectAttributes.addFlashAttribute("msg", "Đã thêm sản phẩm vào giỏ hàng!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
 
         return "redirect:/shop";

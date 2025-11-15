@@ -8,7 +8,8 @@
     <title>GymCare - Cửa hàng</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" th:href="@{/style.css}"> </head>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
 <body>
 
 <header class="navbar">
@@ -30,10 +31,10 @@
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                <li >
+                <li>
                     <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
                 </li>
-                <li >
+                <li>
                     <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
                 </li>
 
@@ -50,7 +51,6 @@
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
     </div>
 </header>
-
 
 <main>
     <div class="page-container">
@@ -81,10 +81,11 @@
                 <span th:if="${cartCount != null and cartCount > 0}"
                       th:text="${cartCount}"
                       class="cart-count-badge">
-                0
-              </span>
+                    0
+                </span>
             </a>
         </div>
+
 
         <div th:if="${msg}" class="alert alert-success" th:text="${msg}"></div>
         <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
@@ -108,31 +109,34 @@
                 <div class="card-actions">
                     <form th:action="@{/cart/add/product}" method="post" style="width: 100%;">
                         <input type="hidden" name="productId" th:value="${p.id}">
-                        <input class="qty-input" type="number" name="quantity" value="1" min="1" th:attr="max=${p.quantity}">
+                            <input class="qty-input" type="number" name="quantity" value="1">
                         <button type="submit" class="cta-button">Thêm vào giỏ</button>
                     </form>
                 </div>
             </div>
 
-        </div> <div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
-        <a th:if="${page > 0}"
-           th:href="@{/shop(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>
-        <a th:if="${page > 0}"
-           th:href="@{/shop(page=${page -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trước</a>
-        <span th:each="i : ${#numbers.sequence(0, totalPages -1)}">
+        </div>
+
+        <div class="pagination" style="margin-top:16px;" th:if="${totalPages > 0}">
+            <a th:if="${page > 0}"
+               th:href="@{/shop(page=${0}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang đầu</a>
+            <a th:if="${page > 0}"
+               th:href="@{/shop(page=${page -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trước</a>
+            <span th:each="i : ${#numbers.sequence(0, totalPages -1)}">
                 <a th:if="${i != page}"
                    th:text="${i+1}"
                    th:href="@{/shop(page=${i}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">1</a>
                 <span th:if="${i == page}" class="current" th:text="${i+1}">1</span>
                 <span> </span>
             </span>
-        <a th:if="${page < totalPages -1}"
-           th:href="@{/shop(page=${page+1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Sau</a>
-        <a th:if="${page < totalPages -1}"
-           th:href="@{/shop(page=${totalPages -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang cuối</a>
-    </div>
+            <a th:if="${page < totalPages -1}"
+               th:href="@{/shop(page=${page+1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Sau</a>
+            <a th:if="${page < totalPages -1}"
+               th:href="@{/shop(page=${totalPages -1}, size=${size}, sortBy=${sortBy}, dir=${dir}, keyword=${keyword})}">Trang cuối</a>
+        </div>
 
-    </div> </main>
+    </div>
+</main>
 
 <footer class="site-footer">
     <div class="container">
@@ -142,7 +146,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Script cho Navbar (Đã có)
+        // Script cho Navbar
         const navbar = document.querySelector('.navbar');
         if(navbar) {
             window.addEventListener('scroll', () => {
@@ -154,18 +158,15 @@
             });
         }
 
-        // Script cho Dropdown (Cần sửa lại cho đúng)
+        // Dropdown profile
         const profileDropdown = document.querySelector('.profile-dropdown');
         if (profileDropdown) {
-            // Click vào toàn bộ dropdown để toggle
             profileDropdown.addEventListener('click', (e) => {
-                // Ngăn click vào link con đóng dropdown
                 if (!e.target.closest('a')) {
                     profileDropdown.classList.toggle('active');
                 }
             });
 
-            // Tùy chọn: Đóng dropdown khi click ra ngoài
             document.addEventListener('click', (e) => {
                 if (profileDropdown && !profileDropdown.contains(e.target)) {
                     profileDropdown.classList.remove('active');
@@ -173,7 +174,7 @@
             });
         }
 
-        // Script cho animation (Đã có)
+        // Animation
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -186,5 +187,9 @@
         elementsToAnimate.forEach(el => observer.observe(el));
     });
 </script>
+
+
+</script>
+
 </body>
 </html>
