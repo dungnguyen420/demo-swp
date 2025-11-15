@@ -23,7 +23,7 @@
                 <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
                 <li><a th:href="@{/classes}">Lớp học</a></li>
                 <li><a th:href="@{/shop}">Cửa hàng</a></li>
-                <li sec:authorize="hasAnyRole('MANAGER')">
+                <li sec:authorize="hasAnyRole('MANAGER', 'TRAINER')">
                     <a th:href="@{/equipment/list}">Cơ sở vật chất</a>
                 </li>
                 <li sec:authorize="hasRole('MANAGER')">
@@ -42,6 +42,7 @@
                     <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                     <li sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
+                    <li><a th:href="@{/trainers/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                     <li >
                     <li sec:authorize="hasRole('ADMIN')">
                         <a th:href="@{/managers}"><i class="fas fa-user-shield"></i> Quản lí </a>

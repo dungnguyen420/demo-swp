@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .csrf(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/index","/ws/**","/auth/register","/orders/**", "/css/**", "/js/**", "/images/**","/shop/**").permitAll()
+                        .requestMatchers("/index","/ws/**","/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(
                                 "/home",
                                 "/trainers/detail/**",
@@ -46,10 +46,17 @@ public class SecurityConfig {
                                 "/classes",
                                 "/classes/**",
                                 "/cart/view",
+                                "/shop",
+                                "/shop/add",
+                                "/cart/add",
+                                "/cart/update",
+                                "/cart/clear",
+                                "/orders/create",
                                 "/orders/**",
                                 "/managers/**"
+
+
                         ).permitAll()// cho phép trang chua login
-                        .requestMatchers("/auth/**").hasRole("ADMIN")
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/chat").authenticated()
                         .requestMatchers("/admin/**",
@@ -57,6 +64,7 @@ public class SecurityConfig {
                                 "/trainers/edit/**",
                                 "/trainers/delete/**").hasRole("ADMIN")
                         .requestMatchers("/products/**", "/equipment/**").hasRole("MANAGER")
+                        .requestMatchers("/equipment/**").hasRole("TRAINER")
                         .requestMatchers("/ws/**","/admin/chat/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

@@ -145,15 +145,6 @@
             <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
             <li><a th:href="@{/classes}">Lớp học</a></li>
             <li><a th:href="@{/shop}">Cửa hàng</a></li>
-            <li sec:authorize="hasAnyRole('MANAGER')">
-                <a th:href="@{/equipment/list}">Cơ sở vật chất</a>
-            </li>
-            <li sec:authorize="hasRole('MANAGER')">
-                <a th:href="@{/products/list}">Danh sách sản phẩm</a>
-            </li>
-            <li sec:authorize="isAuthenticated()">
-                <a th:href="@{/chat/manager}">Chat với Manager</a>
-            </li>
         </ul>
     </nav>
     <div class="auth-section">
@@ -164,9 +155,7 @@
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                <li >
-                <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/managers}"><i class="fas fa-user-shield"></i> Quản lí </a>
+                </li>
                 <li >
                     <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
                 </li>
@@ -180,15 +169,8 @@
                 <li sec:authorize="hasRole('TRAINER')">
                     <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
                 </li>
-                <li class="logout">
-                    <form th:action="@{/logout}" method="post">
-                        <button type="submit">
-                            <i class="fas fa-sign-out-alt"></i> Đăng xuất
-                        </button>
-                    </form>
-                </li>
                 <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
-
+                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
@@ -203,6 +185,14 @@
 
             <div th:if="${error}" class="alert alert-danger" role="alert">
                 <span th:text="${error}"></span>
+            </div>
+
+            <div class="avatar-upload">
+                <img th:src="${user.avatar != null ? user.avatar : '/images/default-avatar.png'}" alt="Avatar" class="avatar">
+                <div>
+                    <label class="form-label">Cập nhật ảnh đại diện:</label>
+                    <input type="file" name="avatarFile">
+                </div>
             </div>
 
             <div class="form-grid-2">

@@ -76,7 +76,6 @@ public class EquipmentService implements IEquipmentService {
         EquipmentEntity entity = equipmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Thiết bị không tìm thấy"));
         EquipmentDTO dto = new EquipmentDTO();
-        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setQuantity(entity.getQuantity());
         dto.setPurchaseDate(entity.getPurchaseDate());
