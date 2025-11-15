@@ -78,7 +78,7 @@ public class EquipmentController {
             Model model
     ) {
         List<EquipmentEntity> result = equipmentService.searchAdvanced(name, quantityMin, quantityMax, startDate, endDate, status);
-        model.addAttribute("equipmentList", result);
+        model.addAttribute("equipments", result);
         return "equipment/list";
     }
 }

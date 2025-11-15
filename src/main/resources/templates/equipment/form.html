@@ -173,21 +173,28 @@
             .navbar { flex-direction: column; gap: 1rem; }
         }
     </style>
-</head>
-<header class="navbar">
-    <a th:href="@{/home}" class="logo">GymCare</a>
-    <nav>
-        <ul>
-            <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}" >Gói tập</a></li>
-            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
-            <li><a th:href="@{/classes}">Lớp học</a></li>
-            <li><a th:href="@{/shop}">Cửa hàng</a></li>
-        </ul>
-    </nav>
-    <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
-    </div>
-</header>
+    <header class="navbar">
+        <a th:href="@{/home}" class="logo">GymCare</a>
+        <nav>
+            <ul>
+                <li><a th:href="@{/home}">Trang chủ</a></li>
+                <li><a th:href="@{/package}" >Gói tập</a></li>
+                <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+                <li><a th:href="@{/classes}">Lớp học</a></li>
+                <li><a th:href="@{/shop}">Cửa hàng</a></li>
+                <li sec:authorize="hasAnyRole('MANAGER')">
+                    <a th:href="@{/equipment/list}">Cơ sở vật chất</a>
+                </li>
+                <li sec:authorize="hasRole('MANAGER')">
+                    <a th:href="@{/products/list}">Danh sách sản phẩm</a>
+                </li>
+                <li sec:authorize="isAuthenticated()">
+                    <a th:href="@{/chat/manager}">Chat với Manager</a>
+                </li>
+            </ul>
+        </nav>
+
+    </header>
 <body>
 <div class="container mt-4">
     <h2>Thiết bị</h2>
