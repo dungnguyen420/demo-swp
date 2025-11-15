@@ -31,7 +31,7 @@ public class PackageController {
             Model model,
             @AuthenticationPrincipal CustomUserDetails principal,
             @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "size", defaultValue = "4") int size,
             @RequestParam(name = "sortBy", defaultValue = "id") String sortBy,
             @RequestParam(name = "dir", defaultValue = "desc") String dir,
             @RequestParam(name = "keyword", required = false) String keyword) {
