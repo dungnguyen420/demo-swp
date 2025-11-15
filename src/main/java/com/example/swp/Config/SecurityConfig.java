@@ -56,7 +56,7 @@ public class SecurityConfig {
                                 "/managers/**"
 
 
-                        ).permitAll()// cho phép trang chua login
+                        ).permitAll()
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/chat").authenticated()
                         .requestMatchers("/admin/**",

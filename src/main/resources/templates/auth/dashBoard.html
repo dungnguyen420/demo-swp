@@ -79,10 +79,16 @@
     <nav>
         <ul>
             <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}">Gói tập</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
             <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
             <li><a th:href="@{/classes}">Lớp học</a></li>
             <li><a th:href="@{/shop}">Cửa hàng</a></li>
+            <li sec:authorize="hasAnyRole('MANAGER')">
+                <a th:href="@{/equipment/list}">Cơ sở vật chất</a>
+            </li>
+            <li sec:authorize="hasRole('MANAGER')">
+                <a th:href="@{/products/list}">Danh sách sản phẩm</a>
+            </li>
         </ul>
     </nav>
     <div class="auth-section">
@@ -93,21 +99,27 @@
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li sec:authorize="hasRole('ADMIN')">
                     <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                </li>
-                <li>
+                <li >
+                <li sec:authorize="hasRole('ADMIN')">
+                    <a th:href="@{/managers}"><i class="fas fa-user-shield"></i> Quản lí </a>
+                <li >
                     <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
                 </li>
-                <li>
+                <li >
                     <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
                 </li>
+
                 <li sec:authorize="hasAuthority('TRAINER')">
                     <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
                 </li>
-                <li sec:authorize="hasRole('TRAINER')">
-                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>
+                <li class="logout">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit">
+                            <i class="fas fa-user"></i> Đăng xuất
+                        </button>
+                    </form>
                 </li>
                 <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
-                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
