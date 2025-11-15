@@ -55,7 +55,7 @@ public class CartService implements ICartService {
             itemToSave.setCart(cart);
             itemToSave.setProduct(product);
             itemToSave.setPackageEntity(null);
-
+            itemToSave.setUnitPrice(product.getPrice());
             newTotalQuantityInCart = quantity;
         }
 
@@ -92,6 +92,7 @@ public class CartService implements ICartService {
                     newItem.setPackageEntity(pkg);
                     newItem.setProduct(null);
                     newItem.setQuantity(quantity);
+                    newItem.setUnitPrice(pkg.getPrice());
                     return newItem;
                 });
 

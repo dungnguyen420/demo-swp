@@ -33,9 +33,12 @@ public class CartItemEntity {
         if (packageEntity != null) return packageEntity.getName();
         return "N/A";
     }
+    @Column(name = "unit_price", nullable = false)
+    private Double unitPrice;
 
 
     public double getDisplayPrice() {
+        if (unitPrice != null) return unitPrice;
         if (product != null) return product.getPrice();
         if (packageEntity != null) return packageEntity.getPrice();
         return 0.0;
