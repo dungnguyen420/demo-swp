@@ -36,12 +36,13 @@ public class SecurityConfig {
                 .csrf(Customizer.withDefaults())
 
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/index","/ws/**","/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/index","/package","/home","/ws/**","/auth/**","/orders/**", "/css/**", "/js/**", "/images/**").permitAll()
                         .requestMatchers(
                                 "/home",
                                 "/trainers/detail/**",
                                 "/classes",
-                                "/packages",
+                                "/style.css",
+                                "/package",
                                 "/trainers",
                                 "/classes",
                                 "/classes/**",
@@ -54,8 +55,6 @@ public class SecurityConfig {
                                 "/orders/create",
                                 "/orders/**",
                                 "/managers/**"
-
-
                         ).permitAll()
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/chat").authenticated()
