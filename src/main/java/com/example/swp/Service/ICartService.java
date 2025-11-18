@@ -19,4 +19,8 @@ public interface ICartService {
 
     CartSummaryDTO getCartSummary(Long userId) throws Exception;
 
+    CartItemEntity updateCartItemQuantity(Long userId,
+                                          Long cartItemId,
+                                          int quantity) throws Exception;
+
 }

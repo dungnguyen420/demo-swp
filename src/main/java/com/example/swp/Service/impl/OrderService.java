@@ -1,40 +1,49 @@
 package com.example.swp.Service.impl;
 
-import com.example.swp.DTO.*;
-import com.example.swp.Entity.*;
+import com.example.swp.DTO.OrderDTO;
+import com.example.swp.DTO.OrderItemDTO;
+import com.example.swp.Entity.CartEntity;
+import com.example.swp.Entity.CartItemEntity;
+import com.example.swp.Entity.OrderEntity;
+import com.example.swp.Entity.OrderItemEntity;
+import com.example.swp.Entity.PaymentEntity;
+import com.example.swp.Entity.UserEntity;
 import com.example.swp.Enums.OrderStatus;
-import com.example.swp.Repository.*;
+import com.example.swp.Repository.CartItemRepository;
+import com.example.swp.Repository.CartRepository;
+import com.example.swp.Repository.OrderItemRepository;
+import com.example.swp.Repository.OrderRepository;
+import com.example.swp.Repository.PaymentRepository;
+import com.example.swp.Repository.IUserRepository;
 import com.example.swp.Service.IOrderService;
 import com.example.swp.Service.IProductService;
-import jakarta.persistence.criteria.Predicate; // <-- THÊM
+import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor; // <-- THÊM
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-// import org.springframework.beans.factory.annotation.Autowired; // (Xóa)
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort; // <-- THÊM
-import org.springframework.data.jpa.domain.Specification; // <-- THÊM
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import vn.payos.PayOS;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkRequest;
 import vn.payos.model.v2.paymentRequests.CreatePaymentLinkResponse;
-import vn.payos.model.v2.paymentRequests.PaymentLinkStatus;
 
-import java.time.LocalDate; // <-- THÊM
-import java.time.LocalDateTime; // <-- THÊM
-import java.time.LocalTime; // <-- THÊM
-import java.util.ArrayList; // <-- THÊM
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderService implements IOrderService {
+
     private final PayOS payos;
     private final CartRepository cartRepository;
     private final IUserRepository userRepository;
@@ -44,8 +53,6 @@ public class OrderService implements IOrderService {
     private final CartItemRepository cartItemRepository;
     private final ModelMapper modelMapper;
     private final IProductService productService;
-
-
 
     private Long getCurrentUserId() throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -61,7 +68,6 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional
     public CreatePaymentLinkResponse createOrder(OrderDTO dto) throws Exception {
-
         Long userId = dto.getUserId() != null ? dto.getUserId() : getCurrentUserId();
 
         List<CartItemEntity> cartItems = cartItemRepository.findByCart_UserId(userId);
@@ -69,10 +75,14 @@ public class OrderService implements IOrderService {
             throw new Exception("Giỏ hàng trống!");
         }
 
-
         long totalPrice = Math.round(
                 cartItems.stream()
-                        .mapToDouble(item -> item.getDisplayPrice() * item.getQuantity())
+                        .mapToDouble(item -> {
+                            Double unitPrice = item.getUnitPrice() != null
+                                    ? item.getUnitPrice()
+                                    : item.getDisplayPrice();
+                            return unitPrice * item.getQuantity();
+                        })
                         .sum()
         );
 
@@ -81,12 +91,10 @@ public class OrderService implements IOrderService {
         String cancelUrl = "http://localhost:8080/cart/view";
         Long orderCode = System.currentTimeMillis() / 1000;
 
-
-
         CreatePaymentLinkRequest paymentData = CreatePaymentLinkRequest.builder()
                 .orderCode(orderCode)
                 .amount(amount)
-                .description("Thanh toán DH"+orderCode)
+                .description("Thanh toán DH" + orderCode)
                 .returnUrl(returnUrl)
                 .cancelUrl(cancelUrl)
                 .build();
@@ -103,7 +111,6 @@ public class OrderService implements IOrderService {
         payment.setUser(cartItems.get(0).getCart().getUser());
         paymentRepository.save(payment);
 
-
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setTotalPrice(totalPrice);
         orderEntity.setPaymentEntity(payment);
@@ -113,25 +120,31 @@ public class OrderService implements IOrderService {
 
         OrderEntity savedOrder = orderRepository.save(orderEntity);
 
-
         for (CartItemEntity item : cartItems) {
             OrderItemEntity orderItemEntity = new OrderItemEntity();
-            orderItemEntity.setQuantity(item.getQuantity());
             orderItemEntity.setOrderEntity(savedOrder);
+            orderItemEntity.setQuantity(item.getQuantity());
+
+            Double unitPrice = item.getUnitPrice() != null
+                    ? item.getUnitPrice()
+                    : item.getDisplayPrice();
+
+            orderItemEntity.setUnitPrice(unitPrice);
+            orderItemEntity.setProductPrice(unitPrice);
 
             if (item.getProduct() != null) {
                 orderItemEntity.setProductId(item.getProduct().getId());
-                orderItemEntity.setProductName(item.getProduct().getName());
-                orderItemEntity.setProductPrice(item.getProduct().getPrice());
                 orderItemEntity.setPackageId(null);
+                orderItemEntity.setProductName(item.getProduct().getName());
             } else if (item.getPackageEntity() != null) {
                 orderItemEntity.setPackageId(item.getPackageEntity().getId());
-                orderItemEntity.setProductName(item.getPackageEntity().getName());
-                orderItemEntity.setProductPrice(item.getPackageEntity().getPrice());
                 orderItemEntity.setProductId(null);
+                orderItemEntity.setProductName(item.getPackageEntity().getName());
             }
+
             orderItemRepository.save(orderItemEntity);
         }
+
         return response;
     }
 
@@ -145,15 +158,14 @@ public class OrderService implements IOrderService {
             order.setStatus(OrderStatus.PAID);
             orderRepository.save(order);
         }
+
         List<OrderItemEntity> orderItems = order.getOrderItems();
         for (OrderItemEntity item : orderItems) {
-
             if (item.getProductId() != null) {
-
                 productService.decreaseStock(item.getProductId(), item.getQuantity());
             }
-
         }
+
         orderRepository.save(order);
         PaymentEntity payment = order.getPaymentEntity();
         if (payment != null) {
@@ -166,12 +178,9 @@ public class OrderService implements IOrderService {
             throw new Exception("Đơn hàng không liên kết với người dùng nào.");
         }
 
-
         List<CartItemEntity> cartItems = cartItemRepository.findByCart_UserId(user.getId());
         if (cartItems != null && !cartItems.isEmpty()) {
             cartItemRepository.deleteAll(cartItems);
-
-
             CartEntity cart = cartItems.get(0).getCart();
             if (cart != null) {
                 cart.setTotalPrice(0.0);
@@ -201,19 +210,15 @@ public class OrderService implements IOrderService {
     @Override
     @Transactional(Transactional.TxType.NEVER)
     public Page<OrderDTO> findOrdersByUserId(Long userId, String keyword, LocalDate date, int page, int size) {
-
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-
 
         Specification<OrderEntity> spec = (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(root.get("userEntity").get("id"), userId));
 
-
             if (keyword != null && !keyword.trim().isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("orderCode"), "%" + keyword.trim() + "%"));
             }
-
 
             if (date != null) {
                 LocalDateTime startOfDay = date.atStartOfDay();
@@ -223,15 +228,10 @@ public class OrderService implements IOrderService {
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
 
-
         Page<OrderEntity> orderPageEntity = orderRepository.findAll(spec, pageable);
 
         return orderPageEntity.map(this::convertToDto);
     }
-
-
-
-
 
     @Transactional(Transactional.TxType.NEVER)
     @Override
@@ -243,35 +243,26 @@ public class OrderService implements IOrderService {
 
     @Override
     public Page<OrderEntity> findMyOrders(UserEntity user, String orderCode, LocalDate searchDate, String status, Pageable pageable) {
-
         Specification<OrderEntity> spec = (root, query, cb) -> {
-
             List<Predicate> predicates = new ArrayList<>();
 
             predicates.add(cb.equal(root.get("userEntity"), user));
 
             if (orderCode != null && !orderCode.trim().isEmpty()) {
                 predicates.add(cb.like(root.get("orderCode"), "%" + orderCode.trim() + "%"));
-
             }
 
             if (searchDate != null) {
-
                 LocalDateTime startOfDay = searchDate.atStartOfDay();
                 LocalDateTime endOfDay = searchDate.atTime(LocalTime.MAX);
-
                 predicates.add(cb.between(root.get("createdAt"), startOfDay, endOfDay));
             }
 
             if (status != null && !status.trim().isBlank()) {
                 try {
-
                     OrderStatus statusEnum = OrderStatus.valueOf(status.toUpperCase());
-
                     predicates.add(cb.equal(root.get("status"), statusEnum));
-
                 } catch (IllegalArgumentException e) {
-
                     System.err.println("Trạng thái tìm kiếm không hợp lệ: " + status);
                 }
             }
@@ -281,7 +272,6 @@ public class OrderService implements IOrderService {
 
         return orderRepository.findAll(spec, pageable);
     }
-
 
     private OrderDTO convertToDto(OrderEntity orderEntity) {
         if (orderEntity == null) return null;
@@ -309,7 +299,10 @@ public class OrderService implements IOrderService {
         itemDTO.setPackageId(itemEntity.getPackageId());
         itemDTO.setProductName(itemEntity.getProductName());
         itemDTO.setQuantity(itemEntity.getQuantity());
-        itemDTO.setPrice(itemEntity.getProductPrice());
+        Double price = itemEntity.getUnitPrice() != null
+                ? itemEntity.getUnitPrice()
+                : itemEntity.getProductPrice();
+        itemDTO.setPrice(price);
         return itemDTO;
     }
 }

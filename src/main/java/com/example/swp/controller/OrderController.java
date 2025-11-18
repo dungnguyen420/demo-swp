@@ -161,25 +161,29 @@ public class OrderController extends BaseAPIController {
         return "orders/order-history";
     }
     @GetMapping("/detail/{orderCode}")
-    public String viewOrderDetail(@PathVariable String orderCode, Model model,
-                                  @AuthenticationPrincipal CustomUserDetails principal) {
-        if (principal == null) return "redirect:/auth/login";
+    public String viewOrderDetail(@PathVariable String orderCode,
+                                  Model model,
+                                  @AuthenticationPrincipal CustomUserDetails principal,
+                                  RedirectAttributes redirectAttributes) {
+        if (principal == null) {
+            return "redirect:/auth/login";
+        }
 
         try {
             OrderDTO order = orderService.findByOrderCode(orderCode);
 
-
             if (!order.getUserId().equals(principal.getUser().getId())) {
-                model.addAttribute("errorMessage", "Bạn không có quyền xem đơn hàng này.");
-                return "orders/order-history";
+                redirectAttributes.addFlashAttribute("errorMessage", "Bạn không có quyền xem đơn hàng này.");
+                return "redirect:/orders/history";
             }
 
             model.addAttribute("order", order);
             return "orders/order-detail";
 
         } catch (Exception e) {
-            model.addAttribute("errorMessage", "Không tìm thấy đơn hàng: " + e.getMessage());
-            return "orders/order-history";
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy đơn hàng: " + e.getMessage());
+            return "redirect:/orders/history";
         }
     }
+
 }

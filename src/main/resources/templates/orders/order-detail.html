@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GymCare - Chi tiết Đơn hàng</title>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" th:href="@{/style.css}">
     <style>
         :root {
@@ -21,14 +22,24 @@
             font-family: var(--font-heading, 'Arial', sans-serif);
         }
 
-        /* 3. CSS CHO TRANG NÀY */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            border: 1px solid;
+        }
+        .alert-success {
+            background-color: rgba(80, 255, 80, 0.1);
+            border-color: #50ff50;
+            color: #50ff50;
+        }
+        .alert-danger {
+            background-color: rgba(255, 77, 77, 0.1);
+            border-color: #ff4d4d;
+            color: #ff4d4d;
+        }
 
-        /* Thông báo */
-        .alert { padding: 1rem 1.5rem; border-radius: 8px; margin-bottom: 2rem; font-weight: 700; border: 1px solid; }
-        .alert-success { background-color: rgba(80, 255, 80, 0.1); border-color: #50ff50; color: #50ff50; }
-        .alert-danger { background-color: rgba(255, 77, 77, 0.1); border-color: #ff4d4d; color: #ff4d4d; }
-
-        /* Thông tin chung */
         .order-summary {
             list-style: none;
             padding: 0;
@@ -49,14 +60,13 @@
         }
         .order-summary li:last-child {
             border-bottom: none;
-            font-size: 1.3rem; /* Làm to tổng tiền */
+            font-size: 1.3rem;
         }
         .order-summary li span[style*="font-weight:bold"] {
             color: var(--primary-color, #FFD700);
             font-size: 1.4rem;
         }
 
-        /* Bảng chi tiết */
         .data-table {
             width: 100%;
             border-collapse: collapse;
@@ -76,17 +86,30 @@
             color: var(--text-secondary, #ccc);
         }
 
-        /* Trạng thái (Status Badges) */
         [class*="status-"] {
-            padding: 0.25rem 0.75rem; border-radius: 20px;
-            font-weight: 700; font-size: 0.8rem;
-            background-color: rgba(255, 255, 255, 0.1); color: #fff;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
         }
-        .status-PENDING { background-color: rgba(255, 165, 0, 0.15); color: #ffa500; }
-        .status-COMPLETED, .status-SUCCESS { background-color: rgba(80, 255, 80, 0.15); color: #50ff50; }
-        .status-CANCELLED, .status-FAILED, .status-REJECTED { background-color: rgba(255, 77, 77, 0.15); color: #ff4d4d; }
+        .status-PENDING {
+            background-color: rgba(255, 165, 0, 0.15);
+            color: #ffa500;
+        }
+        .status-COMPLETED,
+        .status-SUCCESS {
+            background-color: rgba(80, 255, 80, 0.15);
+            color: #50ff50;
+        }
+        .status-CANCELLED,
+        .status-FAILED,
+        .status-REJECTED {
+            background-color: rgba(255, 77, 77, 0.15);
+            color: #ff4d4d;
+        }
 
-        /* Nút quay lại */
         .action-links {
             text-align: right;
             margin-top: 2rem;
@@ -94,7 +117,6 @@
             border-top: 1px solid var(--border-color, rgba(255,215,0,0.2));
         }
 
-        /* (Ghi đè .cta-button.secondary nếu style.css không có) */
         .cta-button.secondary {
             background: transparent;
             border: 2px solid var(--text-gray, #aaa);
@@ -107,15 +129,15 @@
             box-shadow: none;
         }
 
-        /* Footer */
         .site-footer {
-            text-align: center; padding: 2rem 5%;
+            text-align: center;
+            padding: 2rem 5%;
             border-top: 1px solid var(--border-color, rgba(255,215,0,0.2));
             background: var(--secondary-bg, #1A1A1A);
             color: var(--text-gray, #aaa);
             margin-top: 3rem;
         }
-</style>
+    </style>
 </head>
 <body>
 
@@ -124,7 +146,7 @@
     <nav>
         <ul>
             <li><a th:href="@{/home}">Trang chủ</a></li>
-            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/package}">Gói tập</a></li>
             <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
             <li><a th:href="@{/classes}">Lớp học</a></li>
             <li><a th:href="@{/shop}">Cửa hàng</a></li>
@@ -143,20 +165,17 @@
             <ul class="dropdown-menu">
                 <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>
                 <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>
-                <li >
+                    <a th:href="@{/auth/dashBoard}"><i class="fas a-user-shield"></i> Trang quản trị</a>
+                </li>
                 <li sec:authorize="hasRole('ADMIN')">
-                    <a th:href="@{/managers}"><i class="fas fa-user-shield"></i> Quản lí </a>
-                <li >
-                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>
+                    <a th:href="@{/managers}"><i class="fas fa-user-shield"></i> Quản lí</a>
                 </li>
-                <li >
-                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
-                </li>
-
+                <li><a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a></li>
+                <li><a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a></li>
                 <li sec:authorize="hasAuthority('TRAINER')">
                     <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
                 </li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
                 <li class="logout">
                     <form th:action="@{/logout}" method="post">
                         <button type="submit">
@@ -164,12 +183,12 @@
                         </button>
                     </form>
                 </li>
-                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
     </div>
 </header>
+
 <main>
     <div class="page-container">
         <h2 class="page-title">Chi tiết Đơn hàng</h2>
@@ -193,11 +212,13 @@
                     </li>
                     <li>
                         <strong>Trạng thái:</strong>
-                        <span th:text="${order.status}" th:classappend="'status-' + ${order.status}"></span>
+                        <span th:text="${order.status}"
+                              th:classappend="' status-' + ${order.status}"></span>
                     </li>
                     <li>
                         <strong>Tổng tiền:</strong>
-                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'" style="font-weight:bold; color: #d9534f;"></span>
+                        <span th:text="${#numbers.formatDecimal(order.totalPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'"
+                              style="font-weight:bold; color: #d9534f;"></span>
                     </li>
                 </ul>
 
@@ -205,18 +226,30 @@
                 <table class="data-table">
                     <thead>
                     <tr>
-                        <th>Sản phẩm</th>
+                        <th>Sản phẩm / Gói tập</th>
                         <th style="text-align: center;">Số lượng</th>
-                        <th style="text-align: right;">Đơn giá</th>
+                        <th style="text-align: right;">Giá lúc mua</th>
                         <th style="text-align: right;">Thành tiền</th>
                     </tr>
                     </thead>
                     <tbody>
+                    <!-- LƯU Ý: order.items là List<OrderItemEntity> với field productName, productPrice, quantity -->
                     <tr th:each="item : ${order.items}">
                         <td data-label="Sản phẩm" th:text="${item.productName}">Tên sản phẩm</td>
-                        <td data-label="Số lượng" style="text-align: center;" th:text="${item.quantity}"></td>
-                        <td data-label="Đơn giá" style="text-align: right;" th:text="${#numbers.formatDecimal(item.price, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
-                        <td data-label="Thành tiền" style="text-align: right;" th:text="${#numbers.formatDecimal(item.price * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'">0</td>
+                        <td data-label="Số lượng" style="text-align: center;"
+                            th:text="${item.quantity}">1</td>
+
+
+                        <td data-label="Đơn giá" style="text-align: right;"
+                            th:text="${#numbers.formatDecimal(item.productPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                            0 VND
+                        </td>
+
+                        <!-- THÀNH TIỀN = productPrice * quantity -->
+                        <td data-label="Thành tiền" style="text-align: right;"
+                            th:text="${#numbers.formatDecimal(item.productPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                            0 VND
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -225,12 +258,17 @@
                     <a th:href="@{/orders/history}" class="cta-button secondary">Quay lại Lịch sử</a>
                 </div>
 
-            </div> </div> </div> </main>
+            </div>
+        </div>
+    </div>
+</main>
 
 <footer class="site-footer">
-    <div class="container"> <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
+    <div class="container">
+        <p>&copy; 2025 GymCare. Đã đăng ký bản quyền.</p>
     </div>
 </footer>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const navbar = document.querySelector('.navbar');
@@ -258,5 +296,6 @@
         }
     });
 </script>
+
 </body>
 </html>

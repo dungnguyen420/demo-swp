@@ -26,6 +26,10 @@ public class OrderItemEntity extends BaseEntity {
     @Column(name = "package_id", nullable = true)
     private Long packageId;
 
+
+    @Column(name = "unit_price", nullable = false)
+    private Double unitPrice;
+    
     @ManyToOne
     @JoinColumn(name = "order_id")
     @JsonBackReference

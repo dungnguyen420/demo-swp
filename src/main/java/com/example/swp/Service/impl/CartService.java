@@ -173,4 +173,55 @@ public class CartService implements ICartService {
         cart.setTotalPrice(total);
         cartRepo.save(cart);
     }
+    @Override
+    @Transactional
+    public CartItemEntity updateCartItemQuantity(Long userId, Long itemId, int quantity) throws Exception {
+        if (quantity <= 0) {
+            throw new Exception("Số lượng phải lớn hơn 0 ");
+        }
+
+        CartItemEntity item = cartItemRepository
+                .findByIdAndCart_UserId(itemId, userId)
+                .orElseThrow(() -> new Exception("Mục này không tồn tại trong giỏ hàng của bạn"));
+
+        if (item.getProduct() != null) {
+            int stock = item.getProduct().getQuantity();
+            if (quantity > stock) {
+                throw new Exception("Số lượng yêu cầu vượt quá tồn kho (" + stock + ")");
+            }
+        }
+
+        item.setQuantity(quantity);
+        CartItemEntity saved = cartItemRepository.save(item);
+
+        updateCartTotalPrice(item.getCart());
+
+        return saved;
+    }
+    @Transactional
+    public CartItemEntity updateCartItemQuantityAndReturn(Long userId, Long itemId, int quantity) throws Exception {
+        if (quantity <= 0) {
+            throw new Exception("Số lượng phải lớn hơn 0");
+        }
+
+        CartItemEntity item = cartItemRepository
+                .findByIdAndCart_UserId(itemId, userId)
+                .orElseThrow(() -> new Exception("Mục này không tồn tại trong giỏ hàng của bạn"));
+
+        if (item.getProduct() != null) {
+            int availableStock = item.getProduct().getQuantity();
+            if (quantity > availableStock) {
+                throw new Exception("Số lượng yêu cầu (" + quantity +
+                        ") vượt quá số lượng tồn kho hiện có (" + availableStock + ")");
+            }
+        }
+
+        item.setQuantity(quantity);
+        cartItemRepository.save(item);
+
+        CartEntity cart = item.getCart();
+        updateCartTotalPrice(cart);
+        return item;
+    }
+
 }
