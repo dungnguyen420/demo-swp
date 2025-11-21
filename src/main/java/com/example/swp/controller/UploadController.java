@@ -26,11 +26,11 @@ public class UploadController {
     @PostMapping
     public String uploadFile(@NotNull @RequestParam("file")MultipartFile file, Model model){
         try{
-            String imageUrl = cloudinaryService.uploadImage(file, "uploads");
+            String imageUrl = cloudinaryService.uploadFile(file, "uploads");
             model.addAttribute("message","Upload successful");
             model.addAttribute("imageUrl",imageUrl);
         }catch (Exception e){
-            model.addAttribute("message","Upload fail" + e.getMessage());
+            model.addAttribute("message","Upload fail:" + e.getMessage());
         }
         return "upload_result";
     }

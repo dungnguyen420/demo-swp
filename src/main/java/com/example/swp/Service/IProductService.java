@@ -19,5 +19,10 @@ public interface IProductService {
     Page<ProductEntity> findAllPaged(String keyword, Pageable pageable);
     Optional<ProductEntity> findByName(String name);
     void decreaseStock(Long productId, int quantityToDecrease) throws Exception;
-    List<ProductEntity> searchAdvanced(String keyword, Double minPrice, Double maxPrice, LocalDateTime fromDate, LocalDateTime toDate);
+    Page<ProductEntity> searchAdvancedPaged(String keyword,
+                                            Double minPrice,
+                                            Double maxPrice,
+                                            LocalDateTime fromDate,
+                                            LocalDateTime toDate,
+                                            Pageable pageable);
 }

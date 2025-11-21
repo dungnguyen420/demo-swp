@@ -15,17 +15,20 @@ public class CloudinaryService {
     @Autowired
     private Cloudinary cloudinary;
 
-    public String uploadImage(MultipartFile file, String folder) throws IOException{
-        Map uploadResult = cloudinary.uploader().upload(
-                file.getBytes(),
-                ObjectUtils.asMap(
-                        "folder",folder,
-                        "resouce_type","image",
-                        "use_filename",true,
-                        "unique_filename",false,
-                        "overwrite",true
-                )
-        );
-        return  uploadResult.get("secure_url").toString();
+    public String uploadFile(MultipartFile file, String folderName){
+        if (file.isEmpty()){
+            throw new RuntimeException("File is empty!");
+        }
+        try{
+            Map result = cloudinary.uploader().upload(
+              file.getBytes(),
+                    ObjectUtils.asMap(
+                            "folder", folderName
+                    )
+            );
+            return result.get("secure_url").toString();
+        }catch(Exception e){
+            throw new RuntimeException("Upload failed:" + e.getMessage());
+        }
     }
 }

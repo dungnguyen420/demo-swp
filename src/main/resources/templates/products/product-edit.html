@@ -187,31 +187,6 @@
             <li><a th:href="@{/shop}">Cửa hàng</a></li>
         </ul>
     </nav>
-<!--    <div class="auth-section">-->
-<!--        <div sec:authorize="isAuthenticated()" class="profile-dropdown">-->
-<!--            <img th:src="@{/images/default-avatar.png}" alt="Avatar">-->
-<!--            <span sec:authentication="principal.username">Username</span>-->
-<!--            <ul class="dropdown-menu">-->
-<!--                <li><a th:href="@{/user/profile}"><i class="fas fa-user-circle"></i> Hồ sơ cá nhân</a></li>-->
-<!--                <li sec:authorize="hasRole('ADMIN')">-->
-<!--                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-user-shield"></i> Trang quản trị</a>-->
-<!--                <li >-->
-<!--                    <a th:href="@{/my-schedule/personal}"><i class="fas fa-user"></i> Lịch PT của tôi</a>-->
-<!--                </li>-->
-<!--                <li >-->
-<!--                    <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>-->
-<!--                </li>-->
-
-<!--                <li sec:authorize="hasAuthority('TRAINER')">-->
-<!--                    <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>-->
-<!--                </li>-->
-<!--                <li sec:authorize="hasRole('TRAINER')">-->
-<!--                    <a th:href="@{/auth/dashBoard}"><i class="fas fa-cog"></i> Bảng điều khiển</a>-->
-<!--                </li>-->
-<!--                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>-->
-<!--                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>-->
-<!--            </ul>-->
-<!--        </div>-->
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
     </div>
 </header>
@@ -223,7 +198,7 @@
     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
     <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
-    <form th:action="@{/products/update}" th:object="${product}" method="post">
+    <form th:action="@{/products/update}" th:object="${product}" method="post" enctype="multipart/form-data">
         <input type="hidden" th:field="*{id}">
 
         <div class="mb-3">
@@ -247,8 +222,8 @@
             <div class="text-danger" th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"></div>
         </div>
         <div class="mb-3">
-            <label class="form-label">Hình ảnh (URL)</label>
-            <input type="text" th:field="*{image}" class="form-control">
+            <label class="form-label">Hình ảnh</label>
+            <input type="file" name="imageFile" class="form-control" accept="image/*" >
             <div class="text-danger" th:if="${#fields.hasErrors('image')}" th:errors="*{image}"></div>
         </div>
         <button type="submit" class="btn btn-primary">Cập nhật</button>

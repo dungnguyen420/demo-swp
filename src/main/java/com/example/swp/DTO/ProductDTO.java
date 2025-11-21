@@ -9,24 +9,23 @@ import lombok.Data;
 @Data
 public class ProductDTO {
     private long id;
-    @NotBlank(message = "Name cannot be blank")
+    @NotBlank(message = "Tên không được để trống")
     @Pattern(
-            regexp = "^[A-Za-z0-9 ]+$",
-            message = "Name can only contain letters, numbers and spaces"
+            regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
+            message = "Tên chỉ gồm chữ, không cách đầu/cuối"
     )
     private String name;
-    @NotBlank(message = "Description cannot be blank")
+    @NotBlank(message = "Mô tả không được để trống")
     @Pattern(
-            regexp = "^[A-Za-z0-9 ]+$",
-            message = "Description can only contain letters, numbers and spaces"
+            regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
+            message = "Mô tả chỉ gồm chữ, không cách đầu/cuối"
     )
     private String description;
-    @NotNull(message = "Price cannot be null")
-    @PositiveOrZero(message = "Price must be equal or greater than 0")
+    @NotNull(message = "Giá không không để trống")
+    @PositiveOrZero(message = "Giá lớn hơn hoặc bằng 0")
     private double price;
-    @NotNull(message = "Quantity cannot be null")
-    @PositiveOrZero(message = "Quantity must be equal or greater than 0")
+    @NotNull(message = "Số lượng không để trống")
+    @PositiveOrZero(message = "Số lượng lớn hơn hoặc bằng 0")
     private int quantity;
-    @NotBlank(message = "Image cannot be blank")
     private String image;
 }

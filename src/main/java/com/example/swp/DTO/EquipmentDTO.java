@@ -24,7 +24,6 @@ public class EquipmentDTO {
     private LocalDate purchaseDate;
     @NotNull(message = "Trạng thái không được để trống")
     private EquipmentEntity.Status status;
-    @NotBlank(message = "Ảnh không được để trống")
     private String image;
 
 }

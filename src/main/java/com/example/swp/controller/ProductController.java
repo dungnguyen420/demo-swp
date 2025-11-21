@@ -3,13 +3,18 @@ package com.example.swp.controller;
 import com.example.swp.DTO.ProductDTO;
 import com.example.swp.Entity.ProductEntity;
 import com.example.swp.Service.IProductService;
+import com.example.swp.Service.impl.CloudinaryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
@@ -22,17 +27,32 @@ public class ProductController {
     @Autowired
     private IProductService productService;
 
-    @GetMapping("/list")
-    public String getListProduct(@RequestParam(value = "keyword", required = false, defaultValue = "")String keyword, Model model){
-        List<ProductEntity> listProduct;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
-        if (keyword.isEmpty() ){
-            listProduct = productService.getListProduct();
-        }else {
-            listProduct = productService.searchProduct(keyword);
+    @GetMapping("/list")
+    public String getListProduct(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "3") int size,
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
+            Model model) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductEntity> productPage;
+
+        if (keyword.isEmpty()) {
+            productPage = productService.findAllPaged("", pageable);
+        } else {
+            productPage = productService.findAllPaged(keyword, pageable);
         }
-        model.addAttribute("listProduct", listProduct);
+
+        model.addAttribute("listProduct", productPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalItems", productPage.getTotalElements());
         model.addAttribute("keyword", keyword);
+        model.addAttribute("size", size);
+
         return "products/product-list";
     }
 
@@ -45,13 +65,23 @@ public class ProductController {
     @PostMapping("/create")
     public String createProduct(@Valid  @ModelAttribute("product") ProductDTO dto,
                                 BindingResult bindingResult,
+                                @RequestParam("imageFile") MultipartFile imageFile,
                                 RedirectAttributes redirectAttributes,
                                 Model model){
 
         if (bindingResult.hasErrors()){
             return "products/product-create";
         }
+
+        if (imageFile == null || imageFile.isEmpty()) {
+            model.addAttribute("error", "Ảnh không được để trống");
+            return "products/product-create";
+        }
+
         try {
+            String imageUrl = cloudinaryService.uploadFile(imageFile, "products");
+            dto.setImage(imageUrl);
+
             ProductEntity product = productService.createProduct(dto);
             redirectAttributes.addFlashAttribute("success", "Tạo sản phẩm thành công!");
             return "redirect:/products/list";
@@ -86,6 +116,8 @@ public class ProductController {
     @PostMapping("/update")
     public String updateProduct(@Valid @ModelAttribute("product") ProductDTO dto,
                                 BindingResult bindingResult,
+                                @RequestParam(value = "imageFile", required = false) MultipartFile imageFile,
+                                RedirectAttributes redirectAttributes,
                                 Model model){
 
         if (bindingResult.hasErrors()) {
@@ -93,8 +125,12 @@ public class ProductController {
         }
 
         try {
-            ProductEntity updated = productService.updateProduct(dto);
-            model.addAttribute("success", "Cập nhật sản phẩm thành công!");
+            if (imageFile != null && !imageFile.isEmpty()) {
+                String imageUrl = cloudinaryService.uploadFile(imageFile, "products");
+                dto.setImage(imageUrl);
+            }
+            productService.updateProduct(dto);
+            redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công!");
             return "redirect:/products/list";
         } catch (RuntimeException e) {
             model.addAttribute("error", e.getMessage());
@@ -121,10 +157,19 @@ public class ProductController {
             @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime toDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size,
             Model model) {
 
-        List<ProductEntity> products = productService.searchAdvanced(keyword, minPrice, maxPrice, fromDate, toDate);
-        model.addAttribute("listProduct", products);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ProductEntity> productPage = productService.searchAdvancedPaged(
+                keyword, minPrice, maxPrice, fromDate, toDate, pageable
+        );
+
+        model.addAttribute("listProduct", productPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("totalItems", productPage.getTotalElements());
 
         model.addAttribute("keyword", keyword);
         model.addAttribute("minPrice", minPrice);
