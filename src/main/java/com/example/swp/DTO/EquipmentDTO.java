@@ -12,8 +12,8 @@ public class EquipmentDTO {
     private Long id;
     @NotBlank(message = "Tên thiết bị không được để trống")
     @Pattern(
-            regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}]+(?:\\s[\\p{L}]+)*$",
-            message = "Tên chỉ được chứa chữ cái, số và khoảng trắng (không có ký tự đặc biệt)"
+            regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}0-9]+(?:\\s[\\p{L}0-9]+)*$",
+            message = "Không có khoảng trắng ở đầu và cuối"
     )
     private String name;
     @NotNull(message = "Số lượng thiết bị không được để trống")

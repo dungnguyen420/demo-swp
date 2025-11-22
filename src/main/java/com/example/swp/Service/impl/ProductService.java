@@ -66,7 +66,9 @@ public class ProductService implements IProductService {
             existingProduct.setDescription(dto.getDescription());
             existingProduct.setPrice(dto.getPrice());
             existingProduct.setQuantity(dto.getQuantity());
-            existingProduct.setImage(dto.getImage());
+            if (dto.getImage() != null && !dto.getImage().isBlank()) {
+                existingProduct.setImage(dto.getImage());
+            }
 
             productRepository.save(existingProduct);
             return existingProduct;

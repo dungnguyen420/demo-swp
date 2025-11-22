@@ -74,8 +74,13 @@ public class EquipmentController {
 
         }
         try {
-            // Upload ảnh nếu có
-            if (imageFile != null && !imageFile.isEmpty()) {
+            if (imageFile == null || imageFile.isEmpty()) {
+                if (dto.getId() != null) {
+                    EquipmentEntity old = equipmentService.getEquipmentById(dto.getId())
+                            .orElseThrow(() -> new IllegalArgumentException("Thiết bị không tồn tại"));
+                    dto.setImage(old.getImage());
+                }
+            } else {
                 String imageUrl = cloudinaryService.uploadFile(imageFile, "equipment");
                 dto.setImage(imageUrl);
             }

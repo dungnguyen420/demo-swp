@@ -125,7 +125,10 @@ public class ProductController {
         }
 
         try {
-            if (imageFile != null && !imageFile.isEmpty()) {
+            if (imageFile == null || imageFile.isEmpty()) {
+                ProductEntity oldProduct = productService.findById(dto.getId());
+                dto.setImage(oldProduct.getImage());
+            } else {
                 String imageUrl = cloudinaryService.uploadFile(imageFile, "products");
                 dto.setImage(imageUrl);
             }

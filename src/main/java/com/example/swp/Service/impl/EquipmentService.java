@@ -28,13 +28,13 @@ public class EquipmentService implements IEquipmentService {
         } else {
             equipment = new EquipmentEntity();
         }
-        equipment.setId(dto.getId());
         equipment.setName(dto.getName());
         equipment.setQuantity(dto.getQuantity());
         equipment.setPurchaseDate(dto.getPurchaseDate());
         equipment.setStatus(dto.getStatus() != null ? dto.getStatus() : EquipmentEntity.Status.AVAILABLE);
-        equipment.setImage(dto.getImage());
-
+        if (dto.getImage() != null && !dto.getImage().isBlank()) {
+            equipment.setImage(dto.getImage());
+        }
         return equipmentRepository.save(equipment);
     }
 
@@ -78,6 +78,7 @@ public class EquipmentService implements IEquipmentService {
         EquipmentEntity entity = equipmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Thiết bị không tìm thấy"));
         EquipmentDTO dto = new EquipmentDTO();
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setQuantity(entity.getQuantity());
         dto.setPurchaseDate(entity.getPurchaseDate());
