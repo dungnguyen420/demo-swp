@@ -1,5 +1,5 @@
 /* --- Google Fonts: Import font chữ năng động --- */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Teko:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* --- Biến màu và Font chữ toàn cục (Dễ dàng tùy chỉnh) --- */
 :root {
@@ -27,11 +27,7 @@ html {
 }
 
 body {
-    font-family: var(--font-body);
-    background-color: var(--dark-bg);
-    color: var(--text-color);
-    line-height: 1.6;
-    overflow-x: hidden; /* Chống tràn ngang */
+    font-family: 'Inter', sans-serif;
 }
 
 /* ✨ [NÂNG CẤP] Tùy chỉnh màu khi bôi đen chữ */

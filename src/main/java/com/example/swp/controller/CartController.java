@@ -96,7 +96,7 @@ public class CartController {
             ra.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
 
             if (principal == null) {
-                return "redirect:/auth/login";
+                return "redirect:/index";
             }
             return "redirect:/";
         }

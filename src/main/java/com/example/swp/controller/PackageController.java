@@ -3,6 +3,7 @@ package com.example.swp.Controller;
 import com.example.swp.Entity.PackageEntity;
 import com.example.swp.Repository.IPackageRepository;
 import com.example.swp.Service.ICartService;
+import com.example.swp.Service.IPackageService;
 import com.example.swp.Service.impl.CartService;
 import com.example.swp.Service.impl.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class PackageController {
 
     private final IPackageRepository packageRepository;
     private final ICartService cartService;
-
+    private final IPackageService packageService;
     @GetMapping
     public String showPackageShop(
             Model model,
@@ -74,6 +75,22 @@ public class PackageController {
         }
 
         return "package/package";
+    }
+    @GetMapping("/my-packages")
+    public String myPackages(@AuthenticationPrincipal CustomUserDetails principal,
+                             Model model) {
+
+        if (principal == null) {
+            return "redirect:/index";
+        }
+
+        Long userId = principal.getUser().getId();
+
+        var packages = packageService.getMyPackages(userId);
+
+        model.addAttribute("packages", packages);
+
+        return "package/my-packages";
     }
 }
 

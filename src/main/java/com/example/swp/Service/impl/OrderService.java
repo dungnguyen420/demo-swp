@@ -275,21 +275,32 @@ public class OrderService implements IOrderService {
 
     private OrderDTO convertToDto(OrderEntity orderEntity) {
         if (orderEntity == null) return null;
-        OrderDTO orderDTO = modelMapper.map(orderEntity, OrderDTO.class);
+
+        OrderDTO dto = new OrderDTO();
+
+        dto.setId(orderEntity.getId());
 
         if (orderEntity.getUserEntity() != null) {
-            orderDTO.setUserId(orderEntity.getUserEntity().getId());
+            dto.setUserId(orderEntity.getUserEntity().getId());
         }
-        if (orderEntity.getPaymentEntity() != null) {
-            orderDTO.setId(orderEntity.getPaymentEntity().getId());
+
+        dto.setOrderCode(orderEntity.getOrderCode());
+        dto.setStatus(orderEntity.getStatus());
+
+        if (orderEntity.getTotalPrice() != null) {
+            dto.setTotalPrice(orderEntity.getTotalPrice().doubleValue());
         }
+
+        dto.setCreatedAt(orderEntity.getCreatedAt());
+
         if (orderEntity.getOrderItems() != null) {
             List<OrderItemDTO> itemDTOs = orderEntity.getOrderItems().stream()
                     .map(this::convertItemToDto)
-                    .collect(Collectors.toList());
-            orderDTO.setItems(itemDTOs);
+                    .collect(java.util.stream.Collectors.toList());
+            dto.setItems(itemDTOs);
         }
-        return orderDTO;
+
+        return dto;
     }
 
     private OrderItemDTO convertItemToDto(OrderItemEntity itemEntity) {

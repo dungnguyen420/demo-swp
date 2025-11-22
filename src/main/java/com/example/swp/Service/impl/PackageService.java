@@ -1,6 +1,7 @@
 package com.example.swp.Service.impl;
 
 import com.example.swp.DTO.PackageDTO;
+import com.example.swp.Entity.OrderItemEntity;
 import com.example.swp.Entity.PackageEntity;
 import com.example.swp.Repository.IPackageRepository;
 import com.example.swp.Repository.OrderItemRepository;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PackageService implements IPackageService {
@@ -98,4 +101,27 @@ public class PackageService implements IPackageService {
 
         return packageRepository.findAll(spec, pageable);
     }
+    @Override
+    public List<PackageDTO> getMyPackages(Long userId) {
+
+        List<OrderItemEntity> items = orderItemRepository.findPurchasedPackagesByUser(userId);
+
+        return items.stream().map(item -> {
+
+            PackageEntity pkg = item.getPackageEntity();
+
+            PackageDTO dto = new PackageDTO();
+            dto.setName(pkg.getName());
+            dto.setDescription(pkg.getDescription());
+
+            dto.setPurchasedPrice(item.getUnitPrice());
+            dto.setPurchasedAt(item.getCreatedAt());
+
+            dto.setDurationMonth(pkg.getDurationMonth());
+
+            return dto;
+
+        }).collect(Collectors.toList());
+    }
+
 }

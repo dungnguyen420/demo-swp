@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gói tập của tôi - GymCare</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<header class="navbar">
+    <a th:href="@{/home}" class="logo">GymCare</a>
+    <nav>
+        <ul>
+            <li><a th:href="@{/home}">Trang chủ</a></li>
+            <li><a th:href="@{/package}" >Gói tập</a></li>
+            <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
+            <li><a th:href="@{/classes}">Lớp học</a></li>
+            <li><a th:href="@{/shop}">Cửa hàng</a></li>
+        </ul>
+    </nav>
+
+    <div class="auth-section">
+        <div sec:authorize="isAuthenticated()" class="profile-dropdown">
+            <img th:src="@{/images/default-avatar.png}" alt="Avatar">
+            <span sec:authentication="principal.username">Username</span>
+
+            <ul class="dropdown-menu">
+                <li><a th:href="@{/user/profile}"><i class="fas fa-user"></i> Hồ sơ</a></li>
+                <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
+                <li><a th:href="@{/my-packages}"><i class="fas fa-box-open"></i> Gói tập của tôi</a></li>
+
+                <li class="logout">
+                    <form th:action="@{/logout}" method="post">
+                        <button type="submit"><i class="fas fa-sign-out-alt"></i> Đăng xuất</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+
+        <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
+    </div>
+</header>
+
+
+<main>
+    <div class="page-container">
+        <h2 class="page-title">📦 Gói tập của tôi</h2>
+
+        <div class="content-card">
+
+            <!-- Nếu chưa có gói -->
+            <div th:if="${#lists.isEmpty(packages)}" class="empty-cart">
+                <i class="fas fa-box-open"></i>
+                <h3>Bạn chưa mua gói tập nào</h3>
+                <p>Khám phá những gói tập hấp dẫn tại GymCare.</p>
+
+                <a th:href="@{/package}" class="cta-button">Xem gói tập</a>
+            </div>
+
+            <!-- Danh sách gói đã mua -->
+            <div th:if="${!#lists.isEmpty(packages)}">
+                <table class="data-table">
+                    <thead>
+                    <tr>
+                        <th>Tên gói</th>
+                        <th>Thời hạn</th>
+                        <th>Giá</th>
+                        <th>Ngày Mua</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr th:each="p : ${packages}">
+                        <td data-label="Tên gói" th:text="${p.name}"></td>
+
+                        <td data-label="Thời hạn">
+                            <span th:text="${p.durationMonth} + ' tháng'"></span>
+                        </td>
+
+                        <td data-label="Giá"
+                            th:text="${#numbers.formatDecimal(p.purchasedPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                        </td>
+
+
+                        <td data-label="Ngày mua" th:text="${#temporals.format(p.getPurchasedAt(), 'dd/MM/yyyy')}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="container">
+        <p>&copy; 2025 GymCare. All rights reserved.</p>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const navbar = document.querySelector('.navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) navbar.classList.add('scrolled');
+            else navbar.classList.remove('scrolled');
+        });
+
+        const profileDropdown = document.querySelector('.profile-dropdown');
+        if (profileDropdown) {
+            profileDropdown.addEventListener('click', (e) => {
+                if (!e.target.closest('a')) {
+                    profileDropdown.classList.toggle('active');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!profileDropdown.contains(e.target)) {
+                    profileDropdown.classList.remove('active');
+                }
+            });
+        }
+    });
+</script>
+
+</body>
+</html>

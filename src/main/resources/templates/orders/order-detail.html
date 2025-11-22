@@ -241,13 +241,13 @@
 
 
                         <td data-label="Đơn giá" style="text-align: right;"
-                            th:text="${#numbers.formatDecimal(item.productPrice, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                            th:text="${#numbers.formatDecimal(item.getPrice(), 0, 'COMMA', 0, 'POINT')} + ' VND'">
                             0 VND
                         </td>
 
                         <!-- THÀNH TIỀN = productPrice * quantity -->
                         <td data-label="Thành tiền" style="text-align: right;"
-                            th:text="${#numbers.formatDecimal(item.productPrice * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'">
+                            th:text="${#numbers.formatDecimal(item.getPrice() * item.quantity, 0, 'COMMA', 0, 'POINT')} + ' VND'">
                             0 VND
                         </td>
                     </tr>

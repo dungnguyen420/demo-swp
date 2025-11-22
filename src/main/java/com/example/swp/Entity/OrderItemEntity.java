@@ -34,5 +34,9 @@ public class OrderItemEntity extends BaseEntity {
     @JoinColumn(name = "order_id")
     @JsonBackReference
     private OrderEntity orderEntity;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "package_id", insertable = false, updatable = false)
+    private PackageEntity packageEntity;
 }
 

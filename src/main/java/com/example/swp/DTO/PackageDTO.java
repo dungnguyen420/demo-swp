@@ -4,6 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 public class PackageDTO {
@@ -25,4 +26,6 @@ public class PackageDTO {
     @NotNull(message = "Thời hạn gói không được để trống")
     @Positive(message = "Thời hạn (tháng) phải là số dương")
     private Integer durationMonth;
+    private double purchasedPrice;
+    private LocalDateTime purchasedAt;
 }
