@@ -54,7 +54,8 @@ public class SecurityConfig {
                                 "/cart/clear",
                                 "/orders/create",
                                 "/orders/**",
-                                "/managers/**"
+                                "/managers/**",
+                                "equipment/list"
                         ).permitAll()
                         .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("/chat").authenticated()

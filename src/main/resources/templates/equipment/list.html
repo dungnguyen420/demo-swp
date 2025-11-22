@@ -296,7 +296,8 @@
             <th>Số lượng</th>
             <th>Ngày nhập</th>
             <th>Trạng thái</th>
-            <th>Hành động</th>
+            <th>Hình ảnh </th>
+            <th sec:authorize="hasRole('MANAGER')" >Hành động</th>
         </tr>
         </thead>
         <tbody>
@@ -307,7 +308,7 @@
             <td th:text="${e.purchaseDate}"></td>
             <td th:text="${e.status}"></td>
             <td><img th:src="${e.image}" style="width:80px;height:80px;object-fit:cover"></td>
-            <td>
+            <td sec:authorize="hasRole('MANAGER')">
                 <a th:href="@{/equipment/edit/{id}(id=${e.id})}" class="btn btn-warning btn-sm">Sửa</a>
                 <a th:href="@{/equipment/delete/{id}(id=${e.id})}" class="btn btn-danger btn-sm"
                    onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
