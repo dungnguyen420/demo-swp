@@ -36,10 +36,11 @@ public interface IProductRepository extends JpaRepository<ProductEntity, Long>, 
         AND (:fromDate IS NULL OR p.createdDate >= :fromDate)
         AND (:toDate IS NULL OR p.createdDate <= :toDate)
         """)
-    List<ProductEntity> searchAdvanced(String keyword,
-                                       Double minPrice,
-                                       Double maxPrice,
-                                       LocalDateTime fromDate,
-                                       LocalDateTime toDate);
+    Page<ProductEntity> searchAdvanced(@Param("keyword") String keyword,
+                                       @Param("minPrice") Double minPrice,
+                                       @Param("maxPrice") Double maxPrice,
+                                       @Param("fromDate") LocalDateTime fromDate,
+                                       @Param("toDate") LocalDateTime toDate,
+                                       Pageable pageable);
 
 }

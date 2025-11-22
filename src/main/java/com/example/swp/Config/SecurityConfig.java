@@ -63,7 +63,6 @@ public class SecurityConfig {
                                 "/trainers/edit/**",
                                 "/trainers/delete/**").hasRole("ADMIN")
                         .requestMatchers("/products/**", "/equipment/**").hasRole("MANAGER")
-                        .requestMatchers("/equipment/**").hasRole("TRAINER")
                         .requestMatchers("/ws/**","/admin/chat/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

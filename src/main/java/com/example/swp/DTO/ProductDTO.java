@@ -1,32 +1,28 @@
 package com.example.swp.DTO;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 public class ProductDTO {
     private long id;
-    @NotBlank(message = "Name cannot be blank")
+    @NotBlank(message = "Tên không được để trống")
     @Pattern(
-            regexp = "^[A-Za-z0-9 ]+$",
-            message = "Name can only contain letters, numbers and spaces"
+            regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}0-9]+(?:\\s[\\p{L}0-9]+)*$",
+            message = "Không có khoảng trắng ở đầu và cuối"
     )
     private String name;
-    @NotBlank(message = "Description cannot be blank")
+    @NotBlank(message = "Mô tả không được để trống")
     @Pattern(
-            regexp = "^[A-Za-z0-9 ]+$",
-            message = "Description can only contain letters, numbers and spaces"
+            regexp = "^(?!\\s)(?!.*\\s$)[\\p{L}0-9]+(?:\\s[\\p{L}0-9]+)*$",
+            message = "Không có khoảng trắng ở đầu và cuối"
     )
     private String description;
-    @NotNull(message = "Price cannot be null")
-    @PositiveOrZero(message = "Price must be equal or greater than 0")
+    @NotNull(message = "Giá không không để trống")
+    @Positive(message = "Giá lớn hơn 0")
     private double price;
-    @NotNull(message = "Quantity cannot be null")
-    @PositiveOrZero(message = "Quantity must be equal or greater than 0")
+    @NotNull(message = "Số lượng không để trống")
+    @Positive(message = "Số lượng lớn hơn 0")
     private int quantity;
-    @NotBlank(message = "Image cannot be blank")
     private String image;
 }

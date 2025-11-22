@@ -1,6 +1,8 @@
 package com.example.swp.Repository;
 
 import com.example.swp.Entity.EquipmentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -24,12 +26,13 @@ public interface EquipmentRepository extends JpaRepository<EquipmentEntity, Long
              AND (:endDate IS NULL OR e.purchaseDate <= :endDate)
              AND (:status IS NULL OR e.status = :status)
            """)
-    List<EquipmentEntity> searchAdvanced(
+    Page<EquipmentEntity> searchAdvanced(
             @Param("name") String name,
             @Param("quantityMin") Integer quantityMin,
             @Param("quantityMax") Integer quantityMax,
             @Param("startDate") LocalDate startDate,
             @Param("endDate") LocalDate endDate,
-            @Param("status") EquipmentEntity.Status status
+            @Param("status") EquipmentEntity.Status status,
+            Pageable pageable
     );
 }

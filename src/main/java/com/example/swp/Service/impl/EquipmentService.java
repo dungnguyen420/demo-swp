@@ -5,6 +5,8 @@ import com.example.swp.Entity.EquipmentEntity;
 import com.example.swp.Repository.EquipmentRepository;
 import com.example.swp.Service.IEquipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,13 +28,13 @@ public class EquipmentService implements IEquipmentService {
         } else {
             equipment = new EquipmentEntity();
         }
-        equipment.setId(dto.getId());
         equipment.setName(dto.getName());
         equipment.setQuantity(dto.getQuantity());
         equipment.setPurchaseDate(dto.getPurchaseDate());
         equipment.setStatus(dto.getStatus() != null ? dto.getStatus() : EquipmentEntity.Status.AVAILABLE);
-        equipment.setImage(dto.getImage());
-
+        if (dto.getImage() != null && !dto.getImage().isBlank()) {
+            equipment.setImage(dto.getImage());
+        }
         return equipmentRepository.save(equipment);
     }
 
@@ -51,14 +53,14 @@ public class EquipmentService implements IEquipmentService {
     }
 
     @Override
-    public List<EquipmentEntity> getAllEquipment() {
-        return equipmentRepository.findAll();
+    public Page<EquipmentEntity> getAllEquipmentPaged(Pageable pageable) {
+        return equipmentRepository.findAll(pageable);
     }
 
     @Override
     public List<EquipmentEntity> findByName(String name) {
         if(name == null || name.trim().isEmpty()){
-            return getAllEquipment();
+            return equipmentRepository.findAll();
         }
         return equipmentRepository.findByNameContainingIgnoreCase(name);
     }
@@ -66,7 +68,7 @@ public class EquipmentService implements IEquipmentService {
     @Override
     public List<EquipmentEntity> findByStatus(EquipmentEntity.Status status) {
         if(status == null){
-            return getAllEquipment();
+            return equipmentRepository.findAll();
         }
         return equipmentRepository.findByStatus(status);
     }
@@ -76,6 +78,7 @@ public class EquipmentService implements IEquipmentService {
         EquipmentEntity entity = equipmentRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Thiết bị không tìm thấy"));
         EquipmentDTO dto = new EquipmentDTO();
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setQuantity(entity.getQuantity());
         dto.setPurchaseDate(entity.getPurchaseDate());
@@ -84,9 +87,9 @@ public class EquipmentService implements IEquipmentService {
     }
 
     @Override
-    public List<EquipmentEntity> searchAdvanced(String name, Integer quantityMin, Integer quantityMax, LocalDate startDate, LocalDate endDate, EquipmentEntity.Status status) {
-        return equipmentRepository.searchAdvanced(name, quantityMin, quantityMax, startDate, endDate, status);
-
+    public Page<EquipmentEntity> searchAdvancedPaged(String name, Integer quantityMin, Integer quantityMax, LocalDate startDate, LocalDate endDate, EquipmentEntity.Status status, Pageable pageable) {
+        return equipmentRepository.searchAdvanced(name, quantityMin, quantityMax, startDate, endDate, status, pageable);
     }
+
 
 }

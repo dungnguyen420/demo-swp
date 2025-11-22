@@ -315,6 +315,20 @@
         </tr>
         </tbody>
     </table>
+    <nav th:if="${totalPages > 1}">
+        <ul class="pagination justify-content-center mt-3">
+            <li class="page-item" th:classappend="${currentPage == 0}? 'disabled'">
+                <a class="page-link" th:href="@{/equipment/list(page=${currentPage-1}, size=${size})}">Previous</a>
+            </li>
+            <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages-1)}"
+                th:classappend="${i == currentPage}? 'active'">
+                <a class="page-link" th:href="@{/equipment/list(page=${i}, size=${size})}" th:text="${i+1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage+1 >= totalPages}? 'disabled'">
+                <a class="page-link" th:href="@{/equipment/list(page=${currentPage+1}, size=${size})}">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 </body>
 </html>

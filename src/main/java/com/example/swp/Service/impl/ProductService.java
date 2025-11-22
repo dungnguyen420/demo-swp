@@ -27,11 +27,9 @@ public class ProductService implements IProductService {
         if (existingProduct.isPresent()) {
             throw new IllegalArgumentException("Tên sản phẩm '" + dto.getName() + "' đã tồn tại!");
         }
-
         if (dto.getPrice() < 0){
             throw new IllegalArgumentException("Giá phải lớn hơn 0");
         }
-
         if(dto.getQuantity() < 0){
             throw new IllegalArgumentException("Số lượng phải lớn hơn 0");
         }
@@ -68,7 +66,9 @@ public class ProductService implements IProductService {
             existingProduct.setDescription(dto.getDescription());
             existingProduct.setPrice(dto.getPrice());
             existingProduct.setQuantity(dto.getQuantity());
-            existingProduct.setImage(dto.getImage());
+            if (dto.getImage() != null && !dto.getImage().isBlank()) {
+                existingProduct.setImage(dto.getImage());
+            }
 
             productRepository.save(existingProduct);
             return existingProduct;
@@ -111,12 +111,14 @@ public class ProductService implements IProductService {
         return productRepository.findByNameContainingIgnoreCase(keyword);
     }
 
-    public List<ProductEntity> searchAdvanced(String keyword,
-                                              Double minPrice,
-                                              Double maxPrice,
-                                              LocalDateTime fromDate,
-                                              LocalDateTime toDate) {
-        return productRepository.searchAdvanced(keyword, minPrice, maxPrice, fromDate, toDate);
+    @Override
+    public Page<ProductEntity> searchAdvancedPaged(String keyword,
+                                                   Double minPrice,
+                                                   Double maxPrice,
+                                                   LocalDateTime fromDate,
+                                                   LocalDateTime toDate,
+                                                   Pageable pageable) {
+        return productRepository.searchAdvanced(keyword, minPrice, maxPrice, fromDate, toDate, pageable);
     }
 
     @Override
@@ -152,5 +154,6 @@ public class ProductService implements IProductService {
 
         productRepository.save(product);
     }
+
 
 }

@@ -2,6 +2,8 @@ package com.example.swp.Service;
 
 import com.example.swp.DTO.EquipmentDTO;
 import com.example.swp.Entity.EquipmentEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 
 import java.time.LocalDate;
@@ -15,7 +17,7 @@ public interface IEquipmentService {
 
     Optional<EquipmentEntity> getEquipmentById(Long id);
 
-    List<EquipmentEntity> getAllEquipment();
+    Page<EquipmentEntity> getAllEquipmentPaged(Pageable pageable);
 
     List<EquipmentEntity> findByName(String name);
 
@@ -23,13 +25,14 @@ public interface IEquipmentService {
 
     EquipmentDTO getEquipmentDTOById(Long id);
 
-    List<EquipmentEntity> searchAdvanced(
+    Page<EquipmentEntity> searchAdvancedPaged(
             String name,
             Integer quantityMin,
             Integer quantityMax,
             LocalDate startDate,
             LocalDate endDate,
-            EquipmentEntity.Status status
+            EquipmentEntity.Status status,
+            Pageable pageable
     );
 }
 

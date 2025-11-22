@@ -32,6 +32,7 @@ public class PromotionEntity extends BaseEntity {
     @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
+    
 
 }
 
