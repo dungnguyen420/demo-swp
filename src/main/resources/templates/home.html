@@ -23,9 +23,7 @@
                 <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
                 <li><a th:href="@{/classes}">Lớp học</a></li>
                 <li><a th:href="@{/shop}">Cửa hàng</a></li>
-                <li sec:authorize="hasAnyRole('MANAGER')">
-                    <a th:href="@{/equipment/list}">Cơ sở vật chất</a>
-                </li>
+                <li><a th:href="@{/equipment/list}">Cơ sở vật chất</a></li>
                 <li sec:authorize="hasRole('MANAGER')">
                     <a th:href="@{/products/list}">Danh sách sản phẩm</a>
                 </li>
