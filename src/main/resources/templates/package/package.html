@@ -249,7 +249,9 @@
                 <li >
                     <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
                 </li>
-
+                <li >
+                    <a th:href="@{/package/my-packages}"><i class="fas fa-user"></i> Gói Tập Của Tôi</a>
+                </li>
                 <li sec:authorize="hasAuthority('TRAINER')">
                     <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
                 </li>
@@ -261,7 +263,6 @@
                     </form>
                 </li>
                 <li><a th:href="@{/orders/history}"><i class="fas fa-history"></i> Lịch sử giao dịch</a></li>
-                <li class="logout"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a></li>
             </ul>
         </div>
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
