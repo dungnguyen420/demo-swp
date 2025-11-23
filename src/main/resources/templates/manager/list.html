@@ -64,9 +64,7 @@
             <li><a th:href="@{/trainers}">Huấn luyện viên</a></li>
             <li><a th:href="@{/classes}">Lớp học</a></li>
             <li><a th:href="@{/shop}">Cửa hàng</a></li>
-            <li sec:authorize="hasAnyRole('MANAGER')">
-                <a th:href="@{/equipment/list}">Cơ sở vật chất</a>
-            </li>
+            <li><a th:href="@{/equipment/list}">Cơ sở vật chất</a></li>
             <li sec:authorize="hasRole('MANAGER')">
                 <a th:href="@{/products/list}">Danh sách sản phẩm</a>
             </li>
@@ -89,7 +87,9 @@
                 <li >
                     <a th:href="@{/my-schedule/classes}"><i class="fas fa-users"></i> Lớp học của tôi</a>
                 </li>
-
+                <li >
+                    <a th:href="@{/package/my-packages}"><i class="fas fa-user"></i> Gói Tập Của Tôi</a>
+                </li>
                 <li sec:authorize="hasAuthority('TRAINER')">
                     <a th:href="@{/my-schedule/teaching}"><i class="fas fa-chalkboard-teacher"></i> Lịch dạy của tôi</a>
                 </li>
@@ -106,6 +106,7 @@
         <a sec:authorize="!isAuthenticated()" th:href="@{/index}" class="cta-button">Đăng nhập</a>
     </div>
 </header>
+
 <!--<div id="alert-popup" class="popup-backdrop"-->
 <!--     th:classappend="${errorMessage != null || message != null ? 'show' : ''}">-->
 <!--</div>-->
